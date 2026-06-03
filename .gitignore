@@ -9,6 +9,11 @@ wheels/
 # Virtual environments
 .venv
 
+node_modules/
+
 .env
 vector_db/
 preprocessed_db/
+study_guide/
+Phien_am/
+slide/
