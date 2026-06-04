@@ -1,0 +1,69 @@
+﻿Dựa trên file template:
+"G:\RAG\study_guide\study-guide-template.html"
+
+Hãy tạo 1 file .html hoàn chỉnh để tôi học tập và ôn phỏng vấn.
+
+Trước khi tạo file .html, hãy dùng:
+- @brainstorming làm quy trình chính
+- @rich-elicitation chỉ nếu còn mơ hồ lớn
+- @plan-writing ở mức ngắn nếu task có nhiều bước
+
+Không code ngay.
+Hãy đọc các nguồn liên quan mà tôi cung cấp:
+- "G:\RAG\study_guide\study-guide-template.html"
+- nội dung buổi học trước: 
+- nội dung buổi học hiện tại:
+- kết quả brainstorming / thảo luận trong chat nếu có
+
+Sau đó:
+1. Làm Understanding Lock ngắn gọn.
+2. Chờ tôi xác nhận.
+3. Nếu tôi xác nhận thì tạo file .html hoàn chỉnh trong:
+   "G:\RAG\study_guide\"
+
+Yêu cầu tài liệu:
+- Dùng template làm khung.
+- Đây là AI generation template, không phải form để tôi tự điền.
+- Chỉ giữ các section phù hợp với input.
+- Độ dài phải adaptive:
+  - input ít hoặc bài lý thuyết ngắn -> tài liệu ngắn, dễ scan
+  - code snippet / notebook -> tập trung workflow, implementation, pitfalls
+  - repo/project lớn -> đủ sâu về architecture, design choices, trade-off, interview angle
+- Tiếng Việt là chính, nhưng giữ English technical terms khi rõ hơn.
+- Heading, label và thuật ngữ quan trọng phải có song ngữ, ví dụ:
+  "embedding - nhúng vector"
+  "chunking - chia nhỏ tài liệu"
+  "vector store - kho lưu trữ vector"
+  "Popular choices - Lựa chọn phổ biến"
+  "Problem - Vấn đề"
+  "Trade-off - Đánh đổi"
+  "When to use - Khi nào nên dùng"
+- Với các cụm từ tiếng Anh, phải trình bày rõ nghĩa tiếng Việt:
+  - technical phrase / cụm kỹ thuật -> "English phrase - nghĩa tiếng Việt"
+  - short/common word / từ ngắn phổ biến -> "English word (nghĩa tiếng Việt)"
+  - ví dụ:
+    "Semantic retrieval - truy xuất theo ngữ nghĩa"
+    "exact keyword match - khớp chính xác từ khóa"
+    "Expected outcome - Kết quả mong muốn"
+    "cost (chi phí)"
+    "meaning (nghĩa)"
+- Mỗi technical cluster quan trọng phải có:
+  - concept - khái niệm
+  - methods / techniques - phương pháp / kỹ thuật phổ biến
+  - tools / models / frameworks / services - công cụ / mô hình / framework / dịch vụ phổ biến
+  - trade-off - đánh đổi ngắn
+  - when to use - khi nào nên dùng
+- Không đưa secrets, API keys, tokens, giá trị trong .env, hoặc credentials vào tài liệu.
+- Không để placeholder [[...]] trong bản HTML cuối.
+
+Mục tiêu:
+- Ôn tập kiến thức.
+- Hiểu workflow / pipeline.
+- Nắm techniques / implementation insights.
+- Biết pitfalls và common misunderstandings.
+- Có cheat sheet để ôn nhanh.
+- Có Interview Q&A / Flashcards để luyện phỏng vấn.
+
+
+
+load các skills ở: `C:\Users\hieu\.agents\skills`

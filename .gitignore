@@ -15,6 +15,6 @@ package*.json
 .env
 vector_db/
 preprocessed_db/
-study_guide/
 Phien_am/
 slide/
+vector_db/

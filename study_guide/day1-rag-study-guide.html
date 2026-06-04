@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 1 - RAG Core Guide</title>
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --bg-soft: #fbf8f2;
+      --surface: #fffdf8;
+      --surface-alt: #fff8ef;
+      --line: #dcc8a8;
+      --line-soft: #eadcca;
+      --ink: #223042;
+      --ink-soft: #546173;
+      --accent: #1f6f78;
+      --accent-soft: #dfeff0;
+      --warm: #b86d2b;
+      --shadow: 0 18px 40px rgba(88, 62, 30, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --content-width: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(31, 111, 120, 0.08), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(184, 109, 43, 0.10), transparent 24%),
+        linear-gradient(180deg, #faf5ec 0%, #f4ebdd 100%);
+      line-height: 1.65;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+    }
+
+    p, li {
+      text-wrap: pretty;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .card,
+    .toc,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(31, 111, 120, 0.13), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 16px;
+      font-size: clamp(2.3rem, 4vw, 3.9rem);
+      max-width: 10ch;
+    }
+
+    .hero p,
+    .card p,
+    .callout p,
+    details p,
+    li {
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 62ch;
+      font-size: 1.04rem;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .mini-card {
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, #fffdf9 0%, #fff8ee 100%);
+      border: 1px solid var(--line-soft);
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .panel {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, #fffdfa 0%, #fff7ec 100%);
+      border: 1px solid var(--line-soft);
+    }
+
+    .panel h3,
+    .section-title h2 {
+      font-size: clamp(1.35rem, 2vw, 2rem);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(31, 111, 120, 0.18);
+      background: #fffaf1;
+      color: var(--accent);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 160ms ease-out, border-color 160ms ease-out, background-color 160ms ease-out;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(31, 111, 120, 0.34);
+      background: #fffdf8;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+    }
+
+    .toc h2 {
+      font-size: 1.12rem;
+      margin-bottom: 14px;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink-soft);
+      border: 1px solid transparent;
+      transition: transform 160ms ease-out, background-color 160ms ease-out, color 160ms ease-out, border-color 160ms ease-out;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: #fffaf1;
+      border-color: rgba(31, 111, 120, 0.14);
+      transform: translateX(2px);
+    }
+
+    .progress {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #eadfcc;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #4c9096);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+    }
+
+    section {
+      padding: 26px;
+      border-radius: var(--radius-xl);
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-size: 0.82rem;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 1.08rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line-soft);
+      background: #fffaf1;
+    }
+
+    .flow-index {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #215960);
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: #fff5e8;
+    }
+
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #efe4d4;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #fffaf1;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--ink);
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px dashed var(--line);
+      background: rgba(255, 251, 245, 0.92);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      section {
+        padding: 22px 18px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+
+      .hero,
+      .card,
+      .toc,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">RAG Week • Day 1 Core Theory</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>RAG Day 1 Core Guide</h1>
+          <p>
+            Bản rút gọn này chỉ giữ lại những gì cốt lõi nhất của Day 1:
+            RAG là gì, hoạt động ra sao, vì sao <span class="inline-code">keyword lookup</span> chỉ là bước đệm,
+            và tại sao <span class="inline-code">embeddings + vector store</span> là ý tưởng lớn cần nắm trước khi sang các day tiếp theo.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm</strong>
+              RAG = retrieve context rồi augment prompt trước khi generate answer.
+            </article>
+            <article class="mini-card">
+              <strong>Điểm then chốt</strong>
+              Day 1 dạy trực giác trước, chưa phải production RAG hoàn chỉnh.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Use case của tài liệu</h3>
+            <p>
+              Dùng để ôn nhanh trong 5-7 phút, làm mốc nối với Day 2, 3, 4, 5, và giữ bộ khái niệm đủ chắc để đi phỏng vấn.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Light theme</span>
+              <span class="tag">Interview-ready</span>
+              <span class="tag">Reusable format</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Nguồn tổng hợp</h3>
+            <p>
+              <span class="inline-code">Phien_am/day1.txt</span>,
+              <span class="inline-code">day1.ipynb</span>,
+              <span class="inline-code">slide/Copy of LLM - Week 5 Day 1.pptx</span>.
+            </p>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Expand all notes</button>
+              <button class="button" type="button" id="collapseAll">Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Mục lục Day 1</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#overview">1. Overview</a>
+          <a class="toc-link" href="#small-big-idea">2. Small Idea vs Big Idea</a>
+          <a class="toc-link" href="#pipeline">3. RAG Pipeline</a>
+          <a class="toc-link" href="#core-concepts">4. Core Concepts</a>
+          <a class="toc-link" href="#interview">5. Interview Notes</a>
+          <a class="toc-link" href="#memory">6. What to Remember</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Reading progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="overview" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Overview: Day 1 thực sự dạy bạn điều gì?</h2>
+            </div>
+          </div>
+          <p>
+            Day 1 dạy bản chất của RAG theo cách dễ hiểu nhất. Ý tưởng cốt lõi là:
+            khi người dùng hỏi, hệ thống không chỉ dựa vào trí nhớ có sẵn của LLM,
+            mà còn truy xuất thêm context từ một knowledge base rồi đưa context đó vào prompt.
+            Từ đó câu trả lời có cơ sở hơn, chính xác hơn, và bớt phụ thuộc vào kiến thức huấn luyện tĩnh của model.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Mục tiêu nền tảng</h3>
+              <p>Hiểu rõ 3 thành phần: Retrieval, Augmentation, Generation.</p>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu tư duy</h3>
+              <p>Thấy được keyword lookup chỉ là bước đệm để hiểu semantic retrieval.</p>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu phỏng vấn</h3>
+              <p>Nói được RAG hoạt động ra sao, hạn chế nằm ở đâu, và vì sao cần vector search.</p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>One-line definition:</strong>
+            RAG là kỹ thuật tăng chất lượng trả lời của LLM bằng cách truy xuất ngữ cảnh liên quan từ knowledge base và đưa ngữ cảnh đó vào prompt trước khi model sinh câu trả lời.
+          </div>
+        </section>
+
+        <section id="small-big-idea" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>The Small Idea vs The Big Idea</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Trục so sánh</th>
+                <th>The Small Idea</th>
+                <th>The Big Idea</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Bản chất</strong></td>
+                <td>Tìm context bằng keyword, SQL, lookup đơn giản.</td>
+                <td>Tìm context bằng semantic similarity dựa trên embeddings và vector search.</td>
+              </tr>
+              <tr>
+                <td><strong>Mục đích</strong></td>
+                <td>Giúp hiểu intuition cơ bản của RAG.</td>
+                <td>Giúp hiểu cách RAG hiện đại vận hành trong thực tế.</td>
+              </tr>
+              <tr>
+                <td><strong>Ưu điểm</strong></td>
+                <td>Dễ hiểu, ít thành phần, rất hợp để học.</td>
+                <td>Chịu được paraphrase, synonym, cách hỏi fuzzy.</td>
+              </tr>
+              <tr>
+                <td><strong>Hạn chế</strong></td>
+                <td>Fail nếu user không dùng đúng từ khóa.</td>
+                <td>Cần thêm encoder, vectorization, storage, ranking.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <strong>Điểm phải nhớ:</strong>
+            Day 1 cố ý bắt đầu bằng phiên bản đơn giản để bạn hiểu bản chất trước, rồi mới mở sang phần vector-based retrieval là hướng nâng cấp thật sự.
+          </div>
+        </section>
+
+        <section id="pipeline" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>RAG Pipeline: cách hệ thống hoạt động</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Pipeline trực giác của Day 1</h3>
+              <div class="flow">
+                <div class="flow-step">
+                  <div class="flow-index">1</div>
+                  <div>
+                    <strong>User asks</strong>
+                    <p>Người dùng đặt câu hỏi tự nhiên.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">2</div>
+                  <div>
+                    <strong>Retrieve</strong>
+                    <p>Hệ thống tìm các mẩu thông tin liên quan trong knowledge base.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">3</div>
+                  <div>
+                    <strong>Augment</strong>
+                    <p>Thông tin tìm được được chèn vào prompt như additional context.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">4</div>
+                  <div>
+                    <strong>Generate</strong>
+                    <p>LLM đọc prompt đã có context và tạo câu trả lời.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>Pipeline của Big Idea RAG</h3>
+              <div class="flow">
+                <div class="flow-step">
+                  <div class="flow-index">1</div>
+                  <div>
+                    <strong>Encode question</strong>
+                    <p>Biến câu hỏi thành vector bằng encoder model.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">2</div>
+                  <div>
+                    <strong>Nearest-neighbor search</strong>
+                    <p>Tìm các vector gần nhất trong vector store.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">3</div>
+                  <div>
+                    <strong>Retrieve raw text</strong>
+                    <p>Lấy lại text tương ứng với các vector được chọn.</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-index">4</div>
+                  <div>
+                    <strong>Generate answer</strong>
+                    <p>Đưa text đó cho generator model để trả lời.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Điểm rất quan trọng:</strong>
+            Encoder model và generator model là hai vai trò khác nhau. Vector phục vụ retrieval; model sinh văn bản vẫn đọc text, không trực tiếp đọc các con số vector.
+          </div>
+        </section>
+
+        <section id="core-concepts" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Core Concepts cần nắm chắc</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Auto-regressive vs Auto-encoding</h3>
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Khía cạnh</th>
+                    <th>Auto-regressive</th>
+                    <th>Auto-encoding</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Mục tiêu</strong></td>
+                    <td>Dự đoán token tiếp theo.</td>
+                    <td>Tạo representation giàu ngữ nghĩa cho toàn bộ input.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dùng cho</strong></td>
+                    <td>Chat, generation, code, writing.</td>
+                    <td>Retrieval, classification, embeddings.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ví dụ</strong></td>
+                    <td>GPT, Claude, Gemini.</td>
+                    <td>BERT, OpenAI embedding models, MiniLM.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </article>
+
+            <article class="card">
+              <h3>Token vs Vector</h3>
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Khía cạnh</th>
+                    <th>Token</th>
+                    <th>Vector</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Là gì?</strong></td>
+                    <td>Đơn vị văn bản đã mã hóa để model xử lý.</td>
+                    <td>Dãy số biểu diễn meaning trong không gian nhiều chiều.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vai trò</strong></td>
+                    <td>Input cho mô hình sinh văn bản.</td>
+                    <td>Representation để đo similarity.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Trong RAG</strong></td>
+                    <td>Generator tokenize text để trả lời.</td>
+                    <td>Retriever dùng embedding để tìm context gần nghĩa.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="grid-4" style="margin-top: 14px;">
+            <article class="card">
+              <h3>Knowledge Base</h3>
+              <p>Nguồn tri thức ngoài model: tài liệu, hồ sơ, sản phẩm, FAQ, policy, contracts.</p>
+            </article>
+            <article class="card">
+              <h3>Embedding</h3>
+              <p>Vector đại diện cho meaning của câu, đoạn, tài liệu hoặc khái niệm.</p>
+            </article>
+            <article class="card">
+              <h3>Vector Store</h3>
+              <p>Nơi lưu vector và metadata để hỗ trợ semantic retrieval.</p>
+            </article>
+            <article class="card">
+              <h3>Cosine Similarity</h3>
+              <p>Đo độ giống nhau giữa hai vector bằng góc giữa chúng; càng gần 1 càng giống.</p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Vì sao RAG thường được chọn thay vì fine-tuning cho knowledge mới?</summary>
+            <div class="note">
+              <p>
+                Vì RAG cập nhật nhanh hơn, rẻ hơn, kiểm soát nguồn dữ liệu dễ hơn, và phù hợp hơn khi bài toán là hỏi đáp dựa trên tài liệu thay đổi liên tục.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section id="interview" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Interview Notes: các câu bạn nên trả lời được</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>RAG là gì?</h3>
+              <p>Là kỹ thuật bổ sung external knowledge vào prompt bằng một bước retrieval trước khi LLM sinh câu trả lời.</p>
+            </article>
+            <article class="card">
+              <h3>Tại sao Day 1 bắt đầu bằng toy RAG?</h3>
+              <p>Vì nó giúp hiểu luồng xử lý cốt lõi trước khi thêm embeddings, chunking, vector store và framework.</p>
+            </article>
+            <article class="card">
+              <h3>Hạn chế của keyword retrieval?</h3>
+              <p>Nó fail với synonym, paraphrase, typo, cách hỏi gián tiếp và không thật sự hiểu meaning.</p>
+            </article>
+            <article class="card">
+              <h3>Vai trò của embeddings là gì?</h3>
+              <p>Cho phép hệ thống tìm theo meaning thay vì chỉ tìm theo exact string hoặc surface keyword.</p>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Answer frame nên nhớ:</strong>
+            mục tiêu của RAG → pipeline → hạn chế của keyword lookup → lý do cần embeddings và vector store.
+          </div>
+        </section>
+
+        <section id="memory" class="card">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>What to Remember</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>6 ý phải nhớ</h3>
+              <ol class="memory-list">
+                <li>RAG = retrieve context, augment prompt, generate answer.</li>
+                <li>Day 1 dạy intuition bằng phiên bản đơn giản trước.</li>
+                <li>Keyword lookup đủ để hiểu bản chất nhưng không đủ cho semantic search thật sự.</li>
+                <li>Embeddings là chìa khóa để tìm theo nghĩa thay vì tìm theo từ.</li>
+                <li>Encoder và generator là hai vai trò tách biệt.</li>
+                <li>Vector store phục vụ retrieval, không thay thế LLM trả lời.</li>
+              </ol>
+            </article>
+
+            <article class="card">
+              <h3>Tự kiểm tra nhanh</h3>
+              <ul class="memory-list">
+                <li>Bạn có giải thích được pipeline RAG bằng 4 bước không?</li>
+                <li>Bạn có nêu được ít nhất 3 failure của exact keyword search không?</li>
+                <li>Bạn có phân biệt rõ token, vector, encoder, generator không?</li>
+                <li>Bạn có giải thích được vì sao semantic search là bước nâng cấp tất yếu không?</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Đây là bản rút gọn dành cho việc ghép nhiều day lại với nhau. Với các day sau, nên giữ đúng format này:
+            <span class="inline-code">overview → key idea → pipeline → core concepts → interview notes → quick memory</span>.
+          </div>
+          <p class="print-only">End of Day 1 core guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll("main section[id]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function setActiveLink() {
+      let currentId = sections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

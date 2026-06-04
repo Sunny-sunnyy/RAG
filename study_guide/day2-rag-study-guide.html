@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 2 - RAG & Vector Database Study Guide</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-alt: #334155;
+      --line: #475569;
+      --line-soft: #334155;
+      --ink: #f8fafc;
+      --ink-soft: #cbd5e1;
+      --accent: #38bdf8;
+      --accent-soft: #0c4a6e;
+      --warm: #f59e0b;
+      --warn-soft: #78350f;
+      --shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+      --radius: 12px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      color: var(--ink);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+      color: var(--ink-soft);
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .button:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      border-color: var(--warm);
+      box-shadow: none;
+    }
+
+    .callout p {
+      color: var(--ink);
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1px solid #334155;
+    }
+
+    .code-block {
+      display: block;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 14px;
+      border-radius: 8px;
+      background: #090d16;
+      color: #e2e8f0;
+      border: 1px solid #1e293b;
+      overflow-x: auto;
+      margin-top: 12px;
+      white-space: pre;
+    }
+
+    .code-comment {
+      color: #64748b;
+    }
+
+    .code-keyword {
+      color: #ff79c6;
+    }
+
+    .code-string {
+      color: #f1fa8c;
+    }
+
+    .code-func {
+      color: #50fa7b;
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li {
+      margin-top: 6px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+      margin-top: 16px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.3);
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+        background: white;
+        border-color: #ccc;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">RAG Course • Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Day 2: Vectors for RAG, LangChain, & Vector DBs</h1>
+          <p>
+            Tài liệu chi tiết hướng dẫn học tập và ôn phỏng vấn Day 2. Hệ thống hóa toàn bộ kiến thức về việc chuyển đổi từ Keyword Search (tìm kiếm từ khóa) sang Semantic Search (tìm kiếm ngữ nghĩa) thông qua Embedding Models (bộ mã hóa) và Vector Databases (kho lưu trữ vector) tích hợp trong hệ sinh thái LangChain.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm kỹ thuật - Core Technical Focus</strong>
+              Quy trình Ingestion Pipeline: Load (tải tài liệu) &rarr; Chunking (chia nhỏ tài liệu) &rarr; Embed (nhúng vector) &rarr; Store (lưu trữ vector vào ChromaDB) và Visualization (trực quan hóa không gian vector 2D/3D bằng t-SNE).
+            </article>
+            <article class="mini-card">
+              <strong>Mục tiêu phỏng vấn - Interview Goal</strong>
+              Giải thích tường tận kiến trúc RAG, nắm bắt ưu nhược điểm của các loại Text Splitters, hiểu rõ sự đánh đổi (trade-offs) giữa các Encoder và hạ tầng Vector Store để tự tin trả lời nhà tuyển dụng.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn tư liệu - Sources</h3>
+            <p>
+              Tài liệu được tổng hợp từ transcript buổi học (<span class="inline-code">Phien_am/day2.txt</span>), slide lý thuyết (<span class="inline-code">LLM - Week 5 Day 2.pptx</span>) và notebook thực hành (<span class="inline-code">day2.ipynb</span>).
+            </p>
+            <div class="tag-row">
+              <span class="tag">LangChain v1.0</span>
+              <span class="tag">ChromaDB</span>
+              <span class="tag">t-SNE Reduction</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú</button>
+              <button class="button" type="button" onclick="window.print()">In tài liệu / Lưu PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Mục lục - Table of Contents</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake - Đầu vào</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet - Ôn nhanh</a>
+          <a class="toc-link" href="#overview">2. Overview - Tổng quan</a>
+          <a class="toc-link" href="#goals">3. Learning Goals - Mục tiêu</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context - Liên hệ</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory - Lý thuyết</a>
+          <a class="toc-link" href="#workflow">6. Workflow - Quy trình</a>
+          <a class="toc-link" href="#techniques">7. Techniques - Kỹ thuật</a>
+          <a class="toc-link" href="#options-landscape">8. Options - Bản đồ lựa chọn</a>
+          <a class="toc-link" href="#implementation">9. Implementation - Code Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls - Bẫy cần tránh</a>
+          <a class="toc-link" href="#interview">11. Interview - Góc phỏng vấn</a>
+          <a class="toc-link" href="#flashcards">12. Flashcards & Q&A</a>
+          <a class="toc-link" href="#memory">13. Memory - Ghi nhớ nhanh</a>
+          <a class="toc-link" href="#next-step">14. Next Step - Tiếp theo</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading Progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Section 0: Intake -->
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <article class="card">
+              <h3>Metadata buổi học - Session Metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title (Tiêu đề):</strong> Day 2 - Vectors for RAG: Introduction to LangChain and Vector Databases</li>
+                <li><strong>Type (Loại hình):</strong> Kết hợp Lý thuyết &amp; Thực hành (Theory, Code analysis &amp; Visualization)</li>
+                <li><strong>Main focus (Trọng tâm):</strong> Chunking logic, Encoder models, Chroma storage và t-SNE dimensionality reduction (giảm chiều dữ liệu)</li>
+                <li><strong>Depth (Độ sâu):</strong> Deep (Chi tiết về mặt kỹ thuật, tham số và phân tích từng dòng code)</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Các nguồn tài liệu - Input Resources</h3>
+              <ul class="memory-list">
+                <li><strong>Mã nguồn:</strong> Notebook thực hành <a href="file:///G:/RAG/day2.ipynb" class="inline-code">day2.ipynb</a></li>
+                <li><strong>Slide lý thuyết:</strong> File <span class="inline-code">Copy of LLM - Week 5 Day 2.pptx</span></li>
+                <li><strong>Transcript ghi chú:</strong> Transcript giảng bài tiếng Việt <span class="inline-code">Phien_am/day2.txt</span></li>
+                <li><strong>Dữ liệu mẫu:</strong> Thư mục tri thức <span class="inline-code">knowledge-base/</span> với các tệp Markdown (.md) phân loại theo sản phẩm, hợp đồng và nhân sự của InsureLLM</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 1: Cheat Sheet -->
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt nhanh trên một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core Idea - Ý tưởng cốt lõi</h3>
+              <p>
+                RAG chuyên nghiệp chuyển từ tìm từ khóa cứng nhắc sang <strong>Semantic Search (tìm kiếm ngữ nghĩa)</strong>. Ta sử dụng <strong>Encoder (Embedding model)</strong> để chuyển đổi các đoạn văn bản (chunks) thành các chuỗi số (Vector Embedding) mang ý nghĩa ngữ nghĩa, sau đó lưu trữ vào <strong>Vector Store (như ChromaDB)</strong> để tìm kiếm "hàng xóm gần nhất" (Nearest Neighbor Search) dựa trên khoảng cách toán học.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must Know - Điều bắt buộc phải nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>Encoder quyết định chất lượng:</strong> Bản thân Vector DB chỉ lưu trữ và truy vấn nhanh, chính mô hình nhúng (Encoder) mới quyết định mối quan hệ ngữ nghĩa giữa các vector.</li>
+                <li><strong>Text Splitter thông minh:</strong> <span class="inline-code">RecursiveCharacterTextSplitter</span> cố gắng giữ câu và đoạn trọn vẹn bằng cách ngắt đệ quy qua các ký tự <span class="inline-code">\n\n</span>, <span class="inline-code">\n</span>, dấu cách và ký tự.</li>
+                <li><strong>Hệ sinh thái LangChain:</strong> Framework giúp kết nối nhanh các thành phần, đi kèm các công cụ bổ trợ như LangGraph (định nghĩa Agent) và LangSmith (observability - quan sát, debug).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Angle - Góc nhìn phỏng vấn</h3>
+              <p>
+                Khi được hỏi về hiệu năng RAG, hãy nhấn mạnh: <strong>"Hạ tầng Vector DB chỉ là bài toán chi phí/tốc độ (Cost/Performance tradeoff), còn chất lượng tìm kiếm phụ thuộc vào chiến lược Chunking (kích thước khối) và khả năng biểu diễn ngữ nghĩa của mô hình Encoder"</strong>. Biết cách dùng t-SNE để vẽ bản đồ trực quan không gian vector nhằm đánh giá mức độ hội tụ của dữ liệu.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 2: Overview -->
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan bài học</h2>
+            </div>
+          </div>
+          <p>
+            Trong buổi học Day 2, chúng ta tiến hành xây dựng nền tảng bộ nhớ kiến thức (Knowledge Base) cho công ty giả lập <strong>InsureLLM</strong> (một doanh nghiệp có 32 nhân sự và 32 hợp đồng enterprise lớn). Bài học giới thiệu toàn bộ quy trình xử lý dữ liệu đầu vào (Data Ingestion Pipeline) bằng cách sử dụng framework LangChain (phiên bản v1.0 ra mắt tháng 10/2025).
+          </p>
+          <p style="margin-top: 10px;">
+            Mấu chốt của buổi học là giải quyết bài toán: Làm cách nào để máy tính tìm đúng đoạn văn bản chứa câu trả lời mà không bị phụ thuộc vào từ khóa chính xác mà người dùng nhập vào? Điều này yêu cầu ta phải hiểu rõ cấu trúc của vector nhúng, cách lựa chọn kích thước khối cắt văn bản (chunk_size) và độ gối chồng (chunk_overlap) để đảm bảo không mất ngữ cảnh tại các điểm cắt.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Ý tưởng chính - Main Idea</h3>
+              <p>Sử dụng bộ nhúng mã nguồn mở <span class="inline-code">all-MiniLM-L6-v2</span> để chuyển hóa văn bản thành vector 384 chiều, lưu vào ChromaDB cục bộ và phân tích trực quan hóa bằng t-SNE.</p>
+            </article>
+            <article class="card">
+              <h3>Lý do quan trọng - Why It Matters</h3>
+              <p>Trong thực tế, Keyword Search dễ bị "janky" (kém ổn định) khi người dùng dùng từ đồng nghĩa hoặc câu hỏi fuzzy (mập mờ). Semantic Search là chuẩn công nghiệp để xây dựng RAG sản xuất.</p>
+            </article>
+            <article class="card">
+              <h3>Kết quả mong muốn - Expected Outcome</h3>
+              <p>Thiết lập thành công quy trình tự động quét thư mục tài liệu Markdown, gán nhãn metadata phân loại, phân tách đệ quy, vector hóa và trực quan hóa phân bố các cụm chủ đề.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 3: Learning Goals -->
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm vững</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mục tiêu kiến thức - Concept Goals</h3>
+              <ul class="memory-list">
+                <li>Giải thích rõ sự phân tách trách nhiệm giữa <strong>Encoder Model</strong> (mô hình tạo vector) và <strong>Vector Store</strong> (cơ sở dữ liệu lưu trữ vector).</li>
+                <li>Hiểu rõ ưu nhược điểm của framework LangChain, đặc biệt là tính chất nặng nề (heavyweight abstraction layer) so với các giải pháp lightweight (như LiteLLM hoặc gọi API trực tiếp).</li>
+                <li>Nắm bắt cơ chế hoạt động của thuật toán t-SNE trong việc giảm chiều dữ liệu đa chiều về không gian 2D/3D trực quan.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu thực hành - Practical Goals</h3>
+              <ul class="memory-list">
+                <li>Đếm chính xác token của tập tài liệu bằng thư viện <span class="inline-code">tiktoken</span> để đánh giá chi phí và kích thước context window (cửa sổ ngữ cảnh).</li>
+                <li>Cấu hình thành thạo <span class="inline-code">DirectoryLoader</span> để tự động quét thư mục và gán metadata tùy chỉnh như loại tài liệu (<span class="inline-code">doc_type</span>).</li>
+                <li>Cấu hình các tham số <span class="inline-code">chunk_size</span> và <span class="inline-code">chunk_overlap</span> của <span class="inline-code">RecursiveCharacterTextSplitter</span> và lưu trữ vào Chroma DB.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 4: Previous Context -->
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Trong <strong>Day 1 (RAG Core Guide)</strong>, chúng ta đã hiểu nguyên lý RAG trực giác thông qua việc lấy các đoạn tài liệu tương khớp từ khóa chính xác để augment (bổ sung) vào prompt của mô hình sinh.
+          </p>
+          <div class="callout">
+            <strong>Mối liên hệ nâng cấp:</strong>
+            Hạn chế lớn nhất của Day 1 là nếu người dùng hỏi <em>"Tạo ứng dụng AI thế nào?"</em> trong khi tài liệu ghi là <em>"Xây dựng phần mềm trí tuệ nhân tạo"</em>, hệ thống keyword search sẽ thất bại hoàn toàn. <strong>Day 2 nâng cấp hệ thống này bằng cách nhúng ý nghĩa ngữ nghĩa (Vector Embedding)</strong> để hai cụm từ trên có khoảng cách vector gần nhau, từ đó tìm kiếm chính xác mà không cần trùng khớp từ khóa.
+          </div>
+        </section>
+
+        <!-- Section 5: Core Theory -->
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>1. LangChain Framework (Hệ khung LangChain)</h3>
+              <p>
+                Được giới thiệu vào tháng 10/2022 và cập nhật lớn lên phiên bản v1.0 vào tháng 10/2025. Cung cấp một bộ các lớp trừu tượng để kết nối LLMs với dữ liệu bên ngoài.
+              </p>
+              <ul class="memory-list" style="margin-top: 10px;">
+                <li><strong>Ưu điểm:</strong> Đóng gói sẵn nhiều connector, giúp doanh nghiệp rút ngắn time-to-market (thời gian đưa sản phẩm ra thị trường). Tích hợp hệ sinh thái mạnh mẽ (LangSmith giúp debug, LangGraph giúp xây agent phức tạp).</li>
+                <li><strong>Nhược điểm:</strong> Lớp trừu tượng nặng (heavyweight layer), gây khó khăn khi debug lỗi sâu. Nhiều mã nguồn cũ bị lỗi thời (legacy/deprecated syntax). Đối với các tác vụ đơn giản, việc gọi API trực tiếp thông qua các thư viện nhẹ đôi khi hiệu quả hơn.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>2. Sự tách biệt giữa Encoder và Vector Store</h3>
+              <p>
+                Đây là khái niệm cực kỳ quan trọng thường bị nhầm lẫn trong RAG:
+              </p>
+              <ul class="memory-list" style="margin-top: 10px;">
+                <li><strong>Encoder (Embedding Model - Mô hình nhúng):</strong> Là mô hình LLM chuyên biệt có nhiệm vụ nhận văn bản đầu vào và biểu diễn nó thành một chuỗi số (Vector). Encoder chịu trách nhiệm 100% về độ chính xác và khả năng hiểu ngữ nghĩa của hệ thống.</li>
+                <li><strong>Vector Store (Vector Database - Kho lưu trữ vector):</strong> Là cơ sở dữ liệu chuyên dụng chịu trách nhiệm lưu trữ các chuỗi số này và thực hiện tìm kiếm tương đồng (similarity search - tìm các vector gần nhất). Nó không tự tính toán hay hiểu ý nghĩa của văn bản.</li>
+              </ul>
+            </article>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Khái niệm - Term</th>
+                <th>Bản chất tiếng Anh - Meaning</th>
+                <th>Tác động thực tế - Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tokenization - Phân tách token</strong></td>
+                <td>Biến văn bản thô thành các chỉ số ID token để LLM đọc.</td>
+                <td>Dùng để đếm dung lượng văn bản đầu vào, tính toán chi phí API và kiểm tra giới hạn context window.</td>
+              </tr>
+              <tr>
+                <td><strong>Chunking - Chia nhỏ tài liệu</strong></td>
+                <td>Cắt tài liệu dài thành nhiều đoạn văn bản nhỏ tự chủ ngữ nghĩa.</td>
+                <td>Tránh tình trạng nạp quá nhiều text rác gây nhiễu LLM và giúp tìm kiếm vector trả về phân đoạn chính xác chứa câu trả lời.</td>
+              </tr>
+              <tr>
+                <td><strong>Embedding - Nhúng vector</strong></td>
+                <td>Biến đổi từ ngữ/văn bản thành tọa độ số học trong không gian đa chiều.</td>
+                <td>Chuyển ngữ nghĩa của ngôn ngữ tự nhiên thành dữ liệu số học mà máy tính có thể tính khoảng cách hình học.</td>
+              </tr>
+              <tr>
+                <td><strong>Similarity Search - Tìm kiếm tương đồng</strong></td>
+                <td>Truy vấn các vector có khoảng cách gần nhất với vector câu hỏi (thường dùng Cosine Similarity hoặc Euclidean Distance).</td>
+                <td>Cho phép lấy ra các đoạn văn bản có ý nghĩa tương tự với câu hỏi của người dùng chỉ trong mili giây.</td>
+              </tr>
+              <tr>
+                <td><strong>t-SNE Reduction - Thuật toán t-SNE</strong></td>
+                <td>Thuật toán nén không gian đa chiều (ví dụ 384 chiều) xuống 2D hoặc 3D.</td>
+                <td>Cho phép lập trình viên trực quan hóa dữ liệu để kiểm chứng xem các tài liệu cùng chủ đề có thực sự gom cụm (cluster) lại với nhau không.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 6: Workflow -->
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình xử lý dữ liệu</h2>
+            </div>
+          </div>
+          <p>
+            Quy trình xử lý dữ liệu tổng thể để nạp tri thức vào RAG Database được thực hiện qua 5 bước tuần tự:
+          </p>
+          <div class="grid-2" style="margin-top: 14px;">
+            <article class="card">
+              <h3>Luồng Ingestion Pipeline (Nạp dữ liệu)</h3>
+              <ol class="memory-list">
+                <li><strong>Scan Directories (Quét thư mục):</strong> Đọc toàn bộ các file Markdown trong cơ sở dữ liệu.</li>
+                <li><strong>Add Metadata (Gán nhãn metadata):</strong> Trích xuất tên thư mục cha (ví dụ: <span class="inline-code">contracts</span>, <span class="inline-code">company</span>, <span class="inline-code">products</span>, <span class="inline-code">employees</span>) để gán thuộc tính <span class="inline-code">doc_type</span> vào metadata của document.</li>
+                <li><strong>Recursive Split (Tách đệ quy):</strong> Dùng Recursive Character Splitter để cắt documents thành các chunks độ dài tối đa 1000 ký tự, đè gối nhau 200 ký tự.</li>
+                <li><strong>Calculate Embeddings (Tính vector):</strong> Chuyển từng chunk qua mô hình <span class="inline-code">all-MiniLM-L6-v2</span> để nhận vector 384 chiều.</li>
+                <li><strong>Store in Chroma (Lưu trữ):</strong> Nạp vector kèm metadata tương ứng vào SQLite của Chroma DB.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Luồng Query Pipeline (Truy vấn)</h3>
+              <ol class="memory-list">
+                <li><strong>User Question (Câu hỏi):</strong> Người dùng nhập câu hỏi (ví dụ: "Hợp đồng với GlobalRe có điều khoản biến đổi khí hậu không?").</li>
+                <li><strong>Question Vectorization (Mã hóa):</strong> Câu hỏi được chuyển thành Vector bằng <strong>chính mô hình nhúng</strong> đã dùng ở bước Ingestion (all-MiniLM-L6-v2).</li>
+                <li><strong>Vector Search (Tìm kiếm):</strong> ChromaDB tính khoảng cách giữa Vector câu hỏi và 413 vector trong DB để lọc ra K đoạn text tương đồng nhất (K-Nearest Neighbors).</li>
+                <li><strong>Context Injection (Bơm ngữ cảnh):</strong> Chèn các đoạn text này vào Prompt làm Context.</li>
+                <li><strong>LLM Generation (Sinh kết quả):</strong> LLM đọc Prompt và đưa ra câu trả lời cuối cùng dựa trên Context đã được augment.</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 7: Techniques -->
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Recursive Character Splitter - Bộ phân tách ký tự đệ quy</h3>
+              <p>
+                Hoạt động bằng cách cố gắng giữ các đoạn văn, câu và từ liên quan ở lại cùng một khối (chunk) bằng cách chia đệ quy theo danh sách các ký tự ưu tiên giảm dần: <span class="inline-code">["\n\n", "\n", " ", ""]</span>.
+              </p>
+              <p style="margin-top: 8px;">
+                <strong>Tại sao chọn:</strong> Character Splitter đơn giản chỉ cắt cứng theo số lượng ký tự, dễ làm gãy câu giữa chừng. Recursive Splitter thông minh hơn vì ưu tiên xuống dòng kép (hết đoạn), rồi đến xuống dòng đơn (hết câu).
+              </p>
+            </article>
+            <article class="card">
+              <h3>Granularity Control - Kiểm soát kích thước chunk & gối đầu</h3>
+              <p>
+                Tham số <span class="inline-code">chunk_size=1000</span> xác định độ dài tối đa của đoạn văn bản (được tính bằng số ký tự). Tham số <span class="inline-code">chunk_overlap=200</span> chỉ định độ dài trùng lặp giữa hai đoạn liên tiếp.
+              </p>
+              <p style="margin-top: 8px;">
+                <strong>Tại sao chọn:</strong> Đảm bảo thông tin nằm ở ranh giới giao nhau giữa hai chunk không bị cắt mất ý nghĩa (không mất ngữ cảnh ở biên).
+              </p>
+            </article>
+            <article class="card">
+              <h3>Metadata Tagging - Gắn nhãn dữ liệu nguồn</h3>
+              <p>
+                Bổ sung các trường dữ liệu phi cấu trúc vào metadata (như <span class="inline-code">doc_type</span>, <span class="inline-code">source_file</span>) của từng chunk trước khi đưa vào cơ sở dữ liệu.
+              </p>
+              <p style="margin-top: 8px;">
+                <strong>Tại sao chọn:</strong> Cho phép bộ lọc Vector Store lọc nhanh tài liệu theo chủ đề (ví dụ: chỉ tìm kiếm trong thư mục hợp đồng) trước khi thực hiện tìm kiếm tương đồng vector, tăng tốc độ và độ chính xác.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 8: Options Landscape -->
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn công nghệ</h2>
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cụm kỹ thuật - Cluster</th>
+                <th>Vấn đề giải quyết - Problem</th>
+                <th>Lựa chọn phổ biến - Popular Choices</th>
+                <th>Đánh đổi - Trade-off</th>
+                <th>Khi nào nên dùng - When to use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Embedding Encoders (Bộ mã hóa)</strong></td>
+                <td>Biến đổi văn bản thành biểu diễn số học mang ý nghĩa ngữ nghĩa.</td>
+                <td>
+                  1. OpenAI (<span class="inline-code">text-embedding-3-small/large</span>)<br>
+                  2. Hugging Face Sentence Transformers (<span class="inline-code">all-MiniLM-L6-v2</span>)<br>
+                  3. Google (<span class="inline-code">gemini-embedding-001</span>)
+                </td>
+                <td>
+                  <strong>OpenAI/Google:</strong> Độ chính xác cực cao, hỗ trợ đa ngôn ngữ tốt, số chiều vector lớn (1536/3072) &rarr; Tốn chi phí API và tăng tài nguyên lưu trữ vector.<br>
+                  <strong>Hugging Face (MiniLM):</strong> Chạy offline hoàn toàn, miễn phí, nhẹ (384 chiều) &rarr; Kém hơn ở các ngôn ngữ phức tạp (như tiếng Việt chuyên sâu).
+                </td>
+                <td>
+                  Dùng MiniLM cho dự án nhỏ, dữ liệu nội bộ local, bảo mật cao. Dùng OpenAI/Gemini khi làm dự án thương mại quy mô lớn, dữ liệu đa ngôn ngữ phức tạp.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Vector Database (Kho lưu trữ vector)</strong></td>
+                <td>Lưu trữ hàng triệu vector và thực hiện truy vấn Nearest Neighbors cực nhanh.</td>
+                <td>
+                  1. Open-Source Local: <strong>Chroma</strong>, <strong>Qdrant</strong>, <strong>FAISS</strong> (in-memory)<br>
+                  2. Cloud Managed: <strong>Pinecone</strong>, <strong>Weaviate</strong><br>
+                  3. Mainstream DB integration: <strong>Postgres (pgvector)</strong>, <strong>Elasticsearch</strong>
+                </td>
+                <td>
+                  <strong>Chroma/FAISS:</strong> Cài đặt siêu nhanh, chạy cục bộ &rarr; Khó scale (mở rộng) khi dữ liệu đạt hàng triệu bản ghi.<br>
+                  <strong>Pinecone/Weaviate:</strong> Tự động scale, tính năng enterprise &rarr; Chi phí vận hành cao.<br>
+                  <strong>Postgres (pgvector):</strong> Tận dụng DB sẵn có &rarr; Cần cấu hình và tinh chỉnh hiệu năng thủ công.
+                </td>
+                <td>
+                  Dùng Chroma/FAISS trong giai đoạn PoC/phát triển thử nghiệm. Dùng Pinecone/Weaviate khi hệ thống cần chịu tải lớn trên production. Dùng pgvector nếu dự án đã có sẵn DB quan hệ Postgres và muốn tích hợp nhẹ nhàng.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 9: Implementation Insights -->
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Phân tích mã nguồn thực tế</h2>
+            </div>
+          </div>
+          <p>
+            Dưới đây là phân tích chi tiết các khối lệnh thực thi trong tệp tin <span class="inline-code">day2.ipynb</span> phục vụ mục tiêu xây dựng tri thức cho InsureLLM.
+          </p>
+
+          <div class="grid-2" style="margin-top: 14px;">
+            <article class="card">
+              <h3>Đếm Token &amp; Đọc tài liệu đính kèm Metadata</h3>
+              <p>
+                Đầu tiên, hệ thống thực hiện đếm số token thực tế để đưa ra quyết định về cấu trúc context window. Đoạn code thực thi tải tệp tin đính kèm thư mục nguồn cha làm <span class="inline-code">doc_type</span>:
+              </p>
+              <div class="code-block"><span class="code-keyword">import</span> tiktoken
+<span class="code-keyword">import</span> glob
+<span class="code-keyword">import</span> os
+<span class="code-keyword">from</span> langchain_community.document_loaders <span class="code-keyword">import</span> DirectoryLoader, TextLoader
+
+<span class="code-comment"># Khởi tạo bộ đếm token bằng tiktoken</span>
+encoding = tiktoken.encoding_for_model(<span class="code-string">"gpt-4"</span>)
+tokens = encoding.encode(entire_knowledge_base)
+print(f<span class="code-string">"Total tokens: {len(tokens):,}"</span>) <span class="code-comment"># Đọc ra khoảng 63k-64k tokens</span>
+
+<span class="code-comment"># Tải file kèm metadata phân loại</span>
+folders = glob.glob(<span class="code-string">"knowledge-base/*"</span>)
+documents = []
+<span class="code-keyword">for</span> folder <span class="code-keyword">in</span> folders:
+    doc_type = os.path.basename(folder) <span class="code-comment"># Ví dụ: 'contracts', 'employees'</span>
+    loader = DirectoryLoader(folder, glob=<span class="code-string">"**/*.md"</span>, loader_cls=TextLoader)
+    folder_docs = loader.load()
+    <span class="code-keyword">for</span> doc <span class="code-keyword">in</span> folder_docs:
+        doc.metadata[<span class="code-string">"doc_type"</span>] = doc_type <span class="code-comment"># Gán metadata phục vụ filter sau này</span>
+        documents.append(doc)</div>
+            </article>
+
+            <article class="card">
+              <h3>Recursive Chunking &amp; Lưu trữ ChromaDB</h3>
+              <p>
+                Phân chia tài liệu một cách thông minh bằng bộ chia tách đệ quy của LangChain và lưu trữ xuống ổ đĩa cục bộ:
+              </p>
+              <div class="code-block"><span class="code-keyword">from</span> langchain_text_splitters <span class="code-keyword">import</span> RecursiveCharacterTextSplitter
+<span class="code-keyword">from</span> langchain_huggingface <span class="code-keyword">import</span> HuggingFaceEmbeddings
+<span class="code-keyword">from</span> langchain_chroma <span class="code-keyword">import</span> Chroma
+
+<span class="code-comment"># Thiết lập bộ tách tài liệu</span>
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="code-string">1000</span>,     <span class="code-comment"># Tách mỗi chunk tối đa 1000 ký tự</span>
+    chunk_overlap=<span class="code-string">200</span>    <span class="code-comment"># Độ gối đầu 200 ký tự để giữ ngữ cảnh</span>
+)
+chunks = text_splitter.split_documents(documents) <span class="code-comment"># Tạo ra 413 chunks</span>
+
+<span class="code-comment"># Nhúng vector thông qua mô hình all-MiniLM-L6-v2</span>
+embeddings = HuggingFaceEmbeddings(model_name=<span class="code-string">"all-MiniLM-L6-v2"</span>)
+
+<span class="code-comment"># Khởi tạo Vector Store Chroma cục bộ</span>
+db_name = <span class="code-string">"vector_db"</span>
+vectorstore = Chroma.from_documents(
+    documents=chunks, 
+    embedding=embeddings, 
+    persist_directory=db_name
+)</div>
+            </article>
+          </div>
+
+          <details>
+            <summary>Phân tích sâu về Trực quan hóa không gian Vector bằng t-SNE &amp; Plotly</summary>
+            <div class="note">
+              <p>
+                Trong file code thực hành, giảng viên sử dụng thuật toán <strong>t-SNE (t-distributed Stochastic Neighbor Embedding)</strong> để nén các vector từ 384 chiều của mô hình <span class="inline-code">all-MiniLM-L6-v2</span> xuống còn không gian 2D và 3D.
+              </p>
+              <div class="code-block"><span class="code-keyword">from</span> sklearn.manifold <span class="code-keyword">import</span> TSNE
+<span class="code-keyword">import</span> plotly.graph_objects <span class="code-keyword">as</span> go
+
+<span class="code-comment"># Lấy vector và metadata từ Chroma DB</span>
+result = vectorstore._collection.get(include=[<span class="code-string">'embeddings'</span>, <span class="code-string">'documents'</span>, <span class="code-string">'metadatas'</span>])
+vectors = np.array(result[<span class="code-string">'embeddings'</span>])
+
+<span class="code-comment"># Cấu hình t-SNE để giảm chiều xuống 2 chiều</span>
+tsne = TSNE(n_components=<span class="code-string">2</span>, random_state=<span class="code-string">42</span>)
+reduced_vectors = tsne.fit_transform(vectors)
+
+<span class="code-comment"># Vẽ biểu đồ Plotly Scatter</span>
+fig = go.Figure(data=[go.Scatter(
+    x=reduced_vectors[:, <span class="code-string">0</span>],
+    y=reduced_vectors[:, <span class="code-string">1</span>],
+    mode=<span class="code-string">'markers'</span>,
+    marker=dict(size=<span class="code-string">5</span>, color=colors), <span class="code-comment"># Tô màu theo loại tài liệu (doc_type)</span>
+    text=result[<span class="code-string">'documents'</span>]
+)])
+fig.show()</div>
+              <p style="margin-top: 10px;">
+                <strong>Insight cốt lõi rút ra từ biểu đồ trực quan hóa:</strong> Dù chúng ta không hề dạy thuật toán t-SNE hay mô hình nhúng biết rằng "tài liệu này thuộc chủ đề nhân sự hay hợp đồng", nhưng dựa trên ý nghĩa ngữ nghĩa của các câu chữ, thuật toán tự động nhóm (cluster) các điểm tài liệu cùng loại lại sát cạnh nhau trên đồ thị. Trục X và Y trong đồ thị t-SNE không đại diện cho giá trị vật lý cụ thể nào; điều quan trọng duy nhất cần quan sát là <strong>khoảng cách hình học</strong> giữa các điểm biểu thị sự tương đồng về mặt nội dung.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <!-- Section 10: Pitfalls -->
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Các lỗi thiết kế &amp; Hiểu lầm thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các trường hợp dễ thất bại - Failure Modes</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Bẫy cắt gãy câu (Character Splitting):</strong> Sử dụng <span class="inline-code">CharacterTextSplitter</span> cắt cứng tại ký tự thứ N bất kể từ hay câu đang viết dở dang, dẫn đến việc mất từ khóa quan trọng hoặc làm sai lệch ý nghĩa của chunk.
+                  <br><small><em>Giải pháp:</em> Luôn sử dụng <span class="inline-code">RecursiveCharacterTextSplitter</span> làm mặc định.</small>
+                </li>
+                <li>
+                  <strong>Gối đầu không đủ (Insufficient Overlap):</strong> Thiết lập <span class="inline-code">chunk_overlap=0</span>. Nếu câu trả lời cho một câu hỏi nằm đúng ở ranh giới giao nhau của hai chunk, thông tin sẽ bị cắt đôi và LLM không thể tổng hợp được đầy đủ ngữ cảnh.
+                  <br><small><em>Giải pháp:</em> Đảm bảo độ gối đầu tối thiểu từ 10% đến 20% kích thước chunk (ví dụ chunk 1000 thì overlap nên ở mức 150-200).</small>
+                </li>
+                <li>
+                  <strong>Mất dấu nguồn gốc (Missing Source Metadata):</strong> Chỉ nạp text thô vào Vector DB mà không lưu lại đường dẫn gốc hoặc thông tin ngữ cảnh nguồn (như <span class="inline-code">doc_type</span>). Khi LLM trả lời, nó không thể trích dẫn nguồn (citation) làm giảm uy tín của chatbot.
+                  <br><small><em>Giải pháp:</em> Gán metadata cụ thể vào document trước khi thực hiện chunking.</small>
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hiểu lầm phổ biến - Common Misunderstandings</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Hiểu lầm 1: "Chọn Vector DB xịn sẽ giúp tìm kiếm chính xác hơn"</strong>
+                  <br><em>Sự thật:</em> Vector DB chỉ là nơi lưu trữ và tăng tốc độ tìm kiếm khoảng cách. Độ chính xác của việc hiểu ngữ nghĩa phụ thuộc 100% vào mô hình <strong>Encoder (Embedding Model)</strong> và cấu hình chia nhỏ tài liệu (Chunking parameters).
+                </li>
+                <li>
+                  <strong>Hiểu lầm 2: "Cứ nạp nguyên cả tài liệu dài vào LLM có cửa sổ ngữ cảnh lớn là xong, không cần chia nhỏ"</strong>
+                  <br><em>Sự thật:</em> Dù các LLM hiện đại có cửa sổ ngữ cảnh lên tới 1 triệu token, việc nạp tài liệu quá dài sẽ làm tăng chi phí API cực lớn, tăng độ trễ trả lời (latency) và gây ra hiện tượng LLM bị phân tâm bởi các thông tin rác xung quanh (lỗi "lost in the middle").
+                </li>
+                <li>
+                  <strong>Hiểu lầm 3: "Trục tọa độ X và Y của t-SNE có thể giải thích được thuộc tính của dữ liệu"</strong>
+                  <br><em>Sự thật:</em> Các trục trong t-SNE là vô nghĩa về mặt vật lý. t-SNE chỉ bảo toàn khoảng cách tương đối để thể hiện mối quan hệ xa gần của dữ liệu đa chiều trên mặt phẳng 2D.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 11: Interview Takeaways -->
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Trọng tâm chuẩn bị phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các câu hỏi thường gặp khi đi phỏng vấn</h3>
+              <ul class="memory-list">
+                <li>Tại sao bạn lại chọn bộ chia tách đệ quy (<span class="inline-code">RecursiveCharacterTextSplitter</span>) thay vì bộ chia tách ký tự thông thường? Cơ chế hoạt động của nó là gì?</li>
+                <li>Làm thế nào để bạn trực quan hóa và kiểm chứng chất lượng của các Vector Embedding sau khi lưu trữ? Bạn đọc hiểu kết quả từ biểu đồ t-SNE như thế nào?</li>
+                <li>Sự khác biệt lớn nhất giữa một Encoder Model và một Generator Model trong kiến trúc RAG là gì?</li>
+                <li>Làm cách nào bạn tối ưu hóa việc tìm kiếm tương đồng trên cơ sở dữ liệu lớn (scale) trong môi trường doanh nghiệp?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung cấu trúc trả lời phỏng vấn chuẩn - Answer Frame</h3>
+              <p>
+                Khi trả lời các bài toán thiết kế RAG, hãy áp dụng khung: <strong>Goal (Mục tiêu) &rarr; Mechanism (Cơ chế hoạt động) &rarr; Trade-off (Đánh đổi) &rarr; Pitfalls (Rủi ro) &rarr; When to use (Khi nào áp dụng)</strong>.
+              </p>
+              <p style="margin-top: 10px;">
+                <em>Ví dụ thực tế:</em> "Để giải quyết bài toán chia tách tài liệu dài (Goal), tôi sử dụng <span class="inline-code">RecursiveCharacterTextSplitter</span> với chunk_size=1000, chunk_overlap=200 (Mechanism). Cách này giúp giữ trọn vẹn ý nghĩa của câu văn, tuy nhiên sẽ tăng số lượng vector cần lưu trữ và tính toán (Trade-off). Điểm cần lưu ý là tránh đặt overlap quá nhỏ gây đứt đoạn ngữ cảnh ở biên (Pitfalls). Tôi luôn áp dụng phương pháp này cho tài liệu Markdown phi cấu trúc có nhiều phân cấp tiêu đề (When to use)."
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 12: Q&A / Flashcards -->
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&A / Flashcards - Thẻ học nhanh &amp; Hỏi đáp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Thẻ ôn nhanh - Flashcards</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q:</strong> Ý nghĩa của tham số <span class="inline-code">chunk_overlap</span> trong Text Splitter là gì?
+                  <br><strong>A:</strong> Là số lượng ký tự trùng lặp gối đầu giữa hai chunk liên tiếp để tránh mất ngữ cảnh thông tin nằm ở ranh giới điểm cắt văn bản.
+                </li>
+                <li>
+                  <strong>Q:</strong> Vector nhúng tạo ra từ mô hình <span class="inline-code">all-MiniLM-L6-v2</span> có bao nhiêu chiều (dimensions)?
+                  <br><strong>A:</strong> 384 chiều. Số chiều cố định này biểu diễn tọa độ ngữ nghĩa của đoạn văn bản bất kể độ dài đầu vào ngắn hay dài.
+                </li>
+                <li>
+                  <strong>Q:</strong> ChromaDB lưu trữ dữ liệu dưới dạng tệp tin bằng công nghệ gì trên ổ đĩa cục bộ?
+                  <br><strong>A:</strong> SQLite. Đây là giải pháp lưu trữ gọn nhẹ, lý tưởng cho giai đoạn phát triển và chạy thử nghiệm.
+                </li>
+                <li>
+                  <strong>Q:</strong> Nêu vai trò chính của thư viện <span class="inline-code">tiktoken</span>?
+                  <br><strong>A:</strong> Đếm số lượng token của văn bản trước khi đưa vào LLM để dự trù chi phí API và kiểm soát giới hạn cửa sổ ngữ cảnh.
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hỏi đáp phỏng vấn sâu - Interview Q&A</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q:</strong> "Tại sao việc chọn Vector Database lại là một bài toán đánh đổi về mặt hạ tầng (Infrastructure Trade-off) chứ không ảnh hưởng tới chất lượng hiểu ngôn ngữ?"
+                  <br><strong>A:</strong> Vì chất lượng hiểu ngữ nghĩa và phân bố không gian vector hoàn toàn do <strong>Encoder (Embedding Model)</strong> quyết định. Vector Database chỉ làm nhiệm vụ lưu trữ các con số tọa độ đó và tính khoảng cách toán học (như Cosine). Việc chọn Chroma, FAISS hay Pinecone là bài toán hạ tầng: Chroma dễ chạy thử nghiệm local, FAISS tối ưu tìm kiếm siêu nhanh trong RAM, còn Pinecone hỗ trợ phân tán và tự động scale cho doanh nghiệp nhưng tốn phí.
+                </li>
+                <li>
+                  <strong>Q:</strong> "Hãy giải thích sự khác nhau về mặt kiến trúc và chức năng giữa Auto-regressive Models (như GPT/Gemini) và Auto-encoding Models (như BERT/Sentence Transformers) trong RAG?"
+                  <br><strong>A:</strong> <strong>Auto-encoding Models (Mô hình tự mã hóa)</strong> đọc toàn bộ văn bản đầu vào để tạo ra biểu diễn ngữ nghĩa dạng vector (embeddings), thường được dùng làm Encoder cho giai đoạn Retrieval. <strong>Auto-regressive Models (Mô hình tự hồi quy)</strong> dự đoán từng từ tiếp theo từ trái sang phải, tối ưu cho việc hiểu và sinh ngôn ngữ tự nhiên giàu ngữ cảnh ở giai đoạn Generation.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 13: Memory -->
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Kiểm tra kiến thức nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Điểm cốt lõi phải nhớ - Must Remember</h3>
+              <ol class="memory-list">
+                <li><strong>Encoder tạo vector</strong>, <strong>Vector Store lưu trữ vector</strong>.</li>
+                <li><span class="inline-code">RecursiveCharacterTextSplitter</span> là sự lựa chọn an toàn và thông minh nhất cho dữ liệu văn bản thông thường.</li>
+                <li>t-SNE giảm chiều dữ liệu đa chiều về 2D/3D để trực quan hóa cấu trúc gom cụm ngữ nghĩa mà không bảo toàn giá trị tọa độ tuyệt đối.</li>
+                <li>Metadata filtering (lọc siêu dữ liệu) giúp cải thiện đáng kể tốc độ và độ chính xác của RAG trước khi tính toán khoảng cách vector.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Câu hỏi tự kiểm tra - Self-check Questions</h3>
+              <ul class="memory-list">
+                <li>Bạn có thể tự viết lại quy trình nạp tài liệu từ thư mục cục bộ vào ChromaDB mà không cần xem tài liệu hướng dẫn không?</li>
+                <li>Nếu kết quả biểu đồ t-SNE hiển thị các điểm dữ liệu lộn xộn, không gom cụm rõ rệt theo loại tài liệu, bạn sẽ thay đổi tham số gì để tối ưu hóa?</li>
+                <li>Khi nào bạn quyết định chuyển từ cơ sở dữ liệu vector ChromaDB chạy cục bộ sang một giải pháp tự quản lý trên cloud như Pinecone?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 14: Next Step -->
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước chuẩn bị tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Nội dung buổi sau - What Comes Next</h3>
+              <p>
+                Trong <strong>Day 3 (RAG Pipeline &amp; Chatbot UI)</strong>, chúng ta sẽ lắp ghép các mảnh ghép lại để tạo dựng một pipeline RAG hoàn chỉnh: Đưa câu hỏi &rarr; Truy vấn context &rarr; Augment prompt &rarr; Sinh câu trả lời chuyên gia. Thiết kế giao diện Chatbot bằng thư viện Gradio hiển thị trực tiếp các tài liệu nguồn đã trích dẫn.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Chuẩn bị tài nguyên - Missing Inputs</h3>
+              <p>
+                Hãy chắc chắn rằng bạn đã thiết lập thành công khóa API OpenAI trong file <span class="inline-code">.env</span> (để gọi mô hình sinh ở bước Generation) và chuẩn bị các thư viện giao diện Gradio trước khi bắt đầu bài học tiếp theo.
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu học tập được thiết kế song ngữ và tối ưu hóa cho việc ôn tập nhanh. Hãy mở rộng phần ghi chú chi tiết ở góc trên cùng bên phải để phục vụ cho các buổi ôn thi và phỏng vấn chuyên sâu.
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

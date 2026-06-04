@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 3 - End-to-End RAG Pipeline & Gradio UI Study Guide</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #151b2d;
+      --surface-alt: #1f273f;
+      --line: #2e3a5f;
+      --line-soft: #232c4a;
+      --ink: #f1f5f9;
+      --ink-soft: #94a3b8;
+      --accent: #818cf8;
+      --accent-soft: #1e1b4b;
+      --warm: #f472b6;
+      --warn-soft: #500724;
+      --shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+      --radius: 12px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      color: var(--ink);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+      color: var(--ink-soft);
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(129, 140, 248, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .button:hover {
+      border-color: rgba(129, 140, 248, 0.5);
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(129, 140, 248, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      border-color: var(--warm);
+      box-shadow: none;
+    }
+
+    .callout p {
+      color: var(--ink);
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #0b0f19;
+      color: #818cf8;
+      border: 1px solid #2e3a5f;
+    }
+
+    .code-block {
+      display: block;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 14px;
+      border-radius: 8px;
+      background: #060911;
+      color: #e2e8f0;
+      border: 1px solid #1f273f;
+      overflow-x: auto;
+      margin-top: 12px;
+      white-space: pre;
+    }
+
+    .code-comment {
+      color: #64748b;
+    }
+
+    .code-keyword {
+      color: #f472b6;
+    }
+
+    .code-string {
+      color: #34d399;
+    }
+
+    .code-func {
+      color: #60a5fa;
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li {
+      margin-top: 6px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+      margin-top: 16px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      background: rgba(11, 15, 25, 0.3);
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+        background: white;
+        border-color: #ccc;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">RAG Course • Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Day 3: End-to-End RAG Pipeline & Gradio UI</h1>
+          <p>
+            Tài liệu chi tiết hướng dẫn học tập và ôn phỏng vấn Day 3. Nội dung tập trung vào việc hiện thực hóa luồng sinh văn bản (Generation) trong RAG bằng cách kết hợp Vector Store với Generative LLM qua LangChain, kỹ thuật xử lý lịch sử chat (chat history), cơ chế hoạt động của tham số nhiệt độ (temperature) và xây dựng giao diện chatbot trực quan hiển thị tài liệu nguồn ngữ cảnh (Retrieved Context) bằng Gradio.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm kỹ thuật - Core Technical Focus</strong>
+              Cấu hình LangChain Retriever &amp; ChatOpenAI, xử lý query combination (gộp câu hỏi và lịch sử) để tối ưu hóa khả năng truy xuất, thiết kế System Prompt chống ảo tưởng (hallucination) và thiết lập giao diện Gradio Blocks hai cột.
+            </article>
+            <article class="mini-card">
+              <strong>Mục tiêu phỏng vấn - Interview Goal</strong>
+              Giải thích cơ chế toán học của temperature (nhiệt độ), cách xử lý các đại từ bị mất ngữ cảnh (pronoun loss) trong hội thoại nhiều lượt, và cách triển khai attribution (nguồn trích dẫn) để xây dựng lòng tin cho người dùng.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn tư liệu - Sources</h3>
+            <p>
+              Tài liệu được tổng hợp từ slide lý thuyết (<span class="inline-code">Copy of LLM - Week 5 Day 3.pptx</span>), notebook thực hành (<a href="file:///G:/RAG/day3.ipynb" class="inline-code">day3.ipynb</a>) và mã nguồn triển khai thực tế (<a href="file:///G:/RAG/implementation/answer.py" class="inline-code">answer.py</a>, <a href="file:///G:/RAG/app.py" class="inline-code">app.py</a>).
+            </p>
+            <div class="tag-row">
+              <span class="tag">LangChain v1.0</span>
+              <span class="tag">Gradio UI</span>
+              <span class="tag">Conversational RAG</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú</button>
+              <button class="button" type="button" onclick="window.print()">In tài liệu / Lưu PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Mục lục - Table of Contents</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake - Đầu vào</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet - Ôn nhanh</a>
+          <a class="toc-link" href="#overview">2. Overview - Tổng quan</a>
+          <a class="toc-link" href="#goals">3. Learning Goals - Mục tiêu</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context - Liên hệ</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory - Lý thuyết</a>
+          <a class="toc-link" href="#workflow">6. Workflow - Quy trình</a>
+          <a class="toc-link" href="#techniques">7. Techniques - Kỹ thuật</a>
+          <a class="toc-link" href="#options-landscape">8. Options - Bản đồ lựa chọn</a>
+          <a class="toc-link" href="#implementation">9. Implementation - Code Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls - Bẫy cần tránh</a>
+          <a class="toc-link" href="#interview">11. Interview - Góc phỏng vấn</a>
+          <a class="toc-link" href="#flashcards">12. Flashcards & Q&A</a>
+          <a class="toc-link" href="#memory">13. Memory - Ghi nhớ nhanh</a>
+          <a class="toc-link" href="#next-step">14. Next Step - Tiếp theo</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading Progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Section 0: Intake -->
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <article class="card">
+              <h3>Metadata buổi học - Session Metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title (Tiêu đề):</strong> Day 3 - End-to-End RAG Pipeline & Gradio UI: Expert Question Answerer for InsureLLM</li>
+                <li><strong>Type (Loại hình):</strong> Thực hành xây dựng hệ thống (System Implementation & UI Integration)</li>
+                <li><strong>Main focus (Trọng tâm):</strong> Tích hợp LangChain Retriever và LLM, xử lý lịch sử hội thoại (Chat History), cấu hình tham số temperature (nhiệt độ), và trực quan hóa tài liệu nguồn trên giao diện Gradio</li>
+                <li><strong>Depth (Độ sâu):</strong> Deep (Đi sâu vào phân tích mã nguồn Python của pipeline RAG động và luồng đồng bộ sự kiện UI)</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Các nguồn tài liệu - Input Resources</h3>
+              <ul class="memory-list">
+                <li><strong>Mã nguồn thực hành:</strong> Notebook <a href="file:///G:/RAG/day3.ipynb" class="inline-code">day3.ipynb</a></li>
+                <li><strong>Mã nguồn ứng dụng:</strong> Backend logic <a href="file:///G:/RAG/implementation/answer.py" class="inline-code">answer.py</a>, nạp dữ liệu <a href="file:///G:/RAG/implementation/ingest.py" class="inline-code">ingest.py</a> và giao diện <a href="file:///G:/RAG/app.py" class="inline-code">app.py</a></li>
+                <li><strong>Slide lý thuyết:</strong> File trình chiếu <span class="inline-code">Copy of LLM - Week 5 Day 3.pptx</span></li>
+                <li><strong>Cơ sở dữ liệu:</strong> Chroma Vector Store đã tạo ở Day 2 chứa 413 vector nhúng đại diện cho tài liệu InsureLLM</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 1: Cheat Sheet -->
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt nhanh trên một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core Idea - Ý tưởng cốt lõi</h3>
+              <p>
+                RAG động kết nối kho tri thức tĩnh (Vector DB) với mô hình ngôn ngữ lớn (LLM) để sinh câu trả lời có căn cứ. Để đưa vào sản xuất, ta cần giải quyết: (1) <strong>Query Reformulation (cải tiến truy vấn)</strong> để gộp lịch sử chat giúp tìm đúng văn bản, (2) Cấu hình <strong>Temperature = 0</strong> để đảm bảo tính chính xác khoa học, và (3) Hiển thị <strong>Attribution (nguồn trích dẫn)</strong> song song với câu trả lời để người dùng tự kiểm chứng.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must Know - Điều bắt buộc phải nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>Phương thức invoke():</strong> Cả <span class="inline-code">retriever</span> và <span class="inline-code">llm</span> trong LangChain 1.0 đều triển khai giao diện chuẩn <span class="inline-code">invoke()</span>.</li>
+                <li><strong>Cơ chế của Temperature:</strong> Temperature không phải là "sự sáng tạo". Nó kiểm soát mức độ "dẹt" của phân phối xác suất khi chọn token tiếp theo (Greedy/Argmax khi temperature=0). Sự sáng tạo thực sự phải được thiết lập thông qua System Prompt.</li>
+                <li><strong>Xử lý đại từ (Pronouns):</strong> Câu hỏi của user thường dùng đại từ ("ông ấy", "lương của cô ấy"). Phải gộp lịch sử chat của user trước khi gọi Retriever để tránh tìm sai tài liệu ngữ cảnh.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Angle - Góc nhìn phỏng vấn</h3>
+              <p>
+                Khi được hỏi cách xử lý hội thoại nhiều lượt (multi-turn conversation) trong RAG, hãy trả lời theo hai hướng: <strong>"Tôi gộp lịch sử chat của người dùng để truy xuất (Retrieval) nhằm giải quyết vấn đề mất ngữ cảnh đại từ. Nhưng tôi gửi toàn bộ lịch sử hội thoại có cấu trúc tin nhắn cho LLM ở bước sinh (Generation) để mô hình có thể duy trì luồng giao tiếp mượt mà như một chatbot"</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 2: Overview -->
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan bài học</h2>
+            </div>
+          </div>
+          <p>
+            Trong buổi học Day 3, chúng ta tiến hành ráp nối mảnh ghép cuối cùng của một ứng dụng RAG cơ bản: <strong>thành phần Sinh văn bản (Generation) và giao diện Người dùng (User Interface)</strong>. Mục tiêu là xây dựng trợ lý chuyên gia ảo cho công ty <strong>InsureLLM</strong>, có khả năng trả lời các câu hỏi về hợp đồng bảo hiểm, chính sách nhân sự và thông tin nhân viên một cách chính xác nhất.
+          </p>
+          <p style="margin-top: 10px;">
+            Hệ thống sử dụng cơ sở dữ liệu vector Chroma đã nạp từ Day 2. Điểm cải tiến lớn ở đây là việc chuyển từ chạy code tĩnh trong notebook sang một ứng dụng web động hoàn chỉnh với Gradio, cho phép chia đôi màn hình: bên trái hiển thị hội thoại chatbot liên tục, bên phải trực quan hóa lập tức các đoạn tài liệu ngữ cảnh thô (Retrieved Context) kèm metadata nguồn dẫn.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Ý tưởng chính - Main Idea</h3>
+              <p>Sử dụng LangChain 1.0 để kết nối Retriever (Chroma) và LLM (OpenAI ChatOpenAI), viết logic đóng gói lịch sử chat, và dựng giao diện Gradio Blocks hai cột.</p>
+            </article>
+            <article class="card">
+              <h3>Lý do quan trọng - Why It Matters</h3>
+              <p>Một hệ thống RAG không có giao diện và không lưu lịch sử chat thì không thể đưa vào sử dụng thực tế. Bài học này giải quyết bài toán giao tiếp liên tục và tính minh bạch của thông tin.</p>
+            </article>
+            <article class="card">
+              <h3>Kết quả mong muốn - Expected Outcome</h3>
+              <p>Hiểu sâu sắc luồng đi của dữ liệu từ khi user gõ phím, qua khâu gộp lịch sử truy vấn, lấy tài liệu, định dạng prompt hệ thống, gọi API LLM, và cập nhật giao diện web.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 3: Learning Goals -->
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm vững</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mục tiêu kiến thức - Concept Goals</h3>
+              <ul class="memory-list">
+                <li>Nắm rõ hoạt động toán học đằng sau <strong>temperature (nhiệt độ)</strong>: cách nó chia các logits trước khi đưa qua hàm Softmax để kiểm soát phân phối xác suất sinh token.</li>
+                <li>Giải thích được tại sao việc tăng temperature không trực tiếp tạo ra sự sáng tạo thông minh mà chỉ làm tăng tính ngẫu nhiên (entropy), và vì sao <strong>System Prompt</strong> mới là nơi định hình phong cách sáng tạo.</li>
+                <li>Hiểu rõ vấn đề mất thông tin đại từ (pronoun loss) trong hội thoại nhiều lượt và cơ chế gộp lịch sử chat để giải quyết.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu thực hành - Practical Goals</h3>
+              <ul class="memory-list">
+                <li>Cấu hình đối tượng <span class="inline-code">vectorstore.as_retriever()</span> trong LangChain 1.0 để tự động hóa khâu tìm kiếm vector.</li>
+                <li>Xây dựng hàm <span class="inline-code">combined_question()</span> để nối các tin nhắn cũ của người dùng với câu hỏi hiện tại làm câu truy vấn ngữ nghĩa tối ưu.</li>
+                <li>Triển khai giao diện Gradio phức tạp sử dụng cấu trúc <span class="inline-code">gr.Blocks()</span>, quản lý bất đồng bộ sự kiện submit bằng chuỗi phương thức <span class="inline-code">.then()</span>.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 4: Previous Context -->
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Hệ thống RAG này được xây dựng nối tiếp và kế thừa trực tiếp từ hạ tầng của các buổi học trước:
+          </p>
+          <div class="grid-2" style="margin-top: 14px;">
+            <article class="card">
+              <h3>Liên hệ Day 1 & Day 2</h3>
+              <ul class="memory-list">
+                <li><strong><a href="file:///G:/RAG/study_guide/day1-rag-study-guide.html">Day 1 (RAG Core Guide)</a>:</strong> Đưa ra định nghĩa cơ bản về RAG (Retrieve, Augment, Generate) và so sánh giữa Keyword lookup đơn giản (Small Idea) với Semantic search (Big Idea).</li>
+                <li><strong><a href="file:///G:/RAG/study_guide/day2-rag-study-guide.html">Day 2 (Vectors for RAG)</a>:</strong> Triển khai quy trình Ingestion Pipeline để tải tài liệu Markdown của InsureLLM, cắt đệ quy bằng <span class="inline-code">RecursiveCharacterTextSplitter</span>, mã hóa bằng mô hình nhúng <span class="inline-code">all-MiniLM-L6-v2</span> và lưu trữ vào ChromaDB.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Sự nâng cấp ở Day 3</h3>
+              <p>
+                Nếu ở Day 2, cơ sở dữ liệu ChromaDB chỉ nằm im dưới dạng file SQLite vật lý trên ổ đĩa, thì <strong>Day 3 kết nối cơ sở dữ liệu này vào luồng sinh văn bản động của LLM</strong>. Ta chuyển đổi từ tìm kiếm tài liệu thô sang việc sinh câu trả lời tự nhiên có ngữ cảnh, đồng thời tạo giao diện để người dùng có thể trò chuyện trực tiếp qua trình duyệt web.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 5: Core Theory -->
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>1. Trừu tượng hóa Runnable & invoke() của LangChain 1.0</h3>
+              <p>
+                LangChain giới thiệu ngôn ngữ LCEL (LangChain Expression Language) dựa trên giao diện chuẩn <span class="inline-code">Runnable</span>. Hầu hết các đối tượng cốt lõi như Models, Prompts, Retrievers, Parsers đều kế thừa từ giao diện này.
+              </p>
+              <ul class="memory-list" style="margin-top: 10px;">
+                <li><strong>invoke():</strong> Phương thức đồng bộ nhận vào một đầu vào (ví dụ: chuỗi câu hỏi cho Retriever hoặc danh sách Messages cho LLM) và trả về kết quả tương ứng.</li>
+                <li><strong>Sự thống nhất:</strong> Việc thống nhất giao diện giúp lập trình viên dễ dàng kết nối các component thành một chuỗi (Chain) bằng toán tử pipe <span class="inline-code">|</span> (ví dụ: <span class="inline-code">chain = prompt | llm | parser</span>).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>2. Bản chất vật lý của tham số Temperature</h3>
+              <p>
+                Trong LLM, khi mô hình dự đoán token tiếp theo, lớp tuyến tính cuối cùng sinh ra các điểm số thô gọi là <strong>logits</strong> cho toàn bộ từ điển. Các logits này được chuyển qua hàm Softmax để tạo thành phân phối xác suất.
+              </p>
+              <p style="margin-top: 10px;">
+                Công thức Softmax có điều chỉnh nhiệt độ $T$:
+                $$P(x_i) = \frac{e^{z_i / T}}{\sum_j e^{z_j / T}}$$
+              </p>
+              <ul class="memory-list" style="margin-top: 10px;">
+                <li><strong>Khi T &rarr; 0 (Greedy Search / Argmax):</strong> Hiệu số giữa logit lớn nhất và các logit khác bị phóng đại lên cực hạn. Xác suất chọn token có điểm số cao nhất tiệm cận 100%. Mô hình đưa ra câu trả lời ổn định nhất (tuyệt đối khuyên dùng cho RAG).</li>
+                <li><strong>Khi T tăng cao (ví dụ: T = 1.0):</strong> Phân phối xác suất bị kéo dẹt (flatten). Các token có điểm số thấp hơn có nhiều cơ hội được chọn hơn, dẫn đến câu trả lời đa dạng hơn nhưng cũng dễ bị ảo tưởng (hallucination).</li>
+              </ul>
+            </article>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Khái niệm - Term</th>
+                <th>Bản chất tiếng Anh - Meaning</th>
+                <th>Tác động thực tế - Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Retriever - Bộ truy xuất</strong></td>
+                <td>Đối tượng bọc quanh Vector Store cung cấp giao diện truy vấn chuẩn nhận string và trả về đối tượng Document.</td>
+                <td>Trừu tượng hóa cách tìm kiếm dữ liệu. Cho phép dễ dàng thay đổi thuật toán tìm kiếm bên dưới (ví dụ từ Vector Search sang Hybrid Search) mà không cần sửa code ứng dụng chính.</td>
+              </tr>
+              <tr>
+                <td><strong>Query Reformulation - Cải tiến truy vấn</strong></td>
+                <td>Kỹ thuật viết lại hoặc kết hợp câu hỏi hiện tại với ngữ cảnh lịch sử trước khi đưa vào bộ tìm kiếm.</td>
+                <td>Giải quyết triệt để lỗi mất dấu ngữ cảnh khi người dùng đặt câu hỏi ngắn hoặc dùng các đại từ chỉ định thay thế.</td>
+              </tr>
+              <tr>
+                <td><strong>Greedy Decoding - Giải mã tham lam</strong></td>
+                <td>Chiến lược sinh từ luôn chọn token có xác suất cao nhất tại mỗi bước thời gian. Khiến kết quả sinh mang tính xác định cao hơn.</td>
+                <td>Là cấu hình mặc định (bằng cách đặt <span class="inline-code">temperature=0</span>) để hệ thống RAG hoạt động ổn định và tin cậy.</td>
+              </tr>
+              <tr>
+                <td><strong>Source Attribution - Trích dẫn nguồn dẫn</strong></td>
+                <td>Khả năng lưu giữ và hiển thị rõ ràng đường dẫn file (path) và nội dung thô trích xuất từ database cho người dùng thấy.</td>
+                <td>Gia tăng tính minh bạch của ứng dụng RAG, giúp người dùng tự đối chiếu nguồn thông tin và hỗ trợ đắc lực lập trình viên trong khâu debug.</td>
+              </tr>
+              <tr>
+                <td><strong>System Prompt - Prompt hệ thống</strong></td>
+                <td>Chỉ thị cấp cao quy định vai trò, nhiệm vụ và các giới hạn hành vi của LLM trong suốt cuộc hội thoại.</td>
+                <td>Là nơi tốt nhất để cài đặt tính "sáng tạo" hoặc thiết lập các rào cản ngăn chặn mô hình tự bịa câu trả lời khi cơ sở dữ liệu không có thông tin.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 6: Workflow -->
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình xử lý động</h2>
+            </div>
+          </div>
+          <p>
+            Dưới đây là luồng xử lý chi tiết theo thời gian thực (Runtime Flow) của ứng dụng RAG Day 3 khi nhận một câu hỏi từ người dùng:
+          </p>
+          <div class="grid-2" style="margin-top: 14px;">
+            <article class="card">
+              <h3>Quy trình Ingestion Pipeline (Day 2 Recap)</h3>
+              <div class="code-block"><span class="code-comment"># Nạp và cắt văn bản đệ quy, mã hóa và lưu vào Chroma DB</span>
+1. DirectoryLoader quét thư mục -> Documents
+2. RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200) -> Chunks
+3. HuggingFaceEmbeddings("all-MiniLM-L6-v2") mã hóa văn bản thành Vector 384 chiều
+4. Chroma.from_documents() ghi đè bộ sưu tập tĩnh vào thư mục "vector_db/"</div>
+            </article>
+            <article class="card">
+              <h3>Quy trình Query & Generation Pipeline (Day 3)</h3>
+              <ol class="memory-list">
+                <li><strong>User Input (Đầu vào):</strong> Người dùng gửi câu hỏi $Q$ trên giao diện chatbot (ví dụ: <em>"Lương của Avery Lancaster là bao nhiêu?"</em>).</li>
+                <li><strong>Query Reformulation (Xử lý truy vấn):</strong> Hàm <span class="inline-code">combined_question()</span> duyệt qua lịch sử hội thoại, ghép các câu hỏi cũ của user với câu hỏi hiện tại tạo thành chuỗi truy vấn gộp $Q_{combined}$.</li>
+                <li><strong>Context Retrieval (Truy xuất):</strong> Gọi phương thức <span class="inline-code">retriever.invoke(Q_{combined}, k=5)</span>. ChromaDB tìm kiếm và trả về danh sách 5 đối tượng Document có độ tương đồng ngữ nghĩa cao nhất.</li>
+                <li><strong>Context Format (Định dạng ngữ cảnh):</strong> Trích xuất nội dung văn bản thô của 5 tài liệu và ghép nối chúng bằng ký tự xuống dòng kép để tạo thành chuỗi văn bản $Context$.</li>
+                <li><strong>Prompt Injection (Bơm Prompt):</strong> Nhúng chuỗi $Context$ vào prompt hệ thống <span class="inline-code">SYSTEM_PROMPT.format(context=Context)</span>.</li>
+                <li><strong>Message Compilation (Đóng gói tin nhắn):</strong> Tạo danh sách tin nhắn gửi đi bao gồm:
+                  <ul class="memory-list" style="margin-top: 5px;">
+                    <li><span class="inline-code">SystemMessage</span> chứa Prompt hệ thống đã được bơm context.</li>
+                    <li>Danh sách tin nhắn lịch sử hội thoại đã được convert sang đối tượng tin nhắn chuẩn của LangChain.</li>
+                    <li><span class="inline-code">HumanMessage</span> chứa câu hỏi hiện tại $Q$.</li>
+                  </ul>
+                </li>
+                <li><strong>LLM Inference (Suy diễn LLM):</strong> Gọi <span class="inline-code">llm.invoke(messages)</span> với cấu hình `temperature=0`. LLM phân tích ngữ cảnh được cung cấp và sinh ra câu trả lời cuối cùng.</li>
+                <li><strong>UI Update (Cập nhật giao diện):</strong> Hiển thị câu trả lời của trợ lý vào khung chat, đồng thời hiển thị nguồn dẫn chi tiết (metadata 'source') và nội dung của các tài liệu đã truy xuất sang cột Markdown bên phải.</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 7: Techniques -->
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật triển khai chi tiết</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>1. Query Combination for Multi-Turn Retrieval</h3>
+              <p><strong>Khái niệm - Concept:</strong> Ghép nối toàn bộ lịch sử câu hỏi của người dùng để tạo ra một câu truy vấn ngữ cảnh đầy đủ thông tin nhất.</p>
+              <p style="margin-top: 10px;"><strong>Vì sao cần:</strong> Tránh lỗi mất ngữ cảnh khi người dùng sử dụng câu hỏi ngắn hoặc đại từ chỉ định thay thế. Ví dụ: câu 1 <em>"Ai là Avery?"</em>, câu 2 <em>"Chức vụ là gì?"</em>. Nếu chỉ truy vấn vector câu 2, ChromaDB sẽ tìm kiếm từ khóa "Chức vụ" và trả về các kết quả không liên quan. Bằng cách gộp lịch sử, câu truy vấn sẽ là <em>"Ai là Avery?\nChức vụ là gì?"</em> giúp tìm chính xác tài liệu của Avery Lancaster.</p>
+            </article>
+            <article class="card">
+              <h3>2. strict system prompt guard for zero-hallucination</h3>
+              <p><strong>Khái niệm - Concept:</strong> Sử dụng rào cản ngôn ngữ cứng rắn trong Prompt hệ thống để kiểm soát hành vi suy diễn của LLM.</p>
+              <p style="margin-top: 10px;"><strong>Cách triển khai:</strong> Cài đặt câu lệnh <em>"If you don't know the answer, say so."</em> hoặc <em>"Chỉ được phép trả lời dựa trên ngữ cảnh được cung cấp. Tuyệt đối không tự ý suy diễn hoặc bịa đặt thông tin nằm ngoài ngữ cảnh."</em>. Kỹ thuật này bắt buộc mô hình phải từ chối trả lời một cách lịch sự thay vì đưa ra các thông tin sai lệch gây ảnh hưởng nghiêm trọng đến tính chính xác của hệ thống doanh nghiệp.</p>
+            </article>
+            <article class="card">
+              <h3>3. Dual-column dynamic layout for source attribution</h3>
+              <p><strong>Khái niệm - Concept:</strong> Thiết kế giao diện web chia hai cột song song để hiển thị độc lập nội dung chat hội thoại và tài liệu nguồn tham chiếu.</p>
+              <p style="margin-top: 10px;"><strong>Cách hoạt động:</strong> Khung chat bên trái hoạt động mượt mà giúp duy trì trải nghiệm giao tiếp tự nhiên. Khi câu trả lời xuất hiện, khung Markdown bên phải sẽ được cập nhật đồng thời để liệt kê chi tiết danh sách tài liệu nguồn thô đã được mô hình tham khảo. Điều này giúp nâng cao uy tín của chatbot và cung cấp công cụ đắc lực để các kỹ sư AI gỡ lỗi (debug) kết quả tìm kiếm trực quan.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 8: Options Landscape -->
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ so sánh và lựa chọn</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cụm kỹ thuật - Cluster</th>
+                <th>Vấn đề giải quyết - Problem</th>
+                <th>Lựa chọn phổ biến - Popular choices</th>
+                <th>Đánh đổi - Trade-off</th>
+                <th>Khi nào nên dùng - When to use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Framework RAG</strong></td>
+                <td>Quản lý luồng xử lý và kết nối các thành phần RAG.</td>
+                <td>
+                  1. LangChain (v1.0)<br>
+                  2. LlamaIndex<br>
+                  3. LiteLLM / Gọi API trực tiếp
+                </td>
+                <td>
+                  - <strong>LangChain:</strong> Tiện lợi, hệ sinh thái cực mạnh, nhưng lớp trừu tượng quá dày và nặng, khó debug.<br>
+                  - <strong>Custom/LiteLLM:</strong> Siêu nhẹ, tốc độ nhanh, dễ debug kiểm soát từng dòng code, nhưng phải tự viết các thành phần kết nối.
+                </td>
+                <td>
+                  - Dùng LangChain khi cần xây dựng ứng dụng phức tạp có tích hợp Agent (LangGraph), hoặc cần xây dựng nhanh bản thử nghiệm MVP.<br>
+                  - Dùng Custom/LiteLLM khi triển khai trên production yêu cầu tối ưu hóa tốc độ phản hồi và dễ bảo trì mã nguồn lâu dài.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Cấu hình nhiệt độ (Temperature)</strong></td>
+                <td>Kiểm soát tính ổn định và chính xác của câu trả lời sinh ra từ LLM.</td>
+                <td>
+                  1. Temperature = 0 (Greedy Search)<br>
+                  2. Temperature = 0.7 - 1.0 (Sampling)
+                </td>
+                <td>
+                  - <strong>Temperature = 0:</strong> Câu trả lời có tính lặp lại cao, bám sát dữ liệu ngữ cảnh, nhưng văn phong có phần cứng nhắc.<br>
+                  - <strong>Temperature cao:</strong> Văn phong tự nhiên, sinh động hơn, nhưng rủi ro ảo tưởng (hallucination) cực lớn.
+                </td>
+                <td>
+                  - Luôn luôn đặt <strong>Temperature = 0</strong> cho các ứng dụng RAG tra cứu thông tin doanh nghiệp, hợp đồng, tài chính, y tế.<br>
+                  - Đặt temperature cao hơn cho các tác vụ mang tính sáng tạo như viết email, tạo ý tưởng quảng cáo hoặc giải trí.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Hạ tầng Vector DB</strong></td>
+                <td>Lưu trữ và truy xuất nhanh các vector embedding.</td>
+                <td>
+                  1. Local Embedded (ChromaDB, FAISS)<br>
+                  2. Cloud Scalable (Pinecone, Weaviate)<br>
+                  3. Mainstream DB (PostgreSQL với pgvector)
+                </td>
+                <td>
+                  - <strong>Local DB:</strong> Dễ cài đặt, chạy offline hoàn toàn miễn phí, nhưng không tự động scale khi dữ liệu lớn.<br>
+                  - <strong>Cloud DB:</strong> Tốc độ cao với hàng triệu vector, tính năng phân quyền tốt, nhưng tốn chi phí vận hành hàng tháng.<br>
+                  - <strong>Mainstream DB:</strong> Tận dụng hạ tầng DB quan hệ sẵn có của doanh nghiệp, nhưng cần cấu hình và tối ưu hóa index phức tạp.
+                </td>
+                <td>
+                  - Dùng ChromaDB/FAISS cho các dự án nhỏ, dữ liệu ít (dưới 10.000 documents) hoặc chạy thử nghiệm cục bộ.<br>
+                  - Dùng Cloud DB khi xây dựng sản phẩm lớn quy mô doanh nghiệp lớn.<br>
+                  - Dùng PostgreSQL khi doanh nghiệp muốn lưu trữ tập trung dữ liệu quan hệ và dữ liệu vector trong cùng một cơ sở dữ liệu.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 9: Implementation Insights -->
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai mã nguồn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Phân tích mã nguồn RAG - G:\RAG\implementation\answer.py</h3>
+              <p>
+                File <span class="inline-code">answer.py</span> chịu trách nhiệm kết nối đến cơ sở dữ liệu ChromaDB, thiết lập retriever và gọi LLM sinh câu trả lời.
+              </p>
+              <div class="code-block"><span class="code-comment"># Thiết lập các đối tượng cốt lõi</span>
+embeddings = HuggingFaceEmbeddings(model_name=<span class="code-string">"all-MiniLM-L6-v2"</span>)
+vectorstore = Chroma(persist_directory=DB_NAME, embedding_function=embeddings)
+retriever = vectorstore.as_retriever()
+llm = ChatOpenAI(temperature=0, model_name=MODEL)
+
+<span class="code-keyword">def</span> <span class="code-func">combined_question</span>(question: str, history: list[dict] = []) -> str:
+    <span class="code-comment"># Gộp các câu hỏi cũ của user để tối ưu hóa truy xuất ngữ cảnh</span>
+    prior = <span class="code-string">"\n"</span>.join(m[<span class="code-string">"content"</span>] <span class="code-keyword">for</span> m <span class="code-keyword">in</span> history <span class="code-keyword">if</span> m[<span class="code-string">"role"</span>] == <span class="code-string">"user"</span>)
+    <span class="code-keyword">return</span> prior + <span class="code-string">"\n"</span> + question
+
+<span class="code-keyword">def</span> <span class="code-func">answer_question</span>(question: str, history: list[dict] = []):
+    combined = combined_question(question, history)
+    docs = retriever.invoke(combined)  <span class="code-comment"># Lấy tài liệu tương đồng</span>
+    context = <span class="code-string">"\n\n"</span>.join(doc.page_content <span class="code-keyword">for</span> doc <span class="code-keyword">in</span> docs)
+    
+    <span class="code-comment"># Định dạng prompt hệ thống với ngữ cảnh thô</span>
+    system_prompt = SYSTEM_PROMPT.format(context=context)
+    
+    <span class="code-comment"># Xây dựng danh sách tin nhắn có cấu trúc hội thoại gửi sang LLM</span>
+    messages = [SystemMessage(content=system_prompt)]
+    messages.extend(convert_to_messages(history))
+    messages.append(HumanMessage(content=question))
+    
+    response = llm.invoke(messages)
+    <span class="code-keyword">return</span> response.content, docs</div>
+            </article>
+            <article class="card">
+              <h3>Phân tích mã nguồn giao diện UI - G:\RAG\app.py</h3>
+              <p>
+                File <span class="inline-code">app.py</span> sử dụng Gradio Blocks để dựng giao diện người dùng chia làm 2 cột: chatbot và hiển thị ngữ cảnh nguồn dẫn.
+              </p>
+              <div class="code-block"><span class="code-keyword">def</span> <span class="code-func">chat</span>(history):
+    last_message = history[-1][<span class="code-string">"content"</span>]
+    prior = history[:-1]
+    <span class="code-comment"># Gọi RAG lấy câu trả lời và tài liệu tham khảo</span>
+    answer, context = answer_question(last_message, prior)
+    history.append({<span class="code-string">"role"</span>: <span class="code-string">"assistant"</span>, <span class="code-string">"content"</span>: answer})
+    <span class="code-keyword">return</span> history, format_context(context)
+
+<span class="code-keyword">def</span> <span class="code-func">main</span>():
+    theme = gr.themes.Soft(font=[<span class="code-string">"Inter"</span>, <span class="code-string">"system-ui"</span>, <span class="code-string">"sans-serif"</span>])
+    <span class="code-keyword">with</span> gr.Blocks(title=<span class="code-string">"Insurellm Expert Assistant"</span>, theme=theme) <span class="code-keyword">as</span> ui:
+        gr.Markdown(<span class="code-string">"# 🏢 Insurellm Expert Assistant"</span>)
+        <span class="code-keyword">with</span> gr.Row():
+            <span class="code-keyword">with</span> gr.Column(scale=1):
+                chatbot = gr.Chatbot(label=<span class="code-string">"💬 Conversation"</span>, height=600, type=<span class="code-string">"messages"</span>)
+                message = gr.Textbox(placeholder=<span class="code-string">"Ask anything about Insurellm..."</span>)
+            <span class="code-keyword">with</span> gr.Column(scale=1):
+                context_markdown = gr.Markdown(label=<span class="code-string">"📚 Retrieved Context"</span>, height=600)
+        
+        <span class="code-comment"># Đồng bộ hóa tuần tự: submit -> gửi tin nhắn user -> gọi hàm chat sinh kết quả</span>
+        message.submit(
+            put_message_in_chatbot, inputs=[message, chatbot], outputs=[message, chatbot]
+        ).then(chat, inputs=chatbot, outputs=[chatbot, context_markdown])
+    ui.launch(inbrowser=<span class="code-keyword">True</span>)</div>
+            </article>
+          </div>
+
+          <details>
+            <summary>Phân tích sâu cơ chế đồng bộ hóa sự kiện của Gradio - Deep Event Chaining</summary>
+            <div class="note">
+              <p>Trong <span class="inline-code">app.py</span>, cơ chế cập nhật giao diện sử dụng chuỗi sự kiện đặc trưng của Gradio: <span class="inline-code">message.submit(...).then(...)</span>.</p>
+              <p style="margin-top: 10px;">
+                - <strong>Bước 1 (Đồng bộ tức thời - submit):</strong> Khi user nhấn Enter, hàm <span class="inline-code">put_message_in_chatbot</span> được gọi lập tức để xóa hộp thoại nhập liệu và thêm tin nhắn của user vào giao diện chat. Giao diện chatbot lập tức cập nhật để người dùng thấy tin nhắn đã được gửi đi (tránh cảm giác ứng dụng bị đơ).<br>
+                - <strong>Bước 2 (Xử lý bất đồng bộ nặng - then):</strong> Sau khi bước 1 hoàn tất, phương thức <span class="inline-code">.then()</span> được kích hoạt để chạy hàm <span class="inline-code">chat()</span>. Hàm này gọi đến API LLM và truy xuất cơ sở dữ liệu vector (tác vụ tốn thời gian). Khi xử lý xong, nó cập nhật đồng thời câu trả lời của trợ lý vào chatbot và hiển thị các văn bản nguồn dẫn vào cột Markdown bên phải.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <!-- Section 10: Pitfalls -->
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Bẫy và sai lầm thường gặp trong thực tế</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Các trường hợp dễ lỗi</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Mất ngữ cảnh đại từ trong truy xuất (Pronoun Loss in Retrieval):</strong><br>
+                  - <em>Nguyên nhân:</em> Chỉ dùng câu hỏi hiện tại để gọi <span class="inline-code">retriever.invoke()</span>. Ví dụ: user hỏi "What is her salary?" ngay sau khi hỏi "Who is Avery?". Retriever tìm kiếm vector cho câu "What is her salary?" và trả về tài liệu về bảng lương chung hoặc của người khác do từ "her" không có thông tin ngữ nghĩa cụ thể.<br>
+                  - <em>Cách khắc phục:</em> Luôn dùng hàm <span class="inline-code">combined_question()</span> gộp lịch sử câu hỏi của user trước khi gọi Retriever.
+                </li>
+                <li>
+                  <strong>Hiểu lầm về tính lặp lại của Temperature = 0:</strong><br>
+                  - <em>Nguyên nhân:</em> Lập trình viên nghĩ rằng đặt `temperature=0` sẽ giúp mô hình sinh ra câu trả lời giống nhau 100% qua mọi lần gọi.<br>
+                  - <em>Cách khắc phục:</em> Do tính chất tính toán song song bất đồng bộ của GPU (non-deterministic floating-point summation), kết quả sinh vẫn có thể sai lệch nhỏ ở các token cuối. Để tối đa tính ổn định, cần cấu hình thêm tham số seed và triển khai hệ thống lưu trữ log kiểm thử phiên bản.
+                </li>
+                <li>
+                  <strong>Vượt giới hạn cửa sổ ngữ cảnh (Context Window Overflow):</strong><br>
+                  - <em>Nguyên nhân:</em> Tham số K của retriever đặt quá lớn (ví dụ: K = 20) kết hợp với kích thước chunk lớn, khiến tổng số token vượt quá giới hạn đầu vào của mô hình sinh.<br>
+                  - <em>Cách khắc phục:</em> Đếm token tài liệu bằng thư viện <span class="inline-code">tiktoken</span> và tính toán giới hạn an toàn cho tham số K (thường K = 3 đến 5).
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Nghĩ rằng Vector Store tự động hiểu ngữ nghĩa văn bản:</strong><br>
+                  - <em>Hiểu đúng:</em> Vector Store (như ChromaDB) hoàn toàn mù tịt về mặt ngôn ngữ. Nó chỉ là một cơ sở dữ liệu thực hiện các phép tính toán học (như khoảng cách Cosine hoặc khoảng cách Euclid) trên các mảng số thực. Sự "hiểu ngữ nghĩa" hoàn toàn nằm ở mô hình nhúng (Encoder) như <span class="inline-code">all-MiniLM-L6-v2</span>. Nếu chọn mô hình nhúng kém chất lượng, kết quả tìm kiếm của Vector Store sẽ bị sai lệch hoàn toàn.
+                </li>
+                <li>
+                  <strong>Nghĩ rằng Temperature điều khiển "độ thông minh/sáng tạo":</strong><br>
+                  - <em>Hiểu đúng:</em> Temperature chỉ là một hệ số điều chỉnh phân phối xác suất sinh từ ở đầu ra của LLM. Tăng temperature chỉ làm tăng tính ngẫu nhiên (entropy), dễ dẫn đến sai sót thực tế (hallucination). Muốn mô hình trả lời sáng tạo, hài hước hay trang trọng, hãy thiết lập rõ ràng cấu trúc văn phong mong muốn trong <strong>System Prompt</strong>.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 11: Interview Takeaways -->
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Trọng tâm chuẩn bị phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các câu hỏi cốt lõi nhà tuyển dụng thường hỏi</h3>
+              <ul class="memory-list">
+                <li><strong>Q1:</strong> Làm thế nào để giải quyết vấn đề mất ngữ cảnh hội thoại (conversational context) khi người dùng hỏi các câu tiếp theo có chứa đại từ chỉ định trong hệ thống RAG?</li>
+                <li><strong>Q2:</strong> Giải thích cơ chế hoạt động toán học của tham số temperature đối với quá trình sinh token của mô hình ngôn ngữ lớn (LLM).</li>
+                <li><strong>Q3:</strong> Tại sao trong các ứng dụng RAG tra cứu thông tin doanh nghiệp, chúng ta luôn phải thiết lập temperature bằng 0? Thiết lập này có rủi ro gì không?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung trả lời chuẩn phỏng vấn - Answer Frame</h3>
+              <p>
+                Áp dụng cấu trúc trả lời logic khi phỏng vấn kỹ sư AI:
+              </p>
+              <div class="callout" style="margin-top: 10px;">
+                <strong>Khung trả lời:</strong><br>
+                1. <strong>Mục tiêu (Goal):</strong> Nêu rõ bài toán cần giải quyết (ví dụ: đảm bảo độ chính xác thực tế, tránh ảo tưởng).<br>
+                2. <strong>Cơ chế (Mechanism):</strong> Giải thích bản chất kỹ thuật bên dưới (logits, softmax, gộp lịch sử truy vấn).<br>
+                3. <strong>Đánh đổi (Trade-off):</strong> Phân tích mặt được và mất của giải pháp (ví dụ: gộp lịch sử đơn giản tăng chi phí token nhưng triển khai nhanh).<br>
+                4. <strong>Bẫy/Lỗi (Pitfalls):</strong> Chỉ ra các lỗi thường gặp trong thực tế và cách bạn phòng tránh.<br>
+                5. <strong>Khi nào dùng (When to use):</strong> Đưa ra lời khuyên thực tiễn dựa trên loại dự án thực tế.
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 12: Interview Q&A / Flashcards -->
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&A / Flashcards - Hỏi đáp chi tiết</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Ôn tập nhanh</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q: Cả Retriever và ChatOpenAI trong LangChain đều dùng chung phương thức nào để thực thi?</strong><br>
+                  <strong>A:</strong> Phương thức <span class="inline-code">invoke()</span>. Đây là giao diện chuẩn kế thừa từ lớp <span class="inline-code">Runnable</span> của LangChain giúp chuẩn hóa luồng xử lý dữ liệu.
+                </li>
+                <li>
+                  <strong>Q: Cơ chế toán học của temperature = 0 là gì?</strong><br>
+                  <strong>A:</strong> Đây là giải mã tham lam (Greedy Decoding / Argmax). LLM bỏ qua việc lấy mẫu ngẫu nhiên (sampling) và luôn luôn chọn token có xác suất dự đoán cao nhất từ hàm Softmax ở mỗi bước sinh từ.
+                </li>
+                <li>
+                  <strong>Q: Tại sao phải tách biệt bước gộp lịch sử để truy xuất (Retrieval) và bước truyền lịch sử hội thoại để sinh (Generation)?</strong><br>
+                  <strong>A:</strong> Vì cơ sở dữ liệu Vector chỉ hiểu các khái niệm ngữ nghĩa độc lập nên cần câu truy vấn gộp đầy đủ danh từ. Còn LLM sinh văn bản cần cấu hình lịch sử dạng hội thoại tin nhắn (System/Human/Assistant) để hiểu ngữ cảnh giao tiếp tự nhiên của cuộc chat.
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&A - Hỏi đáp phỏng vấn sâu</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q: Làm thế nào để thiết kế một hệ thống RAG đạt độ tin cậy cao nhất cho doanh nghiệp, phòng tránh tối đa hiện tượng ảo tưởng (hallucination)?</strong><br>
+                  <strong>A:</strong> 
+                  Tôi áp dụng đồng thời 3 giải pháp kỹ thuật:<br>
+                  1. <strong>Cấu hình mô hình:</strong> Đặt `temperature=0` để tắt cơ chế ngẫu nhiên, đưa mô hình về chế độ sinh từ có tính xác thực cao nhất.<br>
+                  2. <strong>Thiết kế Prompt hệ thống chặt chẽ:</strong> Định nghĩa rõ vai trò của LLM là một trợ lý khách quan, cung cấp ranh giới cứng bằng chỉ thị: <em>"Chỉ trả lời dựa vào ngữ cảnh được cung cấp. Nếu thông tin không có trong ngữ cảnh, hãy trả lời 'Tôi không biết', tuyệt đối không được tự ý bịa đặt thông tin."</em>.<br>
+                  3. <strong>Hiển thị minh bạch nguồn dẫn (Attribution):</strong> Trích xuất metadata 'source' của các văn bản được truy xuất để hiển thị trực tiếp lên giao diện người dùng, cho phép người dùng cuối chủ động kiểm chứng thông tin và phát hiện lỗi truy xuất ngữ cảnh.
+                </li>
+                <li>
+                  <strong>Q: Kỹ thuật Query Reformulation (viết lại câu hỏi) bằng LLM có ưu nhược điểm gì so với việc gộp lịch sử (Query Combination) đơn giản trong RAG?</strong><br>
+                  <strong>A:</strong> 
+                  - <strong>Query Reformulation (Dùng LLM phụ viết lại câu hỏi):</strong> LLM phụ đọc lịch sử và câu hỏi mới để viết lại thành một câu hỏi độc lập (ví dụ: "Lương của Avery Lancaster là bao nhiêu?"). <em>Ưu điểm:</em> Câu truy vấn rất sạch, tối ưu cho tìm kiếm vector. <em>Nhược điểm:</em> Tăng thêm 1 lần gọi API LLM, làm tăng độ trễ (latency) và chi phí vận hành.<br>
+                  - <strong>Query Combination (Gộp chuỗi đơn giản):</strong> Nối trực tiếp các câu hỏi cũ của user bằng ký tự xuống dòng. <em>Ưu điểm:</em> Không tốn thêm chi phí API, độ trễ bằng 0. <em>Nhược điểm:</em> Chuỗi truy vấn chứa nhiều từ khóa thừa, có thể gây nhiễu nhẹ cho bộ tìm kiếm vector trong một số trường hợp phức tạp.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 13: Quick Memory -->
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Những điểm bắt buộc phải nhớ - Must Remember</h3>
+              <ol class="memory-list">
+                <li><strong>LangChain invoke():</strong> Cả retriever và LLM đều chạy qua <span class="inline-code">.invoke()</span>.</li>
+                <li><strong>Lịch sử chat trong RAG:</strong> Gộp lịch sử câu hỏi của user cho Retriever; truyền lịch sử tin nhắn đầy đủ cho LLM.</li>
+                <li><strong>Bản chất Temperature:</strong> Temperature ảnh hưởng đến Softmax. Đặt bằng 0 để tối ưu độ chính xác của RAG.</li>
+                <li><strong>System Prompt bảo vệ:</strong> Thiết lập rào cản ngăn chặn ảo tưởng trực tiếp trong prompt hệ thống.</li>
+                <li><strong>Giao diện Attributions:</strong> RAG chuyên nghiệp bắt buộc phải có thông tin dẫn nguồn rõ ràng.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Tự kiểm tra kiến thức - Self-check</h3>
+              <ul class="memory-list">
+                <li>Bạn có tự viết được hàm gộp lịch sử câu hỏi của user bằng Python thuần mà không cần dùng thư viện ngoài không?</li>
+                <li>Tại sao một mô hình LLM có nhiệt độ temperature bằng 0 vẫn có thể trả về câu trả lời khác nhau đôi chút qua nhiều lần chạy?</li>
+                <li>Hàm <span class="inline-code">gr.Blocks()</span> trong Gradio giúp bạn tùy biến giao diện linh hoạt hơn hàm đơn giản <span class="inline-code">gr.Interface()</span> như thế nào?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 14: Next Step -->
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo trong lộ trình</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Buổi học tiếp theo - What comes next</h3>
+              <p>
+                Sau khi đã xây dựng thành công pipeline RAG hoàn chỉnh và đưa lên giao diện chatbot động, câu hỏi đặt ra là: <strong>Làm thế nào để đo lường và đánh giá một cách khoa học chất lượng của hệ thống RAG này?</strong>
+              </p>
+              <p style="margin-top: 10px;">
+                Buổi học Day 4 sẽ giới thiệu về <strong>RAG Evaluations (Đánh giá RAG)</strong>. Chúng ta sẽ nghiên cứu cách sử dụng các bộ chỉ số đo lường độc lập cho từng khâu: đo lường hiệu năng truy xuất (Retrieval metrics) và đo lường độ trung thực của câu trả lời sinh ra (Answer generation metrics), từ đó tiến hành thử nghiệm so sánh các chiến lược Chunking và các mô hình Encoder khác nhau.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Thông tin cần bổ sung - Missing inputs</h3>
+              <p>
+                Để nâng cấp tài liệu này sâu hơn trong tương lai, người học có thể cung cấp thêm:
+              </p>
+              <ul class="memory-list">
+                <li>Các số liệu thống kê thực tế về lượng token tiêu thụ (token usage) và thời gian phản hồi (latency) trung bình của API gpt-5-nano.</li>
+                <li>Nhật ký lỗi (error logs) thực tế thu thập từ phản hồi của người dùng khi ứng dụng chatbot InsureLLM chạy thử nghiệm.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="footer-note">
+            Tài liệu này được biên soạn tự động bởi AI hỗ trợ học tập. Khuyến nghị người học kết hợp đọc hiểu mã nguồn thực tế trong thư mục <span class="inline-code">implementation/</span> để đạt hiệu quả cao nhất.
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>
