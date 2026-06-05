@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 5 - Advanced RAG Pro Day Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-2: #eef4f7;
+      --ink: #1d252c;
+      --muted: #5c6b76;
+      --line: #d8e0e6;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --accent-3: #334155;
+      --good: #166534;
+      --warn: #92400e;
+      --bad: #991b1b;
+      --shadow: 0 18px 45px rgba(29, 37, 44, 0.08);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code,
+    .inline-code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+      background: #eef2f7;
+      border: 1px solid #d9e2ea;
+      border-radius: 6px;
+      padding: 0.12rem 0.34rem;
+      color: #0f172a;
+    }
+
+    pre {
+      overflow-x: auto;
+      background: #111827;
+      color: #f8fafc;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: var(--radius);
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow,
+    .kicker {
+      color: #0f766e;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .hero .eyebrow {
+      color: #99f6e4;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-top: 16px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.18;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: 1.7rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .hero-copy p {
+      color: #dbeafe;
+      max-width: 860px;
+      margin-top: 14px;
+      font-size: 1.05rem;
+    }
+
+    .hero-points,
+    .grid-2,
+    .grid-3,
+    .meta-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .panel,
+    .card,
+    .note,
+    .callout {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+      padding: 16px;
+      color: #e2e8f0;
+    }
+
+    .mini-card strong {
+      color: #ffffff;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+      padding: 18px;
+      color: #e2e8f0;
+    }
+
+    .panel h3 {
+      color: #ffffff;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e6fffb;
+      color: #115e59;
+      border: 1px solid #99f6e4;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .hero .tag {
+      background: rgba(153, 246, 228, 0.12);
+      color: #ccfbf1;
+      border-color: rgba(153, 246, 228, 0.32);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .button {
+      border: 1px solid #99f6e4;
+      background: rgba(153, 246, 228, 0.12);
+      color: #f8fafc;
+      border-radius: 7px;
+      min-height: 38px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+    }
+
+    .button:hover {
+      background: rgba(153, 246, 228, 0.22);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+
+    .toc h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc-link {
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.92rem;
+      display: block;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: #ecfdf5;
+      text-decoration: none;
+    }
+
+    .progress {
+      margin-top: 16px;
+    }
+
+    .progress small {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+    }
+
+    .content {
+      display: grid;
+      gap: 20px;
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      scroll-margin-top: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title p {
+      color: var(--muted);
+      max-width: 760px;
+      margin-top: 6px;
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card > p + p {
+      margin-top: 10px;
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .callout {
+      padding: 16px;
+      background: #f0fdfa;
+      border-color: #99f6e4;
+      color: #134e4a;
+    }
+
+    .warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #78350f;
+    }
+
+    .danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    .note {
+      padding: 16px;
+      background: var(--surface-2);
+      margin-top: 16px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.94rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      border: 1px solid var(--line);
+      padding: 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .comparison-table th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-size: 0.85rem;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfdff;
+      padding: 14px 16px;
+    }
+
+    details + details {
+      margin-top: 10px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    summary + * {
+      margin-top: 12px;
+    }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .metric {
+      font-family: var(--mono);
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 18px;
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-grid,
+      .layout,
+      .grid-2,
+      .grid-3,
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.35rem;
+      }
+
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .page {
+        padding: 0;
+      }
+
+      .hero,
+      .section,
+      .toc {
+        box-shadow: none;
+      }
+
+      .toc,
+      .actions,
+      .progress {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .section {
+        break-inside: avoid;
+        margin-bottom: 14px;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">RAG Course - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Day 5: Advanced RAG Pro Day - Evidence-driven RAG Systems</h1>
+          <p>
+            Tài liệu này tổng hợp toàn bộ quá trình xây dựng hệ thống Advanced RAG: từ ingestion pipeline
+            không dùng LangChain, semantic chunking bằng LLM, native vector store, query rewriting,
+            query expansion, re-ranking, đến evaluation loop bằng MRR, nDCG và LLM-as-a-judge.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Core theme - Chủ đề lõi</strong>
+              RAG giỏi không đến từ việc thêm kỹ thuật ngẫu nhiên, mà từ vòng lặp đo lường, thử nghiệm, so sánh và lặp lại.
+            </article>
+            <article class="mini-card">
+              <strong>System focus - Trọng tâm hệ thống</strong>
+              Pro pipeline thay Basic RAG bằng semantic chunks, retrieval mở rộng, merge/deduplicate và LLM re-ranker.
+            </article>
+            <article class="mini-card">
+              <strong>Interview focus - Trọng tâm phỏng vấn</strong>
+              Giải thích được trade-off giữa accuracy, latency, cost, complexity, maintainability và observability.
+            </article>
+          </div>
+        </div>
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Session metadata - Metadata buổi học</h3>
+            <p><strong>Week 5 Day 5:</strong> Advanced RAG Techniques, Pro Implementation, Evaluation & Challenge.</p>
+            <div class="tag-row">
+              <span class="tag">Advanced RAG</span>
+              <span class="tag">No LangChain</span>
+              <span class="tag">Reranking</span>
+              <span class="tag">Evals</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Utilities - Tiện ích</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation</a>
+          <a class="toc-link" href="#evidence">10. Evidence-driven Loop</a>
+          <a class="toc-link" href="#pitfalls">11. Pitfalls</a>
+          <a class="toc-link" href="#interview">12. Interview</a>
+          <a class="toc-link" href="#flashcards">13. Q&A / Flashcards</a>
+          <a class="toc-link" href="#memory">14. Quick Memory</a>
+          <a class="toc-link" href="#next-step">15. Next Step</a>
+        </nav>
+        <div class="progress">
+          <small>Reading progress - Tiến độ đọc</small>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+              <p>Nguồn dùng để tổng hợp tài liệu, không bao gồm secrets, token, API key hoặc giá trị trong file môi trường.</p>
+            </div>
+          </div>
+          <div class="meta-grid grid-2">
+            <article class="card">
+              <h3>Input resources - Nguồn đầu vào</h3>
+              <ul class="memory-list">
+                <li><strong>Template - Khung:</strong> <code>study_guide/study-guide-template.html</code>.</li>
+                <li><strong>Previous guides - Tài liệu cũ:</strong> Day 1 đến Day 4 study guides.</li>
+                <li><strong>Transcript - Phiên âm:</strong> <code>Phien_am/day5.txt</code>, gồm các bài 128-136.</li>
+                <li><strong>Slides - Slide:</strong> <code>slide/Copy of LLM - Week 5 Day 5.pptx</code>.</li>
+                <li><strong>Notebook - Notebook:</strong> <code>day5.ipynb</code>.</li>
+                <li><strong>Implementation - Mã nguồn:</strong> <code>pro_implementation/ingest.py</code>, <code>pro_implementation/answer.py</code>, <code>app.py</code>.</li>
+                <li><strong>Evaluation - Đánh giá:</strong> <code>evaluation/eval.py</code>, <code>evaluation/test.py</code>, <code>evaluator.py</code>, <code>evaluator2.py</code>, <code>evaluation/tests.jsonl</code>.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Output goal - Mục tiêu đầu ra</h3>
+              <ul class="memory-list">
+                <li>Tạo tài liệu học và ôn phỏng vấn hoàn chỉnh, dễ scan nhưng đủ sâu về architecture.</li>
+                <li>Giải thích rõ hệ thống được xây như thế nào, không chỉ giải thích từng hàm rời rạc.</li>
+                <li>Liên kết kỹ thuật với metric: technique nào cải thiện failure mode nào, đo bằng gì.</li>
+                <li>Giữ song ngữ cho thuật ngữ quan trọng: <span class="inline-code">reranking - tái xếp hạng</span>, <span class="inline-code">query rewriting - viết lại truy vấn</span>, <span class="inline-code">MRR - Mean Reciprocal Rank</span>.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+              <p>Phần cần nhớ nhanh trước khi đi vào chi tiết.</p>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Advanced RAG là quá trình biến RAG từ một pipeline thử-sai thành một hệ thống tối ưu có đo lường.
+                Bạn tạo baseline, đo retrieval và answer quality, xác định loại câu hỏi fail, áp dụng một kỹ thuật,
+                rồi chạy eval lại để chứng minh cải tiến.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>Semantic chunking - chia chunk theo ngữ nghĩa:</strong> LLM tạo <code>headline</code>, <code>summary</code>, <code>original_text</code> để tăng khả năng retrieval.</li>
+                <li><strong>Query rewriting - viết lại truy vấn:</strong> biến câu hỏi thiếu ngữ cảnh thành query ngắn, cụ thể, dễ search.</li>
+                <li><strong>Query expansion - mở rộng truy vấn:</strong> search cả câu hỏi gốc và câu hỏi viết lại để giảm rủi ro mất chi tiết.</li>
+                <li><strong>Reranking - tái xếp hạng:</strong> dùng LLM/cross-encoder style để sắp lại top chunks theo relevance thật.</li>
+                <li><strong>MRR/nDCG:</strong> đo thứ hạng context đúng; <strong>Accuracy/Completeness/Relevance:</strong> đo chất lượng câu trả lời.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview angle - Góc phỏng vấn</h3>
+              <p>
+                Câu trả lời tốt không phải “tôi dùng LangChain/Chroma/OpenAI”, mà là:
+                “Tôi có golden test set, đo retrieval và generation riêng, thấy Basic RAG fail ở spanning/holistic/numerical,
+                nên tôi thêm semantic chunking, query expansion và reranking; sau đó MRR và answer accuracy tăng.”
+              </p>
+            </article>
+          </div>
+          <div class="callout" style="margin-top: 16px;">
+            <strong>One-liner - Một câu nhớ:</strong>
+            Day 5 dạy bạn xây RAG như một engineer: mỗi kỹ thuật phải gắn với failure mode, metric và bằng chứng cải thiện.
+          </div>
+        </section>
+
+        <section id="overview" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+              <p>Day 5 là Pro Day: nâng Basic RAG thành Advanced RAG có kiểm chứng.</p>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Main idea - Ý tưởng chính</h3>
+              <p>
+                Basic RAG lấy top K chunks bằng vector similarity rồi nhét vào prompt. Advanced RAG thêm các bước trước và sau retrieval:
+                chuẩn hóa tài liệu, viết lại query, mở rộng query, sắp xếp lại context và đo lường kết quả.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Why it matters - Vì sao quan trọng</h3>
+              <p>
+                Trong production, failure thường không nằm ở LLM “không thông minh”, mà ở context sai, context thiếu,
+                context bị nhiễu hoặc context đúng nhưng nằm quá thấp trong prompt. Advanced RAG xử lý chính các lỗi này.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Expected outcome - Kết quả mong muốn</h3>
+              <p>
+                Hệ thống Pro giữ cùng interface với app cũ nhưng backend retrieval mạnh hơn:
+                search rộng hơn, context sạch hơn, trả lời chính xác hơn và có dashboard để chứng minh.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+              <p>Phân tách mục tiêu concept, implementation và interview.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Concept goals - Mục tiêu kiến thức</h3>
+              <ul class="memory-list">
+                <li>Hiểu vì sao RAG là một hệ thống retrieval + generation + evaluation, không chỉ là vector database.</li>
+                <li>Phân biệt <strong>bi-encoder - bộ mã hóa hai phía</strong> và <strong>cross-encoder - bộ mã hóa chéo</strong>.</li>
+                <li>Hiểu vì sao <strong>semantic chunking - chia chunk theo ngữ nghĩa</strong> khác với character chunking.</li>
+                <li>Biết khi nào dùng MRR, nDCG, Recall@K, Precision@K và keyword coverage.</li>
+                <li>Hiểu vì sao “RAG is dead” là hiểu lầm: RAG chỉ chuyển từ nhồi context sang truy xuất thông minh.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Practical goals - Mục tiêu thực hành</h3>
+              <ul class="memory-list">
+                <li>Đọc được pipeline trong <code>pro_implementation/ingest.py</code> và <code>pro_implementation/answer.py</code>.</li>
+                <li>Giải thích được vì sao app chỉ đổi import từ basic sang pro mà UI vẫn chạy.</li>
+                <li>Biết cách chạy eval theo từng test row bằng <code>uv run evaluation/eval.py &lt;row&gt;</code>.</li>
+                <li>Biết phân tích test categories: <code>direct_fact</code>, <code>temporal</code>, <code>comparative</code>, <code>numerical</code>, <code>relationship</code>, <code>spanning</code>, <code>holistic</code>.</li>
+                <li>Biết nêu trade-off của mỗi kỹ thuật: accuracy tăng nhưng latency/cost/complexity cũng tăng.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+              <p>Day 5 chỉ có ý nghĩa khi đặt trên nền Day 1-4.</p>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Day - Buổi</th>
+                <th>What you built - Bạn đã xây gì</th>
+                <th>How Day 5 upgrades it - Day 5 nâng cấp gì</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Day 1</strong></td>
+                <td>Trực giác RAG: retrieve context, augment prompt, generate answer.</td>
+                <td>Giữ nguyên ý tưởng lõi nhưng xử lý context thông minh hơn.</td>
+              </tr>
+              <tr>
+                <td><strong>Day 2</strong></td>
+                <td>Chunking, embeddings, vector store, Chroma, t-SNE.</td>
+                <td>Thay chunking cơ học bằng LLM semantic chunking và dùng embedding mạnh hơn.</td>
+              </tr>
+              <tr>
+                <td><strong>Day 3</strong></td>
+                <td>Complete RAG chatbot với history, app UI và module hóa.</td>
+                <td>Giữ interface <code>answer_question</code>, thay backend retrieval/generation pipeline.</td>
+              </tr>
+              <tr>
+                <td><strong>Day 4</strong></td>
+                <td>Golden tests, MRR, nDCG, LLM-as-a-judge, dashboard.</td>
+                <td>Dùng metrics làm kim chỉ nam cho mọi cải tiến Advanced RAG.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="core-theory" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+              <p>Các technical cluster quan trọng, mỗi cluster gồm concept, methods, tools, trade-off và when to use.</p>
+            </div>
+          </div>
+
+          <details open>
+            <summary>1. Evidence-driven Advanced RAG - RAG nâng cao dựa trên bằng chứng</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Evidence-driven Advanced RAG là cách phát triển RAG bằng dữ liệu đo lường.
+                  Thay vì hỏi “kỹ thuật nào đang hot?”, bạn hỏi “metric nào đang thấp, failure mode nằm ở đâu,
+                  và kỹ thuật nào có khả năng cải thiện đúng điểm đó?”.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li>Baseline measurement - đo baseline trước khi tối ưu.</li>
+                  <li>Single-change experiment - chỉ đổi một biến mỗi lần.</li>
+                  <li>Category analysis - phân tích theo loại câu hỏi.</li>
+                  <li>Regression tracking - kiểm tra kỹ thuật mới không làm hỏng nhóm câu hỏi cũ.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p><code>evaluation/tests.jsonl</code>, <code>evaluation/eval.py</code>, <code>evaluator.py</code>, <code>evaluator2.py</code>, LiteLLM, Pydantic structured outputs.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  Có eval loop thì chậm hơn ở giai đoạn development, nhưng giảm rủi ro tối ưu mù.
+                  Không có eval loop, bạn dễ thêm reranking/query expansion rồi tưởng là tốt chỉ vì demo vài câu đẹp.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> luôn dùng khi RAG phục vụ dữ liệu nội bộ, thông tin chính xác hoặc sản phẩm có người dùng thật.</p>
+              </article>
+            </div>
+          </details>
+
+          <details>
+            <summary>2. Semantic chunking - Chia chunk theo ngữ nghĩa</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Semantic chunking dùng LLM đọc tài liệu và chia thành các mảnh có nghĩa, thay vì cắt theo số ký tự cố định.
+                  Trong code Day 5, mỗi chunk gồm <code>headline</code>, <code>summary</code> và <code>original_text</code>.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li>LLM-based chunking - dùng LLM chia tài liệu thành chunk.</li>
+                  <li>Overlap - gối đầu khoảng 25% hoặc khoảng 50 từ để tránh mất ngữ cảnh.</li>
+                  <li>Document pre-processing - viết lại bảng/số liệu thành mô tả dễ search.</li>
+                  <li>Chunk enrichment - thêm headline và summary vào nội dung nhúng vector.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p><code>pro_implementation/ingest.py</code>, LiteLLM <code>completion</code>, Pydantic <code>Chunk</code>/<code>Chunks</code>, OpenAI model cho chunking.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  Chất lượng retrieval tốt hơn, nhưng ingestion tốn token, mất thời gian và có thể gặp rate limit.
+                  Nếu dữ liệu rất lớn hoặc thay đổi liên tục, semantic chunking cần queue, cache và retry nghiêm túc.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> khi tài liệu có cấu trúc không đều, nhiều bảng, nhiều đoạn ngắn, hoặc Basic RAG hay fail vì chunk không chứa đủ ngữ cảnh.</p>
+              </article>
+            </div>
+          </details>
+
+          <details>
+            <summary>3. Native vector store - Kho vector native không qua LangChain wrapper</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Day 5 thay abstraction LangChain bằng các thư viện trực tiếp: tự gọi OpenAI embeddings,
+                  tự tạo Chroma collection, tự add ids/embeddings/documents/metadatas. Điều này làm pipeline rõ hơn và dễ debug hơn.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li>Persistent collection - lưu Chroma trong <code>preprocessed_db</code>.</li>
+                  <li>Delete and rebuild - xóa collection cũ khi rebuild embeddings.</li>
+                  <li>Metadata preservation - giữ <code>source</code> và <code>type</code> để show context/citation.</li>
+                  <li>Embedding consistency - dùng cùng embedding model khi ingest và query.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p>ChromaDB <code>PersistentClient</code>, OpenAI <code>text-embedding-3-large</code>, NumPy, Plotly, t-SNE.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  Native code ít magic hơn và dễ kiểm soát hơn, nhưng bạn tự chịu trách nhiệm về retry, batching,
+                  observability, schema, cleanup và backward compatibility.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> khi cần kiểm soát production behavior, debug chi tiết hoặc tối ưu từng bước pipeline.</p>
+              </article>
+            </div>
+          </details>
+
+          <details>
+            <summary>4. Query rewriting & query expansion - Viết lại và mở rộng truy vấn</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Query rewriting biến câu hỏi người dùng thành một query ngắn, cụ thể, dễ tìm trong knowledge base.
+                  Query expansion chạy search trên nhiều phiên bản của câu hỏi để không phụ thuộc vào một cách diễn đạt duy nhất.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li>History-aware rewriting - dùng chat history để giải nghĩa câu hỏi mơ hồ.</li>
+                  <li>Original + rewritten search - search cả câu gốc và câu rewritten.</li>
+                  <li>Merge and deduplicate - gộp kết quả, bỏ trùng theo <code>page_content</code>.</li>
+                  <li>Short refined query - ép LLM chỉ trả về query, không trả lời dài dòng.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p><code>rewrite_query</code>, <code>fetch_context_unranked</code>, <code>merge_chunks</code>, LiteLLM, OpenAI embeddings, Chroma query.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  Rewriting có thể giúp câu hỏi mơ hồ trở nên searchable, nhưng cũng có thể gây <strong>query dilution - loãng truy vấn</strong>.
+                  Module final giảm rủi ro này bằng cách search cả original question và rewritten question.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> khi người dùng hỏi follow-up, câu hỏi thiếu entity, hoặc Basic RAG fail vì query không khớp cách tài liệu diễn đạt.</p>
+              </article>
+            </div>
+          </details>
+
+          <details>
+            <summary>5. Reranking - Tái xếp hạng kết quả truy xuất</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Vector search nhanh nhưng thô. Reranking đọc lại các candidate chunks cùng với câu hỏi và sắp xếp lại
+                  theo relevance thật. Nó giống cross-encoder style: xét cặp <span class="inline-code">question + chunk</span> thay vì so khoảng cách vector độc lập.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li>Retrieve broad - lấy nhiều candidate hơn, ví dụ <code>RETRIEVAL_K = 20</code>.</li>
+                  <li>Structured rank output - ép LLM trả về danh sách ID theo schema <code>RankOrder</code>.</li>
+                  <li>Final top K - chỉ đưa top chunks sau rerank vào prompt, ví dụ <code>FINAL_K = 10</code>.</li>
+                  <li>Lost-in-the-middle mitigation - đẩy context đúng lên đầu để LLM dễ dùng.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p><code>rerank</code>, Pydantic <code>RankOrder</code>, LiteLLM response format, LLM ranker hoặc cross-encoder chuyên dụng.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  Reranking thường tăng MRR và giảm nhiễu context, nhưng thêm 1 lần gọi model, tăng latency và token cost.
+                  Nếu top K ban đầu không chứa context đúng, reranking không thể tự tạo ra thông tin đúng.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> khi retrieval recall khá ổn nhưng context đúng thường nằm vị trí 4-20 thay vì top 1-3.</p>
+              </article>
+            </div>
+          </details>
+
+          <details>
+            <summary>6. Evaluation metrics - Chỉ số đánh giá</summary>
+            <div class="grid-2" style="margin-top: 12px;">
+              <article class="card">
+                <h3>Concept - Khái niệm</h3>
+                <p>
+                  Retrieval metrics đo hệ thống có tìm đúng context không. Answer metrics đo LLM có trả lời chính xác,
+                  đầy đủ và đúng trọng tâm không. Hai nhóm metric này phải tách riêng để biết lỗi nằm ở retrieval hay generation.
+                </p>
+              </article>
+              <article class="card">
+                <h3>Methods / Techniques - Phương pháp / kỹ thuật</h3>
+                <ul class="memory-list">
+                  <li><strong>MRR - Mean Reciprocal Rank:</strong> điểm cao khi keyword/context đúng nằm gần top 1.</li>
+                  <li><strong>nDCG - Normalized Discounted Cumulative Gain:</strong> đo chất lượng thứ tự của nhiều kết quả liên quan.</li>
+                  <li><strong>Keyword coverage - độ phủ từ khóa:</strong> phần trăm keywords xuất hiện trong top results.</li>
+                  <li><strong>LLM-as-a-judge:</strong> chấm accuracy, completeness, relevance theo thang 1-5.</li>
+                </ul>
+              </article>
+              <article class="card">
+                <h3>Tools / Models / Frameworks - Công cụ / mô hình / framework</h3>
+                <p><code>RetrievalEval</code>, <code>AnswerEval</code>, <code>calculate_mrr</code>, <code>calculate_ndcg</code>, Pydantic, LiteLLM.</p>
+              </article>
+              <article class="card">
+                <h3>Trade-off - Đánh đổi</h3>
+                <p>
+                  MRR/nDCG dựa trên keyword có thể bỏ sót relevance ngữ nghĩa. LLM judge linh hoạt hơn nhưng có bias,
+                  chi phí và biến động. Vì vậy nên dùng cả hai.
+                </p>
+                <p><strong>When to use - Khi nào nên dùng:</strong> dùng retrieval metrics khi debug context; dùng answer metrics khi đánh giá trải nghiệm cuối.</p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <section id="workflow" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+              <p>Toàn bộ quá trình xây hệ thống Advanced RAG từ dữ liệu thô đến câu trả lời và dashboard.</p>
+            </div>
+          </div>
+
+          <h3>System architecture - Kiến trúc hệ thống</h3>
+          <div class="flow">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div>
+                <strong>Knowledge base - Kho tri thức</strong>
+                <p>Documents nằm trong <code>knowledge-base</code>, chia theo <code>company</code>, <code>products</code>, <code>contracts</code>, <code>employees</code>. Dữ liệu là Markdown nên giữ được heading/list/table tốt hơn plain text.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div>
+                <strong>Pro ingestion - Nạp dữ liệu nâng cao</strong>
+                <p><code>fetch_documents</code> quét file Markdown, <code>process_document</code> gọi LLM tạo semantic chunks có headline/summary/original_text, <code>create_embeddings</code> lưu vector vào Chroma <code>preprocessed_db</code>.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div>
+                <strong>Query transformation - Biến đổi truy vấn</strong>
+                <p><code>rewrite_query</code> dùng LLM tạo refined query ngắn và cụ thể hơn. Module final vẫn giữ original question để tránh mất chi tiết quan trọng.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">4</div>
+              <div>
+                <strong>Broad retrieval - Truy xuất rộng</strong>
+                <p><code>fetch_context_unranked</code> embed câu hỏi bằng <code>text-embedding-3-large</code>, query Chroma lấy top 20 chunks cho câu gốc và câu rewritten.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">5</div>
+              <div>
+                <strong>Merge, deduplicate, rerank - Gộp, khử trùng, tái xếp hạng</strong>
+                <p><code>merge_chunks</code> bỏ duplicate theo content; <code>rerank</code> dùng LLM ranker trả về thứ tự chunk IDs; hệ thống lấy top 10 chunk sau rerank.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">6</div>
+              <div>
+                <strong>Grounded generation - Sinh câu trả lời có căn cứ</strong>
+                <p><code>make_rag_messages</code> bơm context kèm source vào system prompt; <code>answer_question</code> gọi model trả lời, trả về cả answer và context cho UI.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">7</div>
+              <div>
+                <strong>Evaluation loop - Vòng lặp đánh giá</strong>
+                <p><code>evaluation/eval.py</code> chạy golden tests, đo MRR/nDCG/coverage và dùng LLM judge chấm Accuracy/Completeness/Relevance. Dashboard trong <code>evaluator.py</code> và <code>evaluator2.py</code> hiển thị kết quả.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>Key design choice - Quyết định thiết kế quan trọng:</strong>
+            UI Gradio không cần biết pipeline bên dưới thay đổi. Nó vẫn gọi <code>answer_question(last_message, prior)</code>.
+            Đây là abstraction tốt: contract giữ nguyên, implementation có thể nâng cấp từ Basic RAG sang Pro RAG.
+          </div>
+        </section>
+
+        <section id="techniques" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+              <p>Danh sách technique Day 5, kèm vấn đề giải quyết và điều kiện dùng.</p>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Technique - Kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>How it works - Cách hoạt động</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Chunking R&D - Thử nghiệm chunking</strong></td>
+                <td>Chunk quá ngắn thiếu context, chunk quá dài gây nhiễu.</td>
+                <td>Thử nhiều chunk size/overlap/semantic boundary và đo lại MRR/nDCG.</td>
+                <td>Tốn thời gian rebuild vector store.</td>
+                <td>Khi retrieval thất thường hoặc câu trả lời thiếu chi tiết.</td>
+              </tr>
+              <tr>
+                <td><strong>Encoder R&D - Thử nghiệm embedding model</strong></td>
+                <td>Embedding model không biểu diễn tốt domain hoặc ngôn ngữ.</td>
+                <td>Đổi encoder, rebuild DB, đo lại trên golden test set.</td>
+                <td>Dimension mismatch, cost và latency khác nhau.</td>
+                <td>Khi keyword đúng không xuất hiện dù chunking ổn.</td>
+              </tr>
+              <tr>
+                <td><strong>Improve prompts - Cải thiện prompt</strong></td>
+                <td>LLM trả lời lan man, không đủ, hoặc không bám context.</td>
+                <td>Thêm tiêu chí accuracy/relevance/completeness, source context, history và rule “If you don't know, say so”.</td>
+                <td>Prompt dài hơn, dễ overfit nếu quá cứng.</td>
+                <td>Khi retrieval đúng nhưng answer score thấp.</td>
+              </tr>
+              <tr>
+                <td><strong>Document pre-processing - Tiền xử lý tài liệu</strong></td>
+                <td>Bảng, số liệu, PDF/Word hoặc cấu trúc khó embed.</td>
+                <td>Chuyển sang Markdown, viết lại phần khó thành văn bản mô tả dễ search.</td>
+                <td>Tốn token, có rủi ro LLM làm sai nếu không giữ original_text.</td>
+                <td>Khi tài liệu nhiều bảng, điều khoản, số liệu hoặc format nhiễu.</td>
+              </tr>
+              <tr>
+                <td><strong>Query rewriting - Viết lại truy vấn</strong></td>
+                <td>User hỏi follow-up hoặc dùng đại từ như “nó”, “người đó”.</td>
+                <td>LLM tạo refined query ngắn dựa trên question và history.</td>
+                <td>Có thể làm loãng hoặc bỏ mất chi tiết.</td>
+                <td>Khi chatbot có multi-turn conversation.</td>
+              </tr>
+              <tr>
+                <td><strong>Query expansion - Mở rộng truy vấn</strong></td>
+                <td>Một cách diễn đạt không tìm đủ context.</td>
+                <td>Search nhiều query, merge/deduplicate rồi rerank.</td>
+                <td>Tăng số query, cost và latency.</td>
+                <td>Khi câu hỏi spanning, relationship hoặc có nhiều cách gọi entity.</td>
+              </tr>
+              <tr>
+                <td><strong>Re-ranking - Tái xếp hạng</strong></td>
+                <td>Context đúng có trong top 20 nhưng không nằm top 1-3.</td>
+                <td>LLM/cross-encoder style đọc chunks và trả về thứ tự relevance.</td>
+                <td>Thêm model call, tăng latency.</td>
+                <td>Khi MRR thấp nhưng keyword coverage tương đối ổn.</td>
+              </tr>
+              <tr>
+                <td><strong>Hierarchical RAG - RAG phân cấp</strong></td>
+                <td>Câu hỏi holistic cần tổng hợp toàn corpus.</td>
+                <td>Tạo summaries nhiều cấp: document summary, section summary, chunk detail.</td>
+                <td>Complexity cao, cần bảo trì summary index.</td>
+                <td>Khi hỏi tổng số, xu hướng, portfolio, thống kê toàn bộ.</td>
+              </tr>
+              <tr>
+                <td><strong>GraphRAG - RAG dựa trên đồ thị</strong></td>
+                <td>Quan hệ entity phức tạp, nhiều liên kết gián tiếp.</td>
+                <td>Trích entity/relation, xây graph, retrieve theo neighborhood.</td>
+                <td>Pipeline nặng, cần entity resolution tốt.</td>
+                <td>Khi dữ liệu có network rõ: người, công ty, hợp đồng, sản phẩm.</td>
+              </tr>
+              <tr>
+                <td><strong>Agentic RAG - RAG tác nhân</strong></td>
+                <td>Một retriever không đủ: cần SQL, grep, vector, web, memory.</td>
+                <td>Agent chọn tool, tự đánh giá, có thể search lại hoặc sửa câu trả lời.</td>
+                <td>Khó kiểm soát, cần guardrails và observability.</td>
+                <td>Khi query routing phức tạp và cần multi-tool retrieval.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="options-landscape" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+              <p>Ba nhóm lựa chọn hay gặp khi thiết kế Advanced RAG.</p>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>Recommended for this repo - Khuyến nghị cho repo này</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Framework abstraction - Dùng framework hay native?</td>
+                <td>LangChain, LlamaIndex, native OpenAI/LiteLLM/Chroma.</td>
+                <td>Framework nhanh để prototype; native dễ debug và kiểm soát latency/cost.</td>
+                <td>Day 5 chọn native cho module Pro để nhìn rõ pipeline và giảm magic.</td>
+              </tr>
+              <tr>
+                <td>Chunking strategy - Chiến lược chia chunk</td>
+                <td>Fixed-size, recursive splitter, semantic chunking, parent-child chunking.</td>
+                <td>Semantic chunking chất lượng cao hơn nhưng tốn tiền và cần retry.</td>
+                <td>Dùng LLM semantic chunking có headline/summary/original_text.</td>
+              </tr>
+              <tr>
+                <td>Retrieval strategy - Chiến lược truy xuất</td>
+                <td>Vector only, hybrid BM25 + vector, multi-query, rerank, hierarchical.</td>
+                <td>Càng nhiều bước càng tăng recall nhưng cũng tăng latency và complexity.</td>
+                <td>Search original + rewritten query, merge/deduplicate, rerank top candidates.</td>
+              </tr>
+              <tr>
+                <td>Evaluation strategy - Chiến lược đánh giá</td>
+                <td>Keyword metrics, human eval, LLM-as-a-judge, online feedback.</td>
+                <td>Keyword metrics rẻ nhưng thô; LLM judge linh hoạt nhưng có bias.</td>
+                <td>Kết hợp MRR/nDCG/coverage với Accuracy/Completeness/Relevance.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+              <p>Phân tích các file code chính và cách chúng ghép thành hệ thống.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Ingestion module - Module nạp dữ liệu</h3>
+              <ul class="memory-list">
+                <li><code>fetch_documents</code>: tự thay thế LangChain <code>DirectoryLoader</code>, quét Markdown trong <code>knowledge-base</code>.</li>
+                <li><code>Chunk</code>: Pydantic model ép LLM trả về <code>headline</code>, <code>summary</code>, <code>original_text</code>.</li>
+                <li><code>create_chunks</code>: dùng multiprocessing <code>Pool</code> để xử lý documents song song.</li>
+                <li><code>create_embeddings</code>: gọi OpenAI embeddings, tạo Chroma collection mới trong <code>preprocessed_db</code>.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer module - Module trả lời</h3>
+              <ul class="memory-list">
+                <li><code>rewrite_query</code>: tạo refined query ngắn để search knowledge base.</li>
+                <li><code>fetch_context_unranked</code>: vectorize query và lấy top 20 chunks từ Chroma.</li>
+                <li><code>merge_chunks</code>: gộp kết quả từ original và rewritten query, bỏ trùng.</li>
+                <li><code>rerank</code>: LLM ranker trả về thứ tự chunk IDs qua schema <code>RankOrder</code>.</li>
+                <li><code>answer_question</code>: lấy final context, tạo RAG messages, gọi model sinh answer.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>UI integration - Tích hợp giao diện</h3>
+              <p>
+                <code>app.py</code> chỉ đổi import từ basic sang pro:
+                <span class="inline-code">from pro_implementation.answer import answer_question</span>.
+                Hàm <code>chat</code> vẫn lấy last message, prior history, gọi <code>answer_question</code> và render retrieved context.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Evaluation integration - Tích hợp đánh giá</h3>
+              <p>
+                <code>evaluation/eval.py</code> import <code>answer_question</code> và <code>fetch_context</code> từ pro implementation.
+                Điều này cho phép cùng bộ tests đo bản basic hoặc bản pro chỉ bằng đổi import.
+              </p>
+            </article>
+          </div>
+
+          <h3 style="margin-top: 18px;">Key code path - Đường đi chính trong code</h3>
+          <pre><code>question
+  -> rewrite_query(question)
+  -> fetch_context_unranked(original_question)
+  -> fetch_context_unranked(rewritten_question)
+  -> merge_chunks(chunks_from_original, chunks_from_rewritten)
+  -> rerank(original_question, merged_chunks)
+  -> make_rag_messages(question, history, top_reranked_chunks)
+  -> completion(model=MODEL, messages=messages)
+  -> answer, context</code></pre>
+
+          <div class="warning callout">
+            <strong>Implementation nuance - Chi tiết cần để ý:</strong>
+            Notebook Day 5 ban đầu dùng rewritten query làm query chính. Module final trong <code>pro_implementation/answer.py</code>
+            cải tiến hơn: search cả câu hỏi gốc và câu rewritten. Đây là thiết kế tốt hơn vì chống mất thông tin do query rewriting.
+          </div>
+        </section>
+
+        <section id="evidence" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Evidence-driven Loop - Vòng lặp Advanced RAG dựa trên bằng chứng</h2>
+              <p>Day 5 không chỉ build pipeline, mà còn chứng minh pipeline tốt hơn bằng metric.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Golden dataset - Bộ câu hỏi vàng</h3>
+              <p>
+                <code>evaluation/tests.jsonl</code> chứa câu hỏi, keywords cần xuất hiện, reference answer và category.
+                Bộ này không chỉ có direct facts mà còn có temporal, comparative, numerical, relationship, spanning và holistic.
+              </p>
+              <p style="margin-top: 10px;">
+                Ý nghĩa: nếu chỉ test direct facts, Basic RAG có thể trông ổn. Spanning/holistic/numerical mới là nơi pipeline thật sự lộ điểm yếu.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Metric journey - Hành trình chỉ số</h3>
+              <ul class="memory-list">
+                <li><strong>Basic RAG - Bản cơ bản:</strong> MRR khoảng <span class="metric">0.73</span>, Accuracy khoảng <span class="metric">3.99/5</span>.</li>
+                <li><strong>Embedding/chunk tuning - Tối ưu encoder/chunk:</strong> MRR khoảng <span class="metric">0.79</span>, Accuracy khoảng <span class="metric">4.21/5</span>.</li>
+                <li><strong>Advanced RAG Pro - Bản nâng cao:</strong> MRR khoảng <span class="metric">0.91</span>, Accuracy khoảng <span class="metric">4.62/5</span>.</li>
+              </ul>
+            </article>
+          </div>
+
+          <h3 style="margin-top: 18px;">Optimization workflow - Workflow tối ưu</h3>
+          <ol class="memory-list">
+            <li><strong>Curate test set - Tạo bộ test:</strong> câu hỏi thật, expected keywords, reference answers, categories.</li>
+            <li><strong>Run baseline - Chạy baseline:</strong> đo MRR/nDCG/coverage và answer scores.</li>
+            <li><strong>Find weakness - Tìm điểm yếu:</strong> xem category nào đỏ/vàng, câu nào fail, context đúng có xuất hiện không.</li>
+            <li><strong>Apply one technique - Áp dụng một kỹ thuật:</strong> ví dụ semantic chunking, query expansion hoặc reranking.</li>
+            <li><strong>Re-run eval - Chạy lại đánh giá:</strong> so sánh số mới với baseline, kiểm tra regression.</li>
+            <li><strong>Promote or rollback - Giữ hoặc bỏ:</strong> chỉ giữ kỹ thuật nếu metric và case review chứng minh cải thiện.</li>
+          </ol>
+
+          <div class="note">
+            <strong>How to read metric conflicts - Cách đọc khi metric mâu thuẫn:</strong>
+            Nếu MRR cao nhưng Accuracy thấp, retrieval có thể đúng nhưng generator hoặc prompt đang yếu.
+            Nếu MRR thấp nhưng Accuracy cao, LLM có thể đang đoán bằng parametric memory; đây là rủi ro vì dữ liệu nội bộ không nằm trong training data.
+          </div>
+        </section>
+
+        <section id="pitfalls" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+              <p>Các lỗi dễ gặp khi xây Advanced RAG và cách nhận diện.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Trường hợp dễ fail</h3>
+              <ul class="memory-list">
+                <li><strong>Query dilution - Loãng truy vấn:</strong> rewritten query bỏ mất entity hoặc con số quan trọng. Giảm bằng cách search cả original query.</li>
+                <li><strong>Context contamination - Nhiễu context:</strong> top K chứa nhiều người/sản phẩm/hợp đồng tương tự, LLM trộn thông tin.</li>
+                <li><strong>Lost in the middle - Mất thông tin giữa prompt:</strong> context đúng có nhưng nằm quá thấp, LLM bỏ qua. Reranking giúp đẩy lên đầu.</li>
+                <li><strong>Embedding dimension mismatch - Lệch chiều vector:</strong> đổi embedding model mà không rebuild DB sẽ crash hoặc query sai.</li>
+                <li><strong>Rate limit during ingestion - Giới hạn API khi ingest:</strong> semantic chunking song song cần retry/backoff và giảm workers khi cần.</li>
+                <li><strong>Overfitting to eval set - Quá khớp bộ test:</strong> tối ưu để thắng tests.jsonl nhưng fail ở câu hỏi người dùng thật.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li><strong>“Vector DB xịn là RAG xịn”:</strong> sai. Chất lượng retrieval phụ thuộc nhiều vào data prep, chunking, encoder, query và rerank.</li>
+                <li><strong>“Context window lớn sẽ giết RAG”:</strong> sai. Context window lớn không giải quyết cost, latency, privacy, source control và attention noise.</li>
+                <li><strong>“Reranking sửa được mọi thứ”:</strong> sai. Nếu retrieval không lấy được context đúng trong candidate set, reranker không có gì để đẩy lên.</li>
+                <li><strong>“LLM judge là chân lý”:</strong> sai. LLM judge có bias, nên cần prompt rõ, temperature thấp, structured output và review sample thủ công.</li>
+                <li><strong>“No LangChain nghĩa là LangChain tệ”:</strong> sai. Bài học là hiểu abstraction boundary. LangChain tốt cho speed; native tốt cho control.</li>
+                <li><strong>“Thêm technique luôn tốt hơn”:</strong> sai. Technique không gắn metric chỉ làm hệ thống chậm, đắt và khó debug hơn.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="danger callout" style="margin-top: 16px;">
+            <strong>Code review note - Ghi chú review code:</strong>
+            <code>evaluator2.py</code> có đoạn cố cấu hình <code>answer_module.llm</code> theo style cũ, trong khi <code>pro_implementation/answer.py</code>
+            hiện dùng LiteLLM <code>completion</code>. Nếu chạy evaluator2, cần kiểm tra lại assumption này vì có thể là legacy code không còn tác dụng.
+          </div>
+        </section>
+
+        <section id="interview" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+              <p>Cách trình bày Day 5 như một system design answer.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Questions you should answer - Câu nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>Advanced RAG khác Basic RAG ở điểm nào?</li>
+                <li>Tại sao cần đo retrieval và answer quality riêng?</li>
+                <li>MRR khác nDCG như thế nào? Khi nào dùng metric nào?</li>
+                <li>Query rewriting giúp gì và có rủi ro gì?</li>
+                <li>Reranking hoạt động như thế nào và tại sao cải thiện “Jessica Liu / Manchester” style questions?</li>
+                <li>Khi nào nên chọn LangChain, khi nào nên viết native pipeline?</li>
+                <li>Nếu MRR tăng nhưng accuracy giảm, bạn debug thế nào?</li>
+                <li>Thiết kế eval set cho RAG nội bộ như thế nào để không bị quá dễ?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer frame - Khung trả lời</h3>
+              <ol class="memory-list">
+                <li><strong>Start with baseline - Bắt đầu bằng baseline:</strong> “Tôi đo Basic RAG trước bằng golden test set.”</li>
+                <li><strong>Separate failure source - Tách nguồn lỗi:</strong> “Retrieval lỗi hay generation lỗi?”</li>
+                <li><strong>Map technique to failure - Gắn kỹ thuật với lỗi:</strong> “MRR thấp vì context đúng nằm thấp, nên tôi thêm reranking.”</li>
+                <li><strong>Discuss trade-off - Nêu đánh đổi:</strong> “Accuracy tăng nhưng latency/cost tăng, nên chỉ rerank top candidates.”</li>
+                <li><strong>Close with evidence - Kết bằng bằng chứng:</strong> “Metric tăng từ khoảng 0.73 lên 0.91 MRR và answer score tăng.”</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Interview Q&A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+              <p>Ôn nhanh và luyện trả lời phỏng vấn.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Advanced RAG là gì? <strong>A:</strong> RAG có thêm data prep, query transformation, reranking và evaluation loop để cải thiện bằng metric.</li>
+                <li><strong>Q:</strong> Semantic chunking khác recursive chunking thế nào? <strong>A:</strong> Semantic chunking cắt theo ý nghĩa bằng LLM; recursive chunking cắt theo separator/ký tự.</li>
+                <li><strong>Q:</strong> Vì sao mỗi chunk có headline và summary? <strong>A:</strong> Để embedding chứa tín hiệu ngữ nghĩa rõ hơn, giúp retrieval match câu hỏi tốt hơn.</li>
+                <li><strong>Q:</strong> MRR đo gì? <strong>A:</strong> Vị trí của kết quả đúng đầu tiên; rank 1 được 1 điểm, rank 2 được 0.5 điểm.</li>
+                <li><strong>Q:</strong> nDCG đo gì? <strong>A:</strong> Chất lượng thứ tự của các kết quả liên quan trong top K, có discount theo vị trí.</li>
+                <li><strong>Q:</strong> Query expansion giải quyết gì? <strong>A:</strong> Giảm rủi ro một cách diễn đạt duy nhất không retrieve đủ context.</li>
+                <li><strong>Q:</strong> Reranking cần điều kiện gì để hiệu quả? <strong>A:</strong> Candidate set ban đầu phải có chứa context đúng.</li>
+                <li><strong>Q:</strong> Vì sao dùng structured outputs? <strong>A:</strong> Để LLM trả về JSON/schema ổn định, máy có thể parse và tự động hóa pipeline.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&A - Hỏi đáp phỏng vấn</h3>
+              <details open>
+                <summary>Q1: Hãy thiết kế một Advanced RAG pipeline cho dữ liệu nội bộ công ty.</summary>
+                <p>
+                  Tôi sẽ bắt đầu bằng knowledge base chuẩn hóa sang Markdown, sau đó chạy ingestion pipeline tạo semantic chunks bằng LLM,
+                  mỗi chunk có headline, summary và original text. Tôi embed chunks bằng một embedding model nhất quán và lưu vào Chroma.
+                  Khi user hỏi, tôi rewrite query dựa trên history, search cả original và rewritten query, merge/deduplicate, rerank top candidates,
+                  rồi đưa top context vào prompt. Cuối cùng tôi đo retrieval bằng MRR/nDCG/coverage và đo answer bằng LLM-as-a-judge trên accuracy,
+                  completeness, relevance.
+                </p>
+              </details>
+              <details>
+                <summary>Q2: Khi nào bạn thêm reranking?</summary>
+                <p>
+                  Tôi thêm reranking khi recall/coverage cho thấy context đúng có xuất hiện trong top 10-20 nhưng MRR thấp,
+                  tức là context đúng nằm quá sâu. Reranking không phải bước đầu tiên nếu retrieval không tìm được tài liệu đúng.
+                  Nó phù hợp khi cần sub-select context tốt nhất trước khi đưa vào LLM để giảm nhiễu và lost-in-the-middle.
+                </p>
+              </details>
+              <details>
+                <summary>Q3: Query rewriting có nguy hiểm gì?</summary>
+                <p>
+                  Query rewriting có thể làm mất entity, số liệu, thời gian hoặc điều kiện trong câu hỏi gốc. Đó là query dilution.
+                  Cách giảm rủi ro là search cả original query và rewritten query, sau đó merge/deduplicate rồi rerank theo original question.
+                </p>
+              </details>
+              <details>
+                <summary>Q4: Vì sao không dùng LangChain trong Pro Day?</summary>
+                <p>
+                  Không dùng LangChain không có nghĩa LangChain tệ. Mục tiêu là hiểu động cơ bên dưới: loader, chunker, embedding call,
+                  vector store query, prompt construction, reranking và evaluation. Native pipeline giúp kiểm soát latency, retry,
+                  schema và debug dễ hơn. Khi cần connector nhanh hoặc agent ecosystem, LangChain vẫn là lựa chọn hợp lý.
+                </p>
+              </details>
+              <details>
+                <summary>Q5: Nếu accuracy thấp nhưng retrieval metrics cao, bạn xử lý thế nào?</summary>
+                <p>
+                  Tôi sẽ kiểm tra prompt, độ dài context, thứ tự context và generation model. Retrieval cao nghĩa là context đúng đã vào pipeline,
+                  nhưng generator có thể bị nhiễu, bỏ qua context, hoặc trả lời lan man. Cách xử lý: giảm final K, cải thiện prompt,
+                  thêm source formatting, hoặc dùng model generation mạnh hơn.
+                </p>
+              </details>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+              <p>Checklist nhớ nhanh trước phỏng vấn hoặc trước khi code lại.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Must remember - Phải nhớ</h3>
+              <ol class="memory-list">
+                <li>Advanced RAG là engineering loop: measure, experiment, evaluate, repeat.</li>
+                <li>Semantic chunking cải thiện data representation trước khi retrieval xảy ra.</li>
+                <li>Query rewriting giúp search tốt hơn nhưng phải chống query dilution.</li>
+                <li>Query expansion tăng recall bằng nhiều truy vấn, sau đó phải deduplicate và rerank.</li>
+                <li>Reranking cải thiện thứ tự context, đặc biệt khi context đúng nằm trong top 20 nhưng không ở top đầu.</li>
+                <li>MRR/nDCG đo retrieval; Accuracy/Completeness/Relevance đo answer.</li>
+                <li>Technique chỉ đáng giữ nếu có metric và case review chứng minh cải thiện.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Self-check - Tự kiểm tra</h3>
+              <ul class="memory-list">
+                <li>Bạn có vẽ lại được ingestion pipeline từ Markdown đến Chroma không?</li>
+                <li>Bạn có giải thích được đường đi của một query trong <code>pro_implementation/answer.py</code> không?</li>
+                <li>Bạn có nói rõ vì sao module final search cả original và rewritten query không?</li>
+                <li>Bạn có phân biệt được MRR và nDCG bằng ví dụ cụ thể không?</li>
+                <li>Bạn có nêu được 3 failure modes Advanced RAG vẫn chưa giải quyết triệt để không?</li>
+                <li>Bạn có đưa được trade-off cost/latency/complexity cho reranking không?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 15</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+              <p>Gợi ý học tiếp và cách biến Day 5 thành project portfolio.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What comes next - Tiếp theo là gì</h3>
+              <p>
+                Sau Day 5, hướng tự nhiên là Fine-tuning và Capstone. Nhưng với RAG, bước portfolio tốt nhất là xây
+                một personal knowledge worker: gom notes, docs, email/export, code, vectorize, tạo chatbot và public kết quả eval.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Practice tasks - Bài luyện tập</h3>
+              <ul class="memory-list">
+                <li>Chạy một test row fail trong <code>evaluation/eval.py</code>, đọc context retrieved, giải thích nguyên nhân.</li>
+                <li>Thử giảm/tăng <code>RETRIEVAL_K</code> và <code>FINAL_K</code>, đo lại MRR và answer scores.</li>
+                <li>Thêm một category test mới cho câu hỏi holistic hoặc numerical khó hơn.</li>
+                <li>Thử một hybrid retrieval branch: BM25 hoặc exact grep kết hợp vector search.</li>
+                <li>Thiết kế self-correction loop: answer -> judge -> feedback -> retrieve again.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="footer-note">
+            End of Day 5 study guide. Tài liệu này không chứa secrets, API keys, tokens hoặc credentials.
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const progressBar = document.getElementById("progressBar");
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const sections = tocLinks
+      .map((link) => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = height > 0 ? (scrollTop / height) * 100 : 0;
+      progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+
+      let activeId = sections[0]?.id;
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= 120) {
+          activeId = section.id;
+        }
+      }
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${activeId}`);
+      });
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      document.querySelectorAll("details").forEach((item) => {
+        item.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      document.querySelectorAll("details").forEach((item) => {
+        item.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 4 - RAG Evaluations and Structured Outputs Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      color: var(--ink);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+      color: var(--ink-soft);
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      border-color: var(--warm);
+      box-shadow: none;
+    }
+
+    .callout p {
+      color: var(--ink);
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #176b75;
+      border: 1px solid #e2e8f0;
+    }
+
+    .code-block {
+      display: block;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
+      margin-top: 12px;
+      white-space: pre;
+      line-height: 1.5;
+    }
+
+    .code-comment {
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .code-keyword {
+      color: #be185d;
+      font-weight: bold;
+    }
+
+    .code-string {
+      color: #0f766e;
+    }
+
+    .code-func {
+      color: #1d4ed8;
+    }
+
+    .code-class {
+      color: #7c3aed;
+      font-weight: bold;
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li {
+      margin-top: 6px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+      margin-top: 16px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      background: rgba(23, 107, 117, 0.05);
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line-soft);
+      background: var(--surface-alt);
+    }
+
+    .flow-index {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #0f4c5c);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+        background: white;
+        border-color: #ccc;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">RAG Course • Evaluations &amp; Structured Outputs</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Day 4: Evaluating RAG Systems &amp; Structured Outputs</h1>
+          <p>
+            Tài liệu hướng dẫn học tập và ôn phỏng vấn chi tiết cho bài học Day 4. Nội dung tập trung vào việc thiết lập hệ thống đánh giá định lượng (Evaluation Framework) để đo lường hiệu suất của khâu Truy xuất (Retrieval) và khâu Trả lời (Answer Generation), đồng thời đi sâu vào cơ chế Đầu ra có cấu trúc (Structured Outputs) phục vụ tự động hóa kiểm thử chất lượng AI.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm kỹ thuật - Core Technical Focus</strong>
+              Đo lường Retrieval (MRR, nDCG, Recall, Precision); Đánh giá Answer (LLM-as-a-judge qua thang điểm Accuracy, Completeness, Relevance); Triển khai Structured Outputs với Pydantic và LiteLLM; Xây dựng Dashboard Gradio hiển thị trực quan kết quả.
+            </article>
+            <article class="mini-card">
+              <strong>Mục tiêu phỏng vấn - Interview Goal</strong>
+              Hiểu rõ bản chất toán học của các chỉ số xếp hạng vector (MRR, nDCG); Giải thích được cơ chế ép cấu trúc JSON của LLM; Phân tích các trường hợp lỗi kinh điển như nhiễu bối cảnh (Context Contamination) và sự đánh đổi (trade-offs) khi thay đổi Chunk size hoặc bộ mã hóa nhúng (Embedding Models).
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn tư liệu - Sources</h3>
+            <p>
+              Tài liệu được tổng hợp từ slide lý thuyết (<span class="inline-code">Copy of LLM - Week 5 Day 4.pptx</span>), transcript bài học (<span class="inline-code">Phien_am/day4.txt</span>), mã nguồn thực hành (<span class="inline-code">day4.ipynb</span>) và các module Python (<span class="inline-code">evaluation/test.py</span>, <span class="inline-code">evaluation/eval.py</span>, <span class="inline-code">evaluator.py</span>).
+            </p>
+            <div class="tag-row">
+              <span class="tag">LiteLLM</span>
+              <span class="tag">Pydantic v2</span>
+              <span class="tag">Gradio UI</span>
+              <span class="tag">RAG Evals</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú - Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú - Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">In tài liệu / Lưu PDF - Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Mục lục - Table of Contents</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake - Đầu vào</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet - Ôn nhanh</a>
+          <a class="toc-link" href="#overview">2. Overview - Tổng quan</a>
+          <a class="toc-link" href="#goals">3. Learning Goals - Mục tiêu</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context - Liên hệ</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory - Lý thuyết</a>
+          <a class="toc-link" href="#workflow">6. Workflow - Quy trình</a>
+          <a class="toc-link" href="#techniques">7. Techniques - Kỹ thuật</a>
+          <a class="toc-link" href="#options-landscape">8. Options - Bản đồ lựa chọn</a>
+          <a class="toc-link" href="#implementation">9. Implementation - Code Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls - Bẫy cần tránh</a>
+          <a class="toc-link" href="#interview">11. Interview - Góc phỏng vấn</a>
+          <a class="toc-link" href="#flashcards">12. Flashcards &amp; Q&amp;A</a>
+          <a class="toc-link" href="#memory">13. Memory - Ghi nhớ nhanh</a>
+          <a class="toc-link" href="#next-step">14. Next Step - Tiếp theo</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading Progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- Section 0: Intake -->
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <article class="card">
+              <h3>Metadata buổi học - Session Metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Day 4 - RAG Evaluations: Measuring Performance and Iterating on Your Pipeline</li>
+                <li><strong>Type - Loại hình:</strong> Nghiên cứu lý thuyết kết hợp Kiểm thử thực tế qua Mã nguồn (Evaluation Testing &amp; Gradio Dashboard)</li>
+                <li><strong>Main focus - Trọng tâm:</strong> Trực quan hóa và đo lường định lượng hệ thống RAG thông qua các chỉ số phân tích chuyên sâu cho khâu Retrieval và khâu Answer Generation.</li>
+                <li><strong>Depth - Độ sâu:</strong> Deep (Đi sâu vào cơ sở toán học của các chỉ số đánh giá, cơ chế phân tích JSON của LLM và phân tích mã nguồn kiểm thử thực tế)</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Các nguồn tài liệu - Input Resources</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> Tầng dữ liệu test <a href="file:///G:/RAG/evaluation/test.py" class="inline-code">evaluation/test.py</a>, công cụ đánh giá chính <a href="file:///G:/RAG/evaluation/eval.py" class="inline-code">evaluation/eval.py</a>, giao diện trực quan hóa <a href="file:///G:/RAG/evaluator.py" class="inline-code">evaluator.py</a>, bộ câu hỏi mẫu <a href="file:///G:/RAG/evaluation/tests.jsonl" class="inline-code">evaluation/tests.jsonl</a>, notebook thực hành <a href="file:///G:/RAG/day4.ipynb" class="inline-code">day4.ipynb</a></li>
+                <li><strong>Slide / transcript:</strong> Tài liệu thuyết trình lý thuyết (<span class="inline-code">Copy of LLM - Week 5 Day 4.pptx</span>) và transcript ghi âm tiếng Việt (<span class="inline-code">Phien_am/day4.txt</span>)</li>
+                <li><strong>Dữ liệu:</strong> Bộ 150 câu hỏi thử nghiệm đa danh mục trong tệp JSONL của công ty Insurellm.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 1: Cheat Sheet -->
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt nhanh trên một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core Idea - Ý tưởng cốt lõi</h3>
+              <p>
+                RAG bản chất là một **bản hack mang tính thực nghiệm (empirical hack)** để đưa tri thức ngoài vào Prompt của LLM. Evaluations (Evals) chuyển đổi quá trình phát triển này từ nghệ thuật mò mẫm cảm tính sang khoa học đo lường định lượng, giúp tránh trò chơi **"Whack-a-mole" (Đập chuột chũi)** khi sửa một lỗi lại phát sinh một lỗi khác.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must Know - Điều bắt buộc phải nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>Golden Data Set (Bộ dữ liệu vàng):</strong> Tập hợp các câu hỏi thử nghiệm thực tế kèm từ khóa (keywords) và câu trả lời chuẩn (reference answer) do chuyên gia biên soạn hoặc trích xuất từ dữ liệu người dùng thực tế.</li>
+                <li><strong>MRR vs. nDCG:</strong> MRR đo vị trí của kết quả đúng đầu tiên (phù hợp với các câu hỏi tìm sự thật đơn lẻ); nDCG đo chất lượng phân bổ của tất cả tài liệu liên quan trong top K (phù hợp với câu hỏi tổng hợp).</li>
+                <li><strong>LLM-as-a-judge:</strong> Dùng mô hình mạnh (GPT-4) làm giám khảo để chấm điểm câu trả lời dựa trên: Accuracy (Độ chính xác), Completeness (Độ đầy đủ) và Relevance (Mức độ liên quan) theo thang điểm 1-5.</li>
+                <li><strong>Structured Outputs (Đầu ra có cấu trúc):</strong> Ép buộc LLM Judge trả về JSON định sẵn qua Pydantic Model để hệ thống tự động lưu trữ và vẽ biểu đồ hiệu suất.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Angle - Góc nhìn phỏng vấn</h3>
+              <p>
+                Khi được yêu cầu tối ưu hóa RAG, hãy trình bày một quy trình khoa học: Thiết lập bộ Test Set -> Đo lường các chỉ số Retrieval (MRR, nDCG) và Answer (Accuracy, Completeness) làm baseline -> Chạy các thí nghiệm cô lập (đổi chunk size, overlap, đổi embedding model) -> Đo lường lại để xem liệu sự thay đổi có "di chuyển chiếc kim hiệu năng" (move the needle) một cách tích cực hay không.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 2: Session Overview -->
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan bài học</h2>
+            </div>
+          </div>
+          <p>
+            Trong buổi học Day 4, chúng ta đối mặt với thách thức lớn nhất khi xây dựng ứng dụng AI trong thực tế: **Làm sao để biết hệ thống RAG thực sự hoạt động tốt và làm sao cải tiến nó một cách khoa học?** Chúng ta học cách phân tách việc đánh giá thành hai giai đoạn độc lập: khâu **Truy xuất (Retrieval)** (tìm đúng mảnh giấy trong kho tài liệu) và khâu **Trả lời (Generation)** (tổng hợp thông tin một cách trung thực và đầy đủ).
+          </p>
+          <p style="margin-top: 10px;">
+            Học viên sẽ tiếp cận với bộ 150 câu hỏi thử nghiệm (Golden Dataset) được phân loại thành các danh mục khó dễ khác nhau (Direct Fact, Spanning, Holistic, Temporal...) để kiểm chuẩn chi tiết cho hệ thống Insurellm. Chúng ta viết các hàm toán học để tính toán MRR, nDCG và tích hợp tính năng Structured Outputs của Pydantic v2 để tự động hóa quy trình chấm điểm bằng "Giám khảo LLM" (LLM-as-a-judge), sau đó trực quan hóa toàn bộ chỉ số trên một giao diện dashboard Gradio.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Ý tưởng chính - Main Idea</h3>
+              <p>Phân tách và đo lường định lượng khâu Retrieval bằng toán học (MRR, nDCG) và khâu Answer bằng LLM Judge chấm điểm có cấu trúc JSON.</p>
+            </article>
+            <article class="card">
+              <h3>Lý do quan trọng - Why It Matters</h3>
+              <p>Nếu không có Evaluations, việc thay đổi code RAG (như đổi chunk size hay embedding) chỉ là phỏng đoán cảm tính, dễ dẫn đến phá vỡ các trường hợp sử dụng ổn định trước đó.</p>
+            </article>
+            <article class="card">
+              <h3>Kết quả mong muốn - Expected Outcome</h3>
+              <p>Thiết lập và chạy thành công CLI/Dashboard đánh giá, thu về báo cáo chi tiết về chất lượng của hệ thống, phát hiện ra các vùng lỗi (màu đỏ/vàng) để lên phương án cải tiến ở Day 5.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 3: Learning Goals -->
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu học tập cần đạt</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Kiến thức lý thuyết - Concept Goals</h3>
+              <ul class="memory-list">
+                <li>Hiểu rõ cơ chế hoạt động, sự khác biệt và điều kiện áp dụng của các chỉ số xếp hạng: **MRR (Mean Reciprocal Rank)** và **nDCG (Normalized Discounted Cumulative Gain)**.</li>
+                <li>Nắm vững khái niệm **LLM-as-a-judge** và 3 chiều kích thước đánh giá chất lượng câu trả lời: **Accuracy (Độ chính xác)**, **Completeness (Độ đầy đủ)**, và **Relevance (Mức độ liên quan)**.</li>
+                <li>Hiểu bản chất của kỹ thuật **Structured Outputs (Đầu ra có cấu trúc)** và tại sao nó là nền tảng để tự động hóa quy trình phần mềm tích hợp LLM.</li>
+                <li>Nhận diện các danh mục câu hỏi phức tạp gây khó khăn cho Basic RAG như: **Spanning (So khớp bắc cầu)** và **Holistic (Tổng thể)**.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Kỹ năng thực hành - Practical Goals</h3>
+              <ul class="memory-list">
+                <li>Đọc và xác thực cấu trúc dữ liệu tệp kiểm thử JSONL bằng thư viện **Pydantic v2** (`BaseModel`, `Field`).</li>
+                <li>Cài đặt thành công thuật toán tính toán MRR và nDCG nhị phân bằng Python.</li>
+                <li>Triển khai gọi API LLM Judge (thông qua LiteLLM hoặc OpenAI API) ép cấu trúc đầu ra JSON khớp với lớp Pydantic định nghĩa sẵn.</li>
+                <li>Chạy quy trình kiểm thử tự động, phân tích kết quả theo danh mục và vẽ biểu đồ trực quan hóa dữ liệu hiệu năng trên **Gradio Dashboard**.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 4: Previous Context -->
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với kiến thức cũ</h2>
+            </div>
+          </div>
+          <p>
+            Quy trình đánh giá của Day 4 đóng vai trò là "chất kiểm thử" cho các thành quả kỹ thuật từ các ngày trước đó:
+          </p>
+          <div class="callout">
+            <strong>Mối quan hệ kế thừa và cải tiến:</strong>
+            <ul>
+              <li><strong>Day 2 (Vectors &amp; Ingestion):</strong> Chúng ta đã học cách nạp tài liệu và chia nhỏ (Chunking) với kích thước mặc định <span class="inline-code">chunk_size=1000</span>, <span class="inline-code">chunk_overlap=200</span> và dùng mô hình nhúng <span class="inline-code">all-MiniLM-L6-v2</span>. Ở Day 4, chúng ta dùng bộ chỉ số định lượng để kiểm tra xem cấu hình này thực sự đem lại hiệu năng truy xuất là bao nhiêu.</li>
+              <li><strong>Day 3 (Complete Pipeline):</strong> Chúng ta đã ghép nối hoàn chỉnh chatbot Insurellm và thiết lập hàm truy xuất ngữ cảnh <span class="inline-code">fetch_context</span> và sinh câu trả lời <span class="inline-code">answer_question</span>. Trong Day 4, file <a href="file:///G:/RAG/evaluation/eval.py" class="inline-code">eval.py</a> trực tiếp import các hàm này từ module <a href="file:///G:/RAG/implementation/answer.py" class="inline-code">implementation/answer.py</a> để đo đạc chất lượng thực tế của chúng trên bộ 150 câu hỏi thử nghiệm.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 5: Core Theory -->
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <p>
+            Để đưa khoa học thực nghiệm vào hệ thống RAG, chúng ta phải nắm chắc các cơ sở toán học và cơ chế vận hành của các độ đo:
+          </p>
+
+          <div class="grid-2" style="margin-top: 14px;">
+            <article class="card">
+              <h3>1. Các chỉ số đo lường Truy xuất (Retrieval Metrics)</h3>
+              <p><strong>Mean Reciprocal Rank (MRR - Thứ hạng nghịch đảo trung bình):</strong></p>
+              <p>Đo lường vị trí xuất hiện của tài liệu liên quan đầu tiên trong danh sách kết quả truy xuất. Thích hợp cho các câu hỏi tra cứu sự thật trực tiếp (chỉ cần tìm thấy một tài liệu chứa thông tin đúng là đủ).</p>
+              <p style="margin-top: 8px;">Công thức tính Reciprocal Rank cho một câu hỏi $q$:</p>
+              <p class="inline-code" style="display: block; text-align: center; font-size: 1.1em; padding: 10px;">RR(q) = 1 / rank</p>
+              <p style="margin-top: 8px;">Trong đó $rank$ là vị trí của tài liệu đúng đầu tiên (bắt đầu từ 1). Nếu không tìm thấy trong Top-K, $RR(q) = 0$. MRR là trung bình cộng của RR trên toàn bộ tập câu hỏi $Q$:</p>
+              <p class="inline-code" style="display: block; text-align: center; font-size: 1.1em; padding: 10px;">MRR = (1 / |Q|) * &sum; [1 / rank_i]</p>
+              <p style="margin-top: 8px;"><strong>Normalized Discounted Cumulative Gain (nDCG - Điểm tích lũy có chiết khấu chuẩn hóa):</strong></p>
+              <p>Đánh giá chất lượng của toàn bộ danh sách xếp hạng. Nó giả định rằng tài liệu càng liên quan thì nên được xếp ở vị trí càng cao. NDCG áp dụng cơ chế giảm trừ (discount) theo thang logarit để "phạt" nếu tài liệu liên quan bị đẩy xuống dưới.</p>
+              <p style="margin-top: 8px;">Công thức DCG tại vị trí K sử dụng mức độ liên quan nhị phân (binary relevance $rel_i \in \{0, 1\}$):</p>
+              <p class="inline-code" style="display: block; text-align: center; font-size: 1.1em; padding: 10px;">DCG@K = &sum; [ rel_i / log2(i + 1) ] (với i chạy từ 1 đến K)</p>
+              <p style="margin-top: 8px;">Ideal DCG (IDCG@K) là DCG của danh sách được sắp xếp lý tưởng nhất (tất cả tài liệu liên quan xếp trên đầu). Chỉ số chuẩn hóa nDCG được tính bằng:</p>
+              <p class="inline-code" style="display: block; text-align: center; font-size: 1.1em; padding: 10px;">nDCG@K = DCG@K / IDCG@K</p>
+            </article>
+
+            <article class="card">
+              <h3>2. Chỉ số đo lường Câu trả lời (Answer Metrics - LLM-as-a-judge)</h3>
+              <p>Thay vì so sánh từ vựng thô sơ (như BLEU hay ROUGE - vốn dễ bị đánh lừa bởi cách diễn đạt khác nhau), chúng ta sử dụng một mô hình LLM mạnh (như GPT-4) làm giám khảo để so sánh ngữ nghĩa của câu trả lời được tạo ra (Generated Answer) với câu trả lời chuẩn (Reference Answer). Giám khảo sẽ đánh giá trên thang điểm từ 1 (rất tệ) đến 5 (hoàn hảo) theo 3 khía cạnh độc lập:</p>
+              <ul class="memory-list" style="margin-top: 10px;">
+                <li><strong>Accuracy - Độ chính xác:</strong> Câu trả lời có đúng sự thật và không chứa thông tin sai lệch (hallucination) so với tài liệu chuẩn hay không? Điểm 1 dành cho bất kỳ câu trả lời nào có thông tin sai sự thật.</li>
+                <li><strong>Completeness - Độ đầy đủ:</strong> Câu trả lời có bao phủ được toàn bộ các khía cạnh và thông tin chi tiết có trong câu trả lời chuẩn hay không? Chỉ đạt điểm 5 nếu toàn bộ các thực thể, ý cốt lõi đều được đề cập.</li>
+                <li><strong>Relevance - Mức độ liên quan:</strong> Câu trả lời có tập trung trực tiếp vào câu hỏi hay không, có bị lan man hay chứa các thông tin thừa thãi ngoài lề không? Điểm 5 yêu cầu câu trả lời vừa khít với câu hỏi và không có thông tin dư thừa.</li>
+              </ul>
+            </article>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Chỉ số - Metric</th>
+                <th>Bản chất đo lường - Measure Focus</th>
+                <th>Ưu điểm - Pros</th>
+                <th>Nhược điểm - Cons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MRR (Mean Reciprocal Rank)</strong></td>
+                <td>Đo chất lượng vị trí của kết quả liên quan đầu tiên.</td>
+                <td>Tính toán rất nhanh, đơn giản, lý tưởng cho các hệ thống tìm kiếm thực tế (Search engine).</td>
+                <td>Chỉ quan tâm đến kết quả đúng đầu tiên, bỏ qua chất lượng của các kết quả liên quan khác nằm phía sau.</td>
+              </tr>
+              <tr>
+                <td><strong>nDCG (Normalized DCG)</strong></td>
+                <td>Đo lường toàn bộ chất lượng xếp hạng của danh sách Top K.</td>
+                <td>Phản ánh chính xác trải nghiệm người dùng khi đọc nhiều tài liệu; có cơ chế chiết khấu logarit hợp lý.</td>
+                <td>Tính toán phức tạp hơn MRR; yêu cầu định nghĩa rõ mức độ liên quan (relevance score).</td>
+              </tr>
+              <tr>
+                <td><strong>Recall@K</strong></td>
+                <td>Tỷ lệ phần trăm các thông tin liên quan (hoặc từ khóa vàng) được tìm thấy trong Top K.</td>
+                <td>Đảm bảo không bỏ sót thông tin quan trọng trước khi nạp vào LLM.</td>
+                <td>Không quan tâm đến thứ tự xếp hạng của tài liệu trong danh sách.</td>
+              </tr>
+              <tr>
+                <td><strong>Precision@K</strong></td>
+                <td>Tỷ lệ các tài liệu trong Top K thực sự liên quan đến câu hỏi.</td>
+                <td>Đo lường độ nhiễu của ngữ cảnh được truy xuất (ít nhiễu giúp LLM tập trung tốt hơn).</td>
+                <td>Nếu tài liệu liên quan cực ít trong database, Precision@K mặc định sẽ rất thấp ngay cả khi tìm đúng.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 6: Workflow -->
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình đánh giá hệ thống</h2>
+            </div>
+          </div>
+          <p>
+            Quy trình đánh giá hệ thống RAG được tổ chức tự động hóa qua các bước chặt chẽ sau:
+          </p>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="flow-index">1</div>
+              <div>
+                <strong>Thiết lập Golden Dataset (Tệp dữ liệu vàng):</strong>
+                <p>Xây dựng tệp dữ liệu thử nghiệm <a href="file:///G:/RAG/evaluation/tests.jsonl" class="inline-code">tests.jsonl</a>. Mỗi dòng là một đối tượng JSON độc lập chứa câu hỏi (<span class="inline-code">question</span>), các từ khóa bắt buộc có trong ngữ cảnh truy xuất (<span class="inline-code">keywords</span>), câu trả lời chuẩn (<span class="inline-code">reference_answer</span>) và phân loại danh mục câu hỏi (<span class="inline-code">category</span>).</p>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-index">2</div>
+              <div>
+                <strong>Xác thực Dữ liệu đầu vào:</strong>
+                <p>Sử dụng lớp Pydantic <span class="inline-code">TestQuestion</span> định nghĩa trong file <a href="file:///G:/RAG/evaluation/test.py" class="inline-code">test.py</a> để tự động đọc, ép kiểu và phát hiện sớm các dòng dữ liệu bị lỗi hoặc thiếu trường trong tệp JSONL.</p>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-index">3</div>
+              <div>
+                <strong>Chạy Pipeline RAG &amp; Truy xuất Ngữ cảnh:</strong>
+                <p>Với mỗi câu hỏi thử nghiệm, gọi hàm <span class="inline-code">fetch_context(question)</span> từ module <span class="inline-code">answer.py</span> để thu thập danh sách các tài liệu liên quan được trả về từ cơ sở dữ liệu vector Chroma DB.</p>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-index">4</div>
+              <div>
+                <strong>Tính toán các chỉ số Retrieval:</strong>
+                <p>Hàm <span class="inline-code">evaluate_retrieval()</span> trong <a href="file:///G:/RAG/evaluation/eval.py" class="inline-code">eval.py</a> tính toán MRR, nDCG và Keyword Coverage (tỷ lệ từ khóa vàng xuất hiện trong các đoạn văn bản truy xuất được).</p>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-index">5</div>
+              <div>
+                <strong>LLM Judge chấm điểm câu trả lời:</strong>
+                <p>Gọi hàm sinh câu trả lời RAG <span class="inline-code">answer_question(question)</span>. Sau đó, Prompt đánh giá chứa câu hỏi, câu trả lời sinh ra và câu trả lời tham chiếu được gửi tới LLM Giám khảo (GPT-4). Bằng kỹ thuật Structured Outputs, LLM Judge sẽ phân tích và trả về điểm số Accuracy, Completeness, Relevance cùng nhận xét định tính (feedback) dưới dạng JSON chuẩn khớp với schema của <span class="inline-code">AnswerEval</span>.</p>
+              </div>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-index">6</div>
+              <div>
+                <strong>Tổng hợp và Trực quan hóa (Dashboard):</strong>
+                <p>Giao diện Gradio trong <a href="file:///G:/RAG/evaluator.py" class="inline-code">evaluator.py</a> chạy toàn bộ các bài test, thu thập kết quả, phân nhóm điểm số theo danh mục câu hỏi (Direct Fact, Spanning, Holistic, Temporal...) và hiển thị dưới dạng biểu đồ cột trực quan kèm mã màu Xanh (Đạt) / Vàng (Cảnh báo) / Đỏ (Yếu kém).</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 7: Techniques -->
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Structured Outputs - Đầu ra có cấu trúc</h3>
+              <p><strong>Khái niệm:</strong> Kỹ thuật ép buộc mô hình ngôn ngữ lớn (LLM) phải trả về dữ liệu tuân thủ nghiêm ngặt một cấu trúc định sẵn (JSON Schema) thay vì văn bản tự do.</p>
+              <p style="margin-top: 8px;"><strong>Cơ chế hoạt động:</strong> Khai báo một Pydantic Model định nghĩa các trường dữ liệu và mô tả (descriptions). Khi gọi API LLM (qua LiteLLM hoặc OpenAI), truyền lớp Pydantic này vào tham số <span class="inline-code">response_format</span>. Hệ thống sẽ áp dụng JSON Schema và ép cấu trúc trong quá trình sinh token.</p>
+              <p style="margin-top: 8px;"><strong>Lợi ích:</strong> Triệt tiêu rủi ro lỗi cú pháp khi parse JSON bằng code, đảm bảo tính ổn định cho đường ống dữ liệu (data pipeline) tự động.</p>
+            </article>
+
+            <article class="card">
+              <h3>LLM-as-a-judge - LLM làm Giám khảo</h3>
+              <p><strong>Khái niệm:</strong> Phương pháp sử dụng một mô hình ngôn ngữ lớn mạnh mẽ (như GPT-4, Claude 3.5 Sonnet) để đóng vai trò giám khảo đánh giá chất lượng đầu ra của một mô hình khác.</p>
+              <p style="margin-top: 8px;"><strong>Cơ chế hoạt động:</strong> Cung cấp đầy đủ ngữ cảnh (câu hỏi, câu trả lời sinh ra, câu trả lời tham chiếu) và một bảng tiêu chí chấm điểm chi tiết trong Prompt. Yêu cầu mô hình giám khảo chấm điểm khách quan.</p>
+              <p style="margin-top: 8px;"><strong>Lợi ích:</strong> Có khả năng đánh giá ngữ nghĩa tinh tế (như phát hiện thiếu họ tên, thừa thãi thông tin, lệch bối cảnh) mà các thuật toán so khớp từ vựng truyền thống hoàn toàn bất lực.</p>
+            </article>
+
+            <article class="card">
+              <h3>Categorical Analysis - Phân tích theo nhóm câu hỏi</h3>
+              <p><strong>Khái niệm:</strong> Chia nhỏ bộ dữ liệu thử nghiệm thành các danh mục câu hỏi cụ thể để đánh giá chi tiết từng khía cạnh năng lực của hệ thống RAG.</p>
+              <p style="margin-top: 8px;"><strong>Các nhóm câu hỏi chính:</strong></p>
+              <ul class="memory-list" style="font-size: 0.95rem;">
+                <li><span class="inline-code">direct_fact</span>: Tra cứu thông tin trực tiếp (dễ nhất).</li>
+                <li><span class="inline-code">temporal</span>: Câu hỏi liên quan đến dòng thời gian.</li>
+                <li><span class="inline-code">spanning</span>: Đòi hỏi kết nối thông tin giữa nhiều tài liệu/file khác nhau.</li>
+                <li><span class="inline-code">holistic</span>: Yêu cầu tóm tắt, bao quát toàn bộ kho dữ liệu.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 8: Options Landscape -->
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn công nghệ</h2>
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cụm kỹ thuật - Cluster</th>
+                <th>Vấn đề giải quyết - Problem</th>
+                <th>Lựa chọn phổ biến - Popular Choices</th>
+                <th>Đánh đổi - Trade-off</th>
+                <th>Khi nào nên dùng - When to use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Phương pháp Đánh giá câu trả lời (Answer Evaluation)</strong></td>
+                <td>Đo lường chất lượng nội dung văn bản cuối cùng do LLM sinh ra.</td>
+                <td>
+                  1. Đánh giá thủ công (Manual)<br>
+                  2. Thuật toán so khớp từ vựng (BLEU, ROUGE)<br>
+                  3. LLM làm Giám khảo (LLM-as-a-judge)
+                </td>
+                <td>
+                  - Thủ công: Rất chính xác nhưng cực kỳ tốn thời gian và không thể scale.<br>
+                  - Thuật toán: Cực nhanh, rẻ nhưng không hiểu ngữ nghĩa (diễn đạt khác là chấm điểm thấp).<br>
+                  - LLM Judge: Hiểu ngữ nghĩa tốt, tự động hóa cao nhưng tốn chi phí API và có thể bị thiên vị (judge bias).
+                </td>
+                <td>
+                  Dùng **LLM-as-a-judge** trong môi trường phát triển (CI/CD) để tự động hóa chấm điểm chất lượng câu trả lời một cách nhanh chóng; kết hợp kiểm tra thủ công (Manual) ngẫu nhiên để xác thực lại chất lượng giám khảo.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Mô hình nhúng Vector (Embedding Models)</strong></td>
+                <td>Biểu diễn ngữ nghĩa của văn bản thành các vector số thực để thực hiện tìm kiếm tương đồng.</td>
+                <td>
+                  1. <span class="inline-code">all-MiniLM-L6-v2</span> (HF - 384 dimensions)<br>
+                  2. <span class="inline-code">text-embedding-3-small</span> (OpenAI - 1536 dimensions)<br>
+                  3. <span class="inline-code">text-embedding-3-large</span> (OpenAI - 3072 dimensions)
+                </td>
+                <td>
+                  - L6-v2: Miễn phí, chạy local, nhanh nhưng khả năng biểu diễn ngữ nghĩa yếu ở tài liệu chuyên môn phức tạp.<br>
+                  - 3-small: Rẻ, cân bằng tốt giữa tốc độ và chất lượng.<br>
+                  - 3-large: Độ chính xác và hiểu biết sâu sắc nhất nhưng chi phí API cao hơn, kích thước vector lớn làm tăng chi phí lưu trữ DB.
+                </td>
+                <td>
+                  Nên bắt đầu với **text-embedding-3-small** làm baseline. Nếu hệ thống RAG xử lý các tài liệu kỹ thuật, bảo hiểm hoặc luật pháp phức tạp và yêu cầu độ chính xác truy xuất cực cao, hãy nâng cấp lên **text-embedding-3-large**.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Section 9: Implementation Insights -->
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai mã nguồn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Hoạt động của mã nguồn - What the code does</h3>
+              <p>
+                Module <a href="file:///G:/RAG/evaluation/test.py" class="inline-code">test.py</a> thực hiện nạp tệp JSONL thành danh sách các đối tượng thực thực <span class="inline-code">TestQuestion</span> được bảo vệ định dạng bởi Pydantic. 
+              </p>
+              <p style="margin-top: 10px;">
+                Module chính <a href="file:///G:/RAG/evaluation/eval.py" class="inline-code">eval.py</a> thực thi hai luồng đo lường chính:
+              </p>
+              <ul class="memory-list" style="margin-top: 8px;">
+                <li>Tính toán MRR và nDCG dựa trên việc dò tìm xem các từ khóa vàng (<span class="inline-code">keywords</span>) có xuất hiện trong các đoạn văn bản (<span class="inline-code">Document.page_content</span>) được trả về bởi khâu truy xuất hay không.</li>
+                <li>Gọi mô hình ngôn ngữ lớn làm giám khảo, ép định dạng đầu ra khớp với schema của lớp <span class="inline-code">AnswerEval</span> để thu được phản hồi và điểm số dạng số thực trực tiếp từ API.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Triết lý thiết kế - Why this design</h3>
+              <p>
+                Việc tách biệt <span class="inline-code">RetrievalEval</span> và <span class="inline-code">AnswerEval</span> giúp kỹ sư phát hiện chính xác lỗi thuộc về khâu nào:
+              </p>
+              <ul class="memory-list" style="margin-top: 8px;">
+                <li>Nếu chỉ số **MRR/nDCG thấp** nhưng điểm **Answer vẫn tạm ổn**: Khâu truy xuất đang yếu (lấy nhầm tài liệu), LLM trả lời được là nhờ tri thức huấn luyện sẵn có (parametric memory) chứ không phải nhờ bối cảnh RAG cung cấp. Đây là rủi ro lớn vì LLM dễ bị bịa đặt (hallucination) khi gặp thông tin nội bộ mới.</li>
+                <li>Nếu **MRR/nDCG cao** nhưng điểm **Accuracy/Completeness thấp**: Khâu truy xuất tìm đúng tài liệu, nhưng khâu sinh câu trả lời của LLM gặp lỗi (LLM bị nhiễu do bối cảnh quá dài, hoặc Prompt Template thiết kế chưa tối ưu).</li>
+              </ul>
+            </article>
+          </div>
+
+          <details>
+            <summary>Xem phân tích chi tiết các khối code cốt lõi - Code Snippets</summary>
+            <div class="note">
+              <p><strong>1. Định nghĩa Schema đánh giá bằng Pydantic trong <a href="file:///G:/RAG/evaluation/eval.py#L183-L198" class="inline-code">eval.py</a>:</strong></p>
+              <div class="code-block"><span class="code-keyword">class</span> <span class="code-class">AnswerEval</span>(BaseModel):
+    <span class="code-string">"""LLM-as-a-judge evaluation of answer quality."""</span>
+
+    feedback: str = Field(
+        description=<span class="code-string">"Concise feedback on the answer quality, comparing it..."</span>
+    )
+    accuracy: float = Field(
+        description=<span class="code-string">"How factually correct is the answer...? 1 (wrong) to 5 (ideal)."</span>
+    )
+    completeness: float = Field(
+        description=<span class="code-string">"How complete is the answer...? 1 (very poor) to 5 (ideal)."</span>
+    )
+    relevance: float = Field(
+        description=<span class="code-string">"How relevant is the answer...? 1 (very poor) to 5 (ideal)."</span>
+    )</div>
+              <p style="margin-top: 12px;"><strong>2. Tính toán MRR cho một từ khóa trong <a href="file:///G:/RAG/evaluation/eval.py#L200-L206" class="inline-code">eval.py</a>:</strong></p>
+              <div class="code-block"><span class="code-keyword">def</span> <span class="code-func">calculate_mrr</span>(keyword: str, retrieved_docs: list) -> float:
+    keyword_lower = keyword.lower()
+    <span class="code-keyword">for</span> rank, doc <span class="code-keyword">in</span> <span class="code-func">enumerate</span>(retrieved_docs, start=<span class="code-class">1</span>):
+        <span class="code-keyword">if</span> keyword_lower <span class="code-keyword">in</span> doc.page_content.lower():
+            <span class="code-keyword">return</span> <span class="code-class">1.0</span> / rank  <span class="code-comment"># Trả về 1/vị trí tìm thấy đầu tiên</span>
+    <span class="code-keyword">return</span> <span class="code-class">0.0</span>  <span class="code-comment"># Không tìm thấy trong toàn bộ Top K</span></div>
+              <p style="margin-top: 12px;"><strong>3. Tính toán nDCG nhị phân trong <a href="file:///G:/RAG/evaluation/eval.py#L209-L233" class="inline-code">eval.py</a>:</strong></p>
+              <div class="code-block"><span class="code-keyword">def</span> <span class="code-func">calculate_dcg</span>(relevances: list[int], k: int) -> float:
+    dcg = <span class="code-class">0.0</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-func">range</span>(<span class="code-func">min</span>(k, <span class="code-func">len</span>(relevances))):
+        <span class="code-comment"># i+2 vì index chạy từ 0, công thức yêu cầu log2(rank + 1) với rank bắt đầu từ 1</span>
+        dcg += relevances[i] / math.log2(i + <span class="code-class">2</span>)
+    <span class="code-keyword">return</span> dcg
+
+<span class="code-keyword">def</span> <span class="code-func">calculate_ndcg</span>(keyword: str, retrieved_docs: list, k: int = <span class="code-class">10</span>) -> float:
+    keyword_lower = keyword.lower()
+    <span class="code-comment"># Gán nhãn nhị phân: 1 nếu chứa từ khóa, 0 nếu ngược lại</span>
+    relevances = [
+        <span class="code-class">1</span> <span class="code-keyword">if</span> keyword_lower <span class="code-keyword">in</span> doc.page_content.lower() <span class="code-keyword">else</span> <span class="code-class">0</span> 
+        <span class="code-keyword">for</span> doc <span class="code-keyword">in</span> retrieved_docs[:k]
+    ]
+    dcg = calculate_dcg(relevances, k)
+    <span class="code-comment"># Sắp xếp lý tưởng nhất (đẩy toàn bộ số 1 lên đầu)</span>
+    ideal_relevances = <span class="code-func">sorted</span>(relevances, reverse=<span class="code-keyword">True</span>)
+    idcg = calculate_dcg(ideal_relevances, k)
+    <span class="code-keyword">return</span> dcg / idcg <span class="code-keyword">if</span> idcg > <span class="code-class">0.0</span> <span class="code-keyword">else</span> <span class="code-class">0.0</span></div>
+              <p style="margin-top: 12px;"><strong>4. Gọi LLM Judge và parse JSON tự động bằng LiteLLM và Pydantic trong <a href="file:///G:/RAG/evaluation/eval.py#L311-L316" class="inline-code">eval.py</a>:</strong></p>
+              <div class="code-block">    <span class="code-comment"># Gọi LLM judge với Structured Outputs</span>
+    judge_response = completion(
+        model=MODEL, 
+        messages=judge_messages, 
+        response_format=AnswerEval  <span class="code-comment"># Ép cấu trúc đầu ra khớp với lớp Pydantic</span>
+    )
+    <span class="code-comment"># Chuyển đổi JSON nhận được thành đối tượng Python thực thụ</span>
+    answer_eval = AnswerEval.model_validate_json(
+        judge_response.choices[<span class="code-class">0</span>].message.content
+    )</div>
+            </div>
+          </details>
+        </section>
+
+        <!-- Section 10: Pitfalls -->
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp trong thực tế</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure Modes - Các trường hợp dễ thất bại</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Nhiễu bối cảnh (Context Contamination / Context Mixing):</strong>
+                  <p>Khi khâu truy xuất trả về bối cảnh chứa thông tin của nhiều đối tượng khác nhau có cấu trúc tương đồng (ví dụ: hồ sơ nhân sự của Maxine Thompson và Priya Sharma cùng nằm trong top K). LLM khi tổng hợp có thể bị nhầm lẫn, gán thuộc tính hoặc thành tích của người này sang cho người kia (như lấy thành tựu dự án AI của Priya gán cho Maxine), gây ra lỗi sai lệch sự thật nghiêm trọng.</p>
+                </li>
+                <li>
+                  <strong>Bất tương thích chiều Vector (Embedding Dimension Mismatch):</strong>
+                  <p>Cố gắng thay đổi mô hình mã hóa nhúng (Embedding Model) trong code RAG mà không xóa và nạp lại Vector Store (ví dụ: chuyển từ model HF 384 chiều sang model OpenAI 3072 chiều). Hệ thống sẽ báo lỗi crash ngay lập tức vì không thể thực hiện phép so sánh khoảng cách toán học giữa hai vector khác số chiều.</p>
+                </li>
+                <li>
+                  <strong>Thiên vị của Giám khảo AI (LLM Judge Bias):</strong>
+                  <p>Mô hình LLM làm giám khảo đôi khi có xu hướng thích các câu trả lời dài dòng và viết trôi chảy (verbosity bias) hơn là các câu trả lời ngắn gọn, trực diện, hoặc thiên vị cho chính các câu trả lời do chính mô hình đó sinh ra ở lượt test trước.</p>
+                </li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <h3>Common Misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>"Đổi mô hình nhúng chỉ cần đổi code khởi tạo embeddings":</strong>
+                  <p><strong>Hiểu đúng:</strong> Mỗi mô hình nhúng ánh xạ ngôn ngữ vào một không gian toán học hoàn toàn khác nhau. Khi đổi mô hình nhúng, bắt buộc bạn phải xóa cơ sở dữ liệu cũ và chạy lại toàn bộ quy trình nạp dữ liệu (<span class="inline-code">ingest.py</span>) để xây dựng lại Vector Store từ đầu.</p>
+                </li>
+                <li>
+                  <strong>"Hệ thống đạt điểm ROUGE/BLEU cao nghĩa là câu trả lời tốt":</strong>
+                  <p><strong>Hiểu đúng:</strong> BLEU/ROUGE đo khớp từ khóa thô. Nếu câu trả lời chuẩn là "Avery thành lập công ty năm 2015" và LLM trả lời "Năm 2015, Avery đã sáng lập nên doanh nghiệp này", điểm so khớp từ vựng thô sẽ rất thấp dù về mặt ngữ nghĩa là chính xác hoàn hảo. LLM-as-a-judge giải quyết được vấn đề này.</p>
+                </li>
+                <li>
+                  <strong>"Chỉ số Evals là cố định và không đổi":</strong>
+                  <p><strong>Hiểu đúng:</strong> Bộ Test Set là một thực thể sống (living document). Hành vi của người dùng thực tế liên tục thay đổi. Kỹ sư RAG phải liên tục cập nhật các câu hỏi mới, đặc biệt là các ca lỗi thực tế ngoài đời vào Test Set để tránh hiện tượng "Overfitting" (mô hình chỉ tối ưu cho bộ câu hỏi test cũ mà fail trên thực tế).</p>
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 11: Interview Takeaways -->
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các câu hỏi bạn nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>Làm thế nào bạn biết một thay đổi trong hệ thống RAG (ví dụ: đổi kích thước chunk) là thực sự cải tiến hay làm tệ đi hệ thống?</li>
+                <li>Hãy giải thích ý nghĩa toán học của MRR và nDCG. Khi nào nên ưu tiên dùng chỉ số nào?</li>
+                <li>Structured Outputs hoạt động như thế nào và tại sao nó lại quan trọng trong việc xây dựng các ứng dụng đại lý AI (Agentic AI)?</li>
+                <li>Làm thế nào để giảm thiểu hiện tượng nhiễu bối cảnh (Context Contamination) khiến LLM bị râu ông nọ cắm cằm bà kia?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung trả lời chuẩn (Answer Frame)</h3>
+              <p>
+                Khi gặp các câu hỏi về đo lường và tối ưu hóa hệ thống LLM/RAG, hãy triển khai câu trả lời theo cấu trúc:
+              </p>
+              <ol class="memory-list" style="margin-top: 10px;">
+                <li><strong>Thiết lập Baseline:</strong> Xây dựng Golden Dataset (100-150 câu hỏi) đại diện đầy đủ cho các danh mục (Direct Fact, Spanning, Holistic).</li>
+                <li><strong>Cô lập đo lường:</strong> Đo lường riêng biệt khâu Retrieval (dùng các chỉ số toán học MRR, nDCG@K trên vị trí từ khóa) và khâu Generation (dùng LLM-as-a-judge thông qua Structured Outputs chấm điểm Accuracy, Completeness, Relevance).</li>
+                <li><strong>Thực nghiệm khoa học (A/B testing):</strong> Thực hiện thay đổi duy nhất một tham số (ví dụ: đổi Embedding Model hoặc áp dụng Re-ranking), chạy lại quy trình đánh giá và đối chiếu điểm số để đưa ra quyết định dựa trên dữ liệu định lượng.</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 12: Flashcards -->
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&amp;A / Flashcards - Câu hỏi phỏng vấn và Thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q: Tại sao RAG cơ bản thường đạt điểm thấp ở các câu hỏi Spanning?</strong><br>
+                  <strong>A:</strong> Vì câu hỏi Spanning yêu cầu thông tin nằm rải rác ở nhiều tài liệu khác nhau. Hệ thống RAG cơ bản chỉ lấy Top K khối văn bản độc lập dựa trên độ tương đồng vector thô, dễ bỏ sót các mảnh ghép ngữ cảnh quan trọng nếu tham số K quá nhỏ hoặc thông tin không nằm tập trung.
+                </li>
+                <li>
+                  <strong>Q: Làm sao để LLM Judge chấm điểm một cách khách quan nhất?</strong><br>
+                  <strong>A:</strong> Sử dụng Prompt chi tiết (few-shot examples), thiết lập Temperature = 0 để giảm tính ngẫu nhiên, phân tách rõ các tiêu chí chấm (Accuracy, Completeness, Relevance) và yêu cầu LLM viết phần giải thích (feedback) trước khi đưa ra điểm số cuối cùng (CoT - Chain of Thought).
+                </li>
+                <li>
+                  <strong>Q: Sự khác biệt cơ bản giữa MRR và Recall là gì?</strong><br>
+                  <strong>A:</strong> Recall chỉ quan tâm đến việc thông tin đúng có xuất hiện trong danh sách kết quả hay không (có/không). MRR không chỉ quan tâm đến sự xuất hiện mà còn phạt nặng nếu thông tin đúng nằm ở vị trí thấp (sau) trong danh sách trả về.
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&amp;A - Hỏi đáp phỏng vấn sâu</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q: Giả sử bạn đổi mô hình Embedding từ một mô hình mã nguồn mở sang OpenAI Large và thấy điểm MRR tăng nhưng điểm Accuracy của câu trả lời lại giảm. Nguyên nhân do đâu và bạn sẽ xử lý thế nào?</strong><br>
+                  <strong>A:</strong> 
+                  <br>• <strong>Nguyên nhân:</strong> MRR tăng chứng tỏ khâu Retrieval hoạt động tốt hơn (các tài liệu liên quan được đẩy lên vị trí số 1). Tuy nhiên, mô hình OpenAI Large có thể biểu diễn được nhiều bối cảnh dài hơn và chi tiết hơn, dẫn đến lượng thông tin nạp vào cửa sổ ngữ cảnh tăng lên, làm tăng độ nhiễu ngữ cảnh (Context Contamination). LLM Generator có thể bị quá tải thông tin hoặc bị phân tâm bởi các tài liệu phụ liên quan khác, dẫn đến câu trả lời bị nhầm lẫn thông tin hoặc lan man làm giảm điểm Accuracy.
+                  <br>• <strong>Giải pháp:</strong> 
+                  (1) Giảm bớt số lượng tài liệu trả về (giảm K trong Retriever).
+                  (2) Áp dụng thuật toán sắp xếp lại (Re-ranking) để lọc bỏ các tài liệu gây nhiễu.
+                  (3) Tinh chỉnh lại System Prompt của Generator để hướng dẫn mô hình tập trung nghiêm ngặt vào tài liệu có độ liên quan cao nhất và bỏ qua các thông tin không tương thích trực tiếp.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 13: Quick Memory -->
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Điều bắt buộc phải nhớ - Must Remember</h3>
+              <ol class="memory-list">
+                <li>Đánh giá RAG gồm hai phần tách biệt: Đo lường Truy xuất (Retrieval) và Đo lường Trả lời (Generation).</li>
+                <li>MRR tính bằng nghịch đảo thứ hạng kết quả đúng đầu tiên: 1 / rank.</li>
+                <li>nDCG chiết khấu theo logarit, đánh giá chất lượng của toàn bộ thứ hạng trong danh sách.</li>
+                <li>Ép cấu trúc JSON đầu ra (Structured Outputs) bằng Pydantic là cách duy nhất để tự động hóa quy trình phân tích và tích hợp LLM vào phần mềm.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Câu hỏi tự kiểm tra - Self-check</h3>
+              <ul class="memory-list">
+                <li>Bạn có giải thích được tại sao khi thay đổi mô hình Embedding lại bắt buộc phải chạy lại ingestion để tạo lại Vector Store không?</li>
+                <li>Bạn có phân biệt được bối cảnh sử dụng phù hợp giữa MRR và nDCG không?</li>
+                <li>Lớp Pydantic đóng vai trò gì trong việc xử lý kết quả trả về từ LLM Judge?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- Section 14: Next Step -->
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Lộ trình phát triển tiếp theo - What comes next</h3>
+              <p>
+                Sau khi đã thiết lập được baseline đo lường định lượng và nhận diện được các điểm yếu (màu đỏ/vàng trên Gradio Dashboard như các nhóm câu hỏi Spanning, Holistic, Relationship), chúng ta sẵn sàng tiến sang **Day 5 - Advanced RAG Techniques (Kỹ thuật RAG nâng cao)**. 
+              </p>
+              <p style="margin-top: 10px;">
+                Chúng ta sẽ áp dụng các kỹ thuật như: Tiền xử lý dữ liệu nâng cao, Tái sắp xếp kết quả (Re-ranking) bằng Cross-Encoder, và Viết lại truy vấn (Query Transformation) để trực tiếp cải thiện điểm số MRR và Accuracy lên vùng màu xanh an toàn (>90%).
+              </p>
+            </article>
+            <article class="card">
+              <h3>Dữ liệu còn thiếu - Missing Inputs</h3>
+              <p>
+                Để làm tài liệu sâu hơn nữa về mặt triển khai hệ thống lớn, chúng ta cần bổ sung thêm các số liệu thực tế về chi phí gọi API (token costs), thời gian phản hồi (latency logs) của khâu đánh giá bằng LLM Judge khi chạy trên quy mô hàng ngàn câu hỏi, và các kịch bản kiểm thử bảo mật (Prompt Injection Testing).
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được biên soạn tự động để tối ưu hóa việc học tập lý thuyết cốt lõi và thực hành mã nguồn của ngày học số 4 trong tuần lễ RAG.
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>
