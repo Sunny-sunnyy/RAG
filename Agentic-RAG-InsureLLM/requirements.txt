@@ -1,0 +1,9 @@
+chromadb==1.5.5
+gradio==6.10.0
+litellm==1.82.6
+openai==2.30.0
+pandas==3.0.1
+pydantic==2.12.5
+python-dotenv==1.2.2
+tenacity==8.3.0
+tqdm==4.66.4

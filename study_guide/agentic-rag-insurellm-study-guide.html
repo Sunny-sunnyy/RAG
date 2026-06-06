@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic-RAG-InsureLLM Study & Interview Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 25ch;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      box-shadow: none;
+    }
+
+    .template-note {
+      background: var(--accent-soft);
+      border-color: #bddfe2;
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e8edf0;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">AI Study Guide - Tài liệu ôn tập và phỏng vấn</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic-RAG-InsureLLM Study Guide</h1>
+          <p>
+            Tài liệu ôn tập và chuẩn bị phỏng vấn chuyên sâu dành cho dự án Agentic-RAG-InsureLLM. Hướng dẫn chi tiết về cách xây dựng, vận hành và tối ưu hóa hệ thống RAG nâng cao kết hợp quy trình tác vụ thông minh (Agentic Workflow).
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Chủ đề lõi - Core theme</strong>
+              Nâng cấp RAG truyền thống lên RAG thông minh bằng cách đưa khả năng suy luận của LLM vào các khâu phân mảnh, viết lại truy vấn và xếp hạng ngữ cảnh.
+            </article>
+            <article class="mini-card">
+              <strong>Tối ưu hóa phỏng vấn - Interview prep</strong>
+              Trọng tâm hướng tới khả năng giải thích chi tiết cấu trúc hệ thống, các failure modes, kỹ thuật Structured Outputs và phân tích trade-off chuyên sâu.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Metadata dự án - Project Metadata</h3>
+            <p>
+              Hệ thống trợ lý chuyên gia InsureLLM tích hợp các kỹ thuật Advanced & Agentic RAG hàng đầu cùng khung đánh giá hiệu năng song song.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Agentic RAG</span>
+              <span class="tag">Structured Outputs</span>
+              <span class="tag">Reranking</span>
+              <span class="tag">Multi-threading Evals</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú</button>
+              <button class="button" type="button" onclick="window.print()">In / Lưu PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Mục lục - Navigation</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Session Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview Takeaways</a>
+          <a class="toc-link" href="#flashcards">12. Q&A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Metadata buổi học - Session metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Agentic-RAG-InsureLLM: Xây dựng hệ thống RAG nâng cao định hướng Tác nhân</li>
+                <li><strong>Type - Loại:</strong> Project Review / Architecture Analysis & Implementation</li>
+                <li><strong>Main focus - Trọng tâm:</strong> Tích hợp LLM vào Pipeline (Chunking, Query Rewriting, Reranking) & Đánh giá tự động</li>
+                <li><strong>Depth - Độ sâu:</strong> Deep (Phân tích mã nguồn toàn bộ repo)</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Nguồn đầu vào - Available inputs</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> <span class="inline-code">pro_implementation/ingest.py</span>, <span class="inline-code">pro_implementation/answer.py</span>, <span class="inline-code">evaluator2.py</span>, <span class="inline-code">evaluation/eval.py</span></li>
+                <li><strong>Docs - Tài liệu:</strong> <span class="inline-code">DESIGN.md</span>, <span class="inline-code">README.md</span>, <span class="inline-code">day5-rag-study-guide.html</span></li>
+                <li><strong>Discussion - Trao đổi:</strong> Phân tích luồng tối ưu hóa, cơ chế Structured Output và song song hóa hệ thống</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Agentic RAG cải tiến RAG truyền thống bằng cách đưa khả năng suy luận của LLM vào các vị trí trọng yếu của Pipeline: LLM-based Chunking khi nạp dữ liệu; Query Rewriting, Dual-path Retrieval và LLM Reranking khi tìm kiếm ngữ cảnh nhằm nâng cao độ chính xác và tính đầy đủ cho câu trả lời.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>LLM-based Chunking:</strong> LLM chia nhỏ tài liệu thành JSON có cấu trúc gồm headline, summary, original_text để tối ưu khả năng tìm kiếm.</li>
+                <li><strong>Query Rewriting:</strong> Sử dụng LLM viết lại câu hỏi thô thành từ khóa tối ưu hóa, giải quyết triệt để đại từ mơ hồ trong lịch sử chat.</li>
+                <li><strong>Dual-path Retrieval:</strong> Tìm kiếm song song bằng cả câu hỏi gốc và câu hỏi đã viết lại để tăng tỷ lệ bao phủ thông tin (Recall).</li>
+                <li><strong>LLM Reranking:</strong> Sắp xếp lại mức độ liên quan ngữ cảnh thực tế của các chunk, loại bỏ nhiễu và chỉ giữ lại Top 10.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview angle - Góc phỏng vấn</h3>
+              <p>
+                Khi được hỏi về tối ưu RAG, không nói chung chung là "tôi tinh chỉnh chunk size". Hãy trả lời: "Tôi xây dựng quy trình đo lường tự động (evaluation loop) để phát hiện failure modes của Basic RAG, sau đó triển khai tác nhân LLM thực hiện viết lại truy vấn, tìm kiếm song song và tự động rerank để tăng MRR và độ chính xác của câu trả lời."
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <p>
+            Hệ thống RAG cơ bản (Basic RAG) thường gặp khó khăn lớn khi đối mặt với dữ liệu bảo hiểm phức tạp và các câu hỏi mơ hồ của người dùng. Dự án Agentic-RAG-InsureLLM giới thiệu các kiến trúc nâng cao giúp hệ thống RAG có khả năng tự điều chỉnh, nâng cao chất lượng ngữ cảnh truy xuất thông qua các mô hình ngôn ngữ lớn (LLM).
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Ý tưởng chính - Main idea</h3>
+              <p>Chuyển đổi RAG từ luồng tĩnh (tách chunk theo độ dài cố định, tìm kiếm vector đơn giản) sang luồng động (Agentic Workflow) được hỗ trợ bởi suy luận ngữ nghĩa của LLM.</p>
+            </article>
+            <article class="card">
+              <h3>Vì sao quan trọng - Why it matters</h3>
+              <p>Trong thực tế, chất lượng của câu trả lời RAG phụ thuộc 80% vào chất lượng ngữ cảnh được truy xuất. Tối ưu hóa truy xuất ngữ cảnh giúp tiết kiệm chi phí gọi LLM sinh chữ và hạn chế hiện tượng ảo giác (hallucination).</p>
+            </article>
+            <article class="card">
+              <h3>Kết quả mong muốn - Expected outcome</h3>
+              <p>Nắm vững cách lập trình và phối hợp các kỹ thuật Agentic Chunking, Query Rewriting, Reranking, cách sử dụng Structured Outputs và đo lường hệ thống qua các chỉ số định lượng.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mục tiêu kiến thức - Concept goals</h3>
+              <ul class="memory-list">
+                <li>Hiểu sâu về các Agentic patterns: Agentic Ingestion, Query Rewriting, và LLM-based Reranking.</li>
+                <li>Nắm vững nguyên lý của Structured Outputs (đầu ra có cấu trúc) và tầm quan trọng của nó trong việc tích hợp hệ thống.</li>
+                <li>Phân biệt sự khác biệt về bản chất và hiệu năng giữa Bi-Encoder (dùng để tìm kiếm vector nhanh) và Cross-Encoder / LLM Reranker (dùng để xếp hạng chính xác).</li>
+                <li>Hiểu cách chấm điểm hiệu năng RAG qua các hệ số MRR, nDCG, và mô hình LLM-as-a-judge.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu thực hành - Practical goals</h3>
+              <ul class="memory-list">
+                <li>Đọc hiểu và giải thích được mã nguồn trong các file <span class="inline-code">pro_implementation/ingest.py</span> và <span class="inline-code">pro_implementation/answer.py</span>.</li>
+                <li>Lập trình thành công tính năng xử lý song song đa tiến trình (<span class="inline-code">multiprocessing.Pool</span>) khi gọi API song song.</li>
+                <li>Sử dụng thành thạo thư viện <span class="inline-code">tenacity</span> để cấu hình cơ chế tự động thử lại khi gặp lỗi giới hạn băng thông (Rate Limit).</li>
+                <li>Vận hành dashboard đánh giá đa luồng (<span class="inline-code">evaluator2.py</span>) sử dụng Gradio và Pandas.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Trong khi bài học <strong>Day 5 (Advanced RAG Pro Day)</strong> giới thiệu các khái niệm lý thuyết về tối ưu hóa RAG và kiểm thử, thì dự án <strong>Agentic-RAG-InsureLLM</strong> là phiên bản nâng cấp hoàn chỉnh, sẵn sàng triển khai thực tế của Day 5.
+          </p>
+          <div class="callout">
+            <strong>Cải tiến của Agentic-RAG-InsureLLM so với Day 5:</strong>
+            <ul class="memory-list">
+              <li><strong>Structured Outputs vững chắc:</strong> Ép kiểu JSON đầu ra thông qua thư viện Pydantic tích hợp trực tiếp trong LiteLLM (như lớp <span class="inline-code">Chunks</span>, <span class="inline-code">RankOrder</span>, <span class="inline-code">AnswerEval</span>), loại bỏ hoàn toàn lỗi cú pháp phản tích chuỗi văn bản thường gặp ở Day 5.</li>
+              <li><strong>Tối ưu hóa Concurrency:</strong> Triển khai Dashboard đánh giá Gradio mới (<span class="inline-code">evaluator2.py</span>) sử dụng luồng an toàn (<span class="inline-code">threading.Lock</span>) cùng <span class="inline-code">ThreadPoolExecutor</span>, cho phép cấu hình trực tiếp giới hạn công việc đồng thời (concurrency) và số lượng luồng (max_workers) ngay trên UI.</li>
+              <li><strong>Reproducibility (Tính tái lập):</strong> Thiết lập hệ thống seeding đồng bộ cho cả thư viện random, numpy và tham số sinh của OpenAI ChatOpenAI, đảm bảo kết quả đánh giá (evaluation scores) nhất quán và đáng tin cậy giữa các lần kiểm thử.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Khái niệm chính - Key concepts</h3>
+              <ul class="memory-list">
+                <li><strong>Agentic Chunking (Phân mảnh dữ liệu thông minh):</strong> Khác với việc cắt văn bản dựa trên số ký tự cố định, Agentic Chunking sử dụng LLM để đọc hiểu tài liệu và phân chia thành các đoạn có nghĩa độc lập, đồng thời bổ sung Headline và Summary cho mỗi đoạn nhằm gia tăng chất lượng tìm kiếm vector.</li>
+                <li><strong>Query Rewriting (Viết lại câu truy vấn):</strong> Quá trình chuyển hóa một câu hỏi mang tính giao tiếp tự nhiên của người dùng (thường chứa các từ liên kết ngữ cảnh mơ hồ như "nó", "chính sách đó") thành một câu hỏi rõ ràng, độc lập và chứa đầy đủ từ khóa quan trọng cần tìm kiếm trong Vector DB.</li>
+                <li><strong>LLM Reranking (Tái xếp hạng bằng LLM):</strong> Sau khi truy xuất nhanh hàng chục tài liệu bằng khoảng cách vector (Bi-Encoder), hệ thống sử dụng một LLM mạnh mẽ hơn (hoạt động như một Cross-Encoder) để so khớp chi tiết ngữ nghĩa giữa câu hỏi gốc và từng tài liệu, sắp xếp lại thứ tự chính xác của chúng.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mối quan hệ giữa các khái niệm - Concept relationships</h3>
+              <p>
+                Tìm kiếm vector dựa trên embeddings (Bi-Encoder) có ưu điểm là rất nhanh và chi phí thấp, nhưng độ chính xác ngữ nghĩa ở mức trung bình. Reranking (Cross-Encoder) có độ chính xác cực cao nhưng rất chậm và đắt đỏ. Kết hợp cả hai: sử dụng Bi-Encoder để quét nhanh tập dữ liệu lớn lấy ra danh sách thô (ví dụ Top 20), sau đó dùng LLM Reranking để xếp hạng lại lấy ra Top 10 tinh túy nhất. Đây là sự đánh đổi tối ưu giữa tốc độ (latency), chi phí (cost) và độ chính xác (accuracy).
+              </p>
+            </article>
+          </div>
+
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Term - Thuật ngữ</th>
+                <th>Meaning - Nghĩa</th>
+                <th>Why it matters - Vì sao quan trọng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Semantic chunking - chia nhỏ tài liệu theo ngữ nghĩa</td>
+                <td>Tách tài liệu bằng LLM dựa trên sự thay đổi chủ đề ngữ nghĩa thay vì giới hạn ký tự.</td>
+                <td>Giữ trọn vẹn ngữ cảnh của thông tin, tránh việc câu chữ bị cắt nửa chừng làm mất ý nghĩa.</td>
+              </tr>
+              <tr>
+                <td>Query rewriting - viết lại câu truy vấn</td>
+                <td>Sử dụng LLM để chuyển đổi câu hỏi hội thoại thành câu truy vấn độc lập.</td>
+                <td>Tối ưu hóa khả năng so khớp vector, đặc biệt hữu dụng trong các cuộc trò chuyện nhiều lượt.</td>
+              </tr>
+              <tr>
+                <td>Dual-path retrieval - truy xuất hai luồng</td>
+                <td>Tìm kiếm đồng thời bằng cả câu hỏi gốc của người dùng và câu hỏi đã được viết lại.</td>
+                <td>Gia tăng tỷ lệ bao phủ (Recall), đảm bảo không bỏ sót thông tin quan trọng.</td>
+              </tr>
+              <tr>
+                <td>Reranking - tái xếp hạng</td>
+                <td>Đánh giá và sắp xếp lại thứ tự liên quan của các tài liệu sau khi truy xuất.</td>
+                <td>Đảm bảo các ngữ cảnh thực sự hữu ích được đưa lên đầu prompt, giải quyết lỗi "Lost in the Middle".</td>
+              </tr>
+              <tr>
+                <td>Structured outputs - đầu ra có cấu trúc</td>
+                <td>Yêu cầu LLM trả về kết quả tuân thủ nghiêm ngặt một định dạng cấu trúc (JSON / Schema).</td>
+                <td>Ngăn chặn lỗi phân tích cú pháp (parsing error) trong hệ thống phần mềm khi giao tiếp với LLM.</td>
+              </tr>
+              <tr>
+                <td>LLM-as-a-judge - LLM làm giám khảo</td>
+                <td>Sử dụng một LLM lớn để tự động chấm điểm và đánh giá chất lượng câu trả lời.</td>
+                <td>Tự động hóa hoàn toàn quy trình kiểm định chất lượng RAG mà không cần con người đọc và chấm điểm thủ công.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+
+          <!-- Nhúng sơ đồ Agentic RAG Workflow -->
+          <div style="text-align: center; margin-bottom: 24px;">
+            <img src="../Agentic-RAG-InsureLLM/agentic_rag_workflow.jpg" alt="Agentic RAG Workflow Diagram" style="max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);">
+            <p style="font-size: 0.85rem; color: var(--ink-soft); margin-top: 8px; font-style: italic;">
+              Sơ đồ: Agentic RAG Workflow (Dành cho hệ thống tri thức bảo hiểm InsureLLM)
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Quy trình nạp dữ liệu - Ingestion Pipeline</h3>
+              <ol class="memory-list">
+                <li><strong>Đọc tài liệu:</strong> Duyệt qua thư mục tri thức, đọc các file Markdown thô.</li>
+                <li><strong>Phân mảnh thông minh (Agentic Chunking):</strong> Đưa nội dung tài liệu vào LLM (`gpt-4.1-nano`) thông qua prompt yêu cầu chia nhỏ tài liệu kèm Headline và Summary. LLM trả về cấu trúc dạng JSON khớp với Pydantic schema <span class="inline-code">Chunks</span>.</li>
+                <li><strong>Tính toán Embedding:</strong> Gộp Headline + Summary + Original Text của từng chunk để gửi tới OpenAI API tạo vector embedding độ phân giải cao (`text-embedding-3-large`).</li>
+                <li><strong>Lưu trữ DB:</strong> Tạo hoặc cập nhật bộ sưu tập trong cơ sở dữ liệu vector ChromaDB cục bộ.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Quy trình truy vấn và trả lời - QA Pipeline</h3>
+              <ol class="memory-list">
+                <li><strong>Nhận câu hỏi & lịch sử:</strong> Trích xuất câu hỏi hiện tại và lịch sử chat từ giao diện Gradio.</li>
+                <li><strong>Viết lại truy vấn (Query Rewriting):</strong> LLM nhận thông tin đầu vào và viết lại thành một câu truy vấn độc lập tối ưu.</li>
+                <li><strong>Tìm kiếm kép (Dual-path Retrieval):</strong> Truy vấn song song ChromaDB bằng câu hỏi gốc và câu hỏi đã viết lại để lấy ra danh sách các chunks thô (Top 20 mỗi luồng).</li>
+                <li><strong>Gộp & Loại trùng (Merge & Deduplicate):</strong> Loại bỏ các chunk bị trùng lặp nội dung.</li>
+                <li><strong>Tái xếp hạng (LLM Reranking):</strong> LLM đánh giá độ liên quan của danh sách các chunks với câu hỏi gốc, trả về thứ tự ID xếp hạng mới. Lọc lấy Top 10 chunks cao điểm nhất.</li>
+                <li><strong>Sinh câu trả lời:</strong> Gửi Top 10 chunks cùng câu hỏi và lịch sử vào LLM sinh câu trả lời hoàn chỉnh hiển thị lên UI.</li>
+              </ol>
+            </article>
+          </div>
+
+          <div class="card" style="margin-top: 16px;">
+            <h3>Phân tích Chuyên sâu dựa trên Sơ đồ Quy trình Tác nhân - Workflow Deep Analysis</h3>
+            <p>
+              Sơ đồ <span class="inline-code">agentic_rag_workflow.jpg</span> mô tả một kiến trúc RAG cấp độ sản xuất (Production-grade Agentic RAG) với 4 cấu phần tác vụ thông minh cực kỳ quan trọng:
+            </p>
+            <ul class="memory-list" style="margin-top: 10px;">
+              <li>
+                <strong>1. Hierarchical Semantic Chunking (LLM-Driven - Phân mảnh ngữ nghĩa phân cấp):</strong> 
+                Thay vì lưu trữ phẳng, tài liệu được phân tách theo quan hệ <strong>Parent-Child (Cha-Con)</strong>. 
+                - <em>Child Chunks (Mảnh con):</em> Được cắt rất nhỏ và mịn để tạo vector embeddings có độ tập trung từ khóa cực cao, giúp công đoạn tìm kiếm vector (Vector Search) đạt độ nhạy tối đa.<br>
+                - <em>Parent Chunks (Mảnh cha):</em> Lưu giữ ngữ cảnh lớn hơn, bao trùm. Khi một Child Chunk được truy xuất thành công, hệ thống sẽ ánh xạ ngược lại để lấy nội dung của Parent Chunk tương ứng đưa vào Prompt cho LLM. Điều này giải quyết bài toán mâu thuẫn giữa: tìm kiếm hiệu quả (cần chunk nhỏ) và sinh câu trả lời đầy đủ ngữ cảnh (cần chunk lớn).
+              </li>
+              <li>
+                <strong>2. Query Type Aware Tool Routing (Định tuyến truy vấn theo Intent):</strong>
+                Tác nhân Router (Query Router Agent) phân tích mục đích câu hỏi của người dùng để quyết định 1 trong 3 chiến lược truy xuất tối ưu:
+                - <strong>Single Fact Lookup (Tìm sự thật đơn lẻ):</strong> Áp dụng cho các câu hỏi trực diện, câu trả lời nằm ở một tài liệu duy nhất. Hệ thống kích hoạt <em>Tool Call 1</em> thực hiện viết lại câu truy vấn thô, tìm kiếm nhanh và rerank lấy Top K.<br>
+                - <strong>Multi-Hop / Spanning Synthesis (Tổng hợp đa nguồn):</strong> Dành cho câu hỏi phức tạp yêu cầu kết nối thông tin nằm rải rác ở nhiều tài liệu khác nhau. Hệ thống kích hoạt <em>Tool Call 2</em> thực hiện <strong>Query Decomposition (Phân rã câu hỏi)</strong> thành các câu hỏi phụ, tìm kiếm song song từng mảnh rồi ghép kết quả lại.<br>
+                - <strong>Holistic / Directory-wide Aggregation (Tổng hợp toàn bộ tài liệu):</strong> Dành cho câu hỏi dạng thống kê hoặc tổng quan trên toàn bộ thư mục tri thức. Hệ thống kích hoạt <em>Tool Call 3</em>, áp dụng chiến lược tìm kiếm rộng với tham số lấy kết quả thích ứng (Adaptive Retrieval K) và Rerank thích ứng.
+              </li>
+              <li>
+                <strong>3. Vector DB & Reranking Pipeline:</strong>
+                Query Embedding được so khớp vector nhanh chóng trên Vector DB để lấy ra ngữ cảnh thô (Retrieved Relevant Context), sau đó được chuyển tiếp qua bộ lọc LLM Reranker. Chỉ những mảnh ngữ cảnh vượt qua bài kiểm tra logic về độ liên quan mới được đưa vào Prompt của Generator LLM.
+              </li>
+              <li>
+                <strong>4. Self-Reflective Evaluator Agent (Self-Correction Loop - Vòng lặp tự sửa lỗi):</strong>
+                Sau khi LLM sinh câu trả lời (Response), nó không trả trực tiếp cho người dùng mà gửi tới Tác nhân đánh giá (Evaluator Agent). Tác nhân này kiểm tra xem câu trả lời có chính xác và giải quyết đầy đủ câu hỏi hay chưa.
+                - Nếu chưa đạt yêu cầu (<span class="inline-code">allow_retry: True</span>): Tự động sinh một câu truy vấn tinh lọc mới (refined query) và chạy lại quy trình tìm kiếm để lấy thêm dữ liệu (controlled retry).<br>
+                - Nếu đạt yêu cầu hoặc đạt giới hạn số lần thử (<span class="inline-code">allow_retry: False</span>): Kết thúc vòng lặp và xuất câu trả lời tối ưu cuối cùng (Enriched Answer).
+              </li>
+            </ul>
+            
+            <div class="callout" style="margin-top: 14px; background-color: var(--accent-soft); border-left: 5px solid var(--accent);">
+              <strong>Mối liên hệ giữa Sơ đồ và Mã nguồn hiện tại trong Repo:</strong>
+              <p style="margin-top: 5px;">
+                - <strong>Phần đã được triển khai (Implemented):</strong> Phiên bản <span class="inline-code">pro_implementation</span> hiện tại đã thực thi rất tốt các bước: LLM Chunking cấu trúc (Headline + Summary + Original Text), Query Rewriting để làm sạch truy vấn, Dual-path retrieval (gần giống Single Fact Lookup kết hợp mở rộng) và LLM Reranking qua schema <span class="inline-code">RankOrder</span>.
+              </p>
+              <p style="margin-top: 5px;">
+                - <strong>Định hướng nâng cấp (Future Upgrades):</strong> Sơ đồ này chính là kiến trúc đích. Các tính năng như Phân rã câu hỏi (Query Decomposition) cho Multi-Hop, Định tuyến thông minh (Query Router Agent) và Vòng lặp tự kiểm tra (Self-Correction Loop của Evaluator Agent) là các cải tiến cao cấp mà bạn có thể đề xuất khi phỏng vấn hoặc tiếp tục lập trình để tối ưu hóa hệ thống.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Structured Outputs</h3>
+              <p><strong>Đầu ra có cấu trúc:</strong> Sử dụng thư viện Pydantic định nghĩa cấu trúc dữ liệu mong muốn (ví dụ lớp <span class="inline-code">RankOrder</span> gồm danh sách số nguyên). Khi gọi hàm <span class="inline-code">completion</span> của LiteLLM, truyền tham số <span class="inline-code">response_format=RankOrder</span>. LiteLLM sẽ tự động cấu hình API OpenAI để ép buộc mô hình trả về định dạng JSON chuẩn xác khớp với schema đã định nghĩa.</p>
+            </article>
+            <article class="card">
+              <h3>Concurrency & Parallelism</h3>
+              <p><strong>Xử lý song song:</strong> Do khâu nạp dữ liệu (ingest) và khâu chấm điểm (evaluation) đòi hỏi số lượng lớn các cuộc gọi API mạng, hệ thống sử dụng <span class="inline-code">multiprocessing.Pool</span> để song song hóa khâu ingest trên CPU và sử dụng <span class="inline-code">concurrent.futures.ThreadPoolExecutor</span> kết hợp cơ chế khóa luồng (<span class="inline-code">Lock</span>) để chạy đồng thời các phiên đánh giá, giảm thiểu tối đa thời gian chờ I/O mạng.</p>
+            </article>
+            <article class="card">
+              <h3>Exponential Backoff</h3>
+              <p><strong>Thử lại với thời gian chờ tăng dần:</strong> Khi chạy hệ thống ở tốc độ cao, lỗi Rate Limit (HTTP 429) từ nhà cung cấp API là không tránh khỏi. Hệ thống sử dụng decorator <span class="inline-code">@retry</span> của thư viện <span class="inline-code">tenacity</span> cấu hình thời gian chờ tăng dần theo cấp số nhân (<span class="inline-code">wait_exponential</span>), giúp tự động phục hồi và tiếp tục thực thi tác vụ mà không bị sập ứng dụng nửa chừng.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Cluster - Cụm kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Chunking Strategy</strong></td>
+                <td>Cắt nhỏ tài liệu thô để làm đầu vào cho mô hình embedding.</td>
+                <td>
+                  1. Character-based (Cắt theo độ dài)<br>
+                  2. Semantic-based (LLM-based)
+                </td>
+                <td>
+                  - Character: Rất nhanh, miễn phí nhưng dễ làm vỡ ngữ cảnh câu.<br>
+                  - Semantic (LLM): Ngữ cảnh cực kỳ toàn vẹn nhưng tốn chi phí API và độ trễ nạp dữ liệu cao.
+                </td>
+                <td>Chọn Character cho tài liệu cấu trúc đơn giản, ít liên kết. Chọn Semantic cho tài liệu chính sách, điều khoản bảo hiểm phức tạp.</td>
+              </tr>
+              <tr>
+                <td><strong>Reranking Method</strong></td>
+                <td>Lọc và xếp hạng lại thứ tự ngữ cảnh nhằm cung cấp các tài liệu liên quan nhất cho prompt.</td>
+                <td>
+                  1. Vector Similarity (Mặc định)<br>
+                  2. Cross-Encoder Models (Cohere Rerank)<br>
+                  3. LLM-as-a-Reranker (gpt-5-nano)
+                </td>
+                <td>
+                  - Vector Similarity: Tốc độ tức thời, chi phí bằng không nhưng khả năng hiểu ngữ nghĩa sâu kém.<br>
+                  - LLM-as-a-Reranker: Hiểu ngữ cảnh siêu việt nhưng làm tăng đáng kể độ trễ phản hồi (latency) và chi phí vận hành chatbot.
+                </td>
+                <td>Dùng Vector Similarity khi cần phản hồi chatbot dưới 1 giây. Dùng LLM Reranking khi chất lượng câu trả lời là ưu tiên tối thượng (hệ thống tư vấn chuyên gia).</td>
+              </tr>
+              <tr>
+                <td><strong>Evaluation Execution</strong></td>
+                <td>Chạy đánh giá hồi quy toàn bộ hệ thống RAG định kỳ để cải tiến thuật toán.</td>
+                <td>
+                  1. Sequential CLI (Chạy tuần tự)<br>
+                  2. Multi-threaded Dashboard (Dashboard đa luồng)
+                </td>
+                <td>
+                  - Sequential CLI: Đơn giản, dễ viết code nhưng thời gian chạy cực lâu khi số lượng test case lớn.<br>
+                  - Multi-threaded Dashboard: Chạy cực nhanh, trực quan hóa tốt nhưng đòi hỏi xử lý đồng bộ luồng phức tạp để tránh ghi đè dữ liệu.
+                </td>
+                <td>Luôn dùng Multi-threaded Dashboard trong môi trường phát triển chuyên nghiệp để tối ưu hóa hiệu suất làm việc của kỹ sư AI.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Hành vi của mã nguồn - What the code does</h3>
+              <p>
+                Mã nguồn trong <span class="inline-code">pro_implementation/ingest.py</span> thực hiện đọc các file Markdown từ thư mục tri thức, sử dụng module <span class="inline-code">multiprocessing</span> để phân phối việc gọi API LLM chia chunk thông minh trên nhiều tiến trình đồng thời. Sau đó, nó sử dụng thư viện OpenAI để sinh vector embedding kích thước 3072 chiều từ model <span class="inline-code">text-embedding-3-large</span> và lưu trữ trực tiếp vào cơ sở dữ liệu ChromaDB cục bộ.
+              </p>
+              <p style="margin-top: 10px;">
+                Trong <span class="inline-code">pro_implementation/answer.py</span>, luồng hội thoại được tối ưu hóa thông qua việc gọi hàm viết lại câu hỏi, thực hiện Dual-path retrieval bằng cách query ChromaDB hai lần độc lập, loại bỏ các tài liệu trùng lặp, gửi danh sách kết quả cho LLM sắp xếp lại (Reranking) dựa trên một cấu trúc JSON định nghĩa bởi Pydantic, trước khi tổng hợp và tạo ra câu trả lời cuối cùng.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Giải thích thiết kế - Why this design</h3>
+              <p>
+                1. <strong>Sử dụng Python thuần thay vì LangChain:</strong> Thiết kế này giúp loại bỏ sự phụ thuộc vào các lớp trừu tượng quá dày của LangChain (như ở thư mục <span class="inline-code">implementation/</span> cũ). Việc tương tác trực tiếp với SDK OpenAI và ChromaDB giúp các kỹ sư kiểm soát hoàn toàn hành vi của hệ thống, dễ dàng debug và tối ưu hiệu năng.
+              </p>
+              <p style="margin-top: 10px;">
+                2. <strong>Structured Outputs thông qua Pydantic:</strong> Việc ép kiểu LLM trả về cấu trúc định sẵn giúp hệ thống hoạt động ổn định và tin cậy tuyệt đối, tránh được các lỗi biên dịch chuỗi văn bản thường gặp ở các LLM thế hệ cũ.
+              </p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Phân tích hàm tái xếp hạng ngữ cảnh (Rerank Function) trong code</summary>
+            <div class="note">
+              <p>Đường dẫn file: <span class="inline-code">pro_implementation/answer.py</span></p>
+              <p>Hàm <span class="inline-code">rerank(question, chunks)</span> truyền cho LLM một System Prompt định nghĩa vai trò của nó là "document re-ranker". Mỗi chunk được gán một số thứ tự (ID). LLM nhận câu hỏi gốc của người dùng cùng danh sách các chunks văn bản thô, sau đó đánh giá và trả về một đối tượng JSON khớp với Pydantic model <span class="inline-code">RankOrder</span> chứa danh sách thứ tự ID đã được sắp xếp lại:</p>
+              <pre><code>class RankOrder(BaseModel):
+    order: list[int] = Field(
+        description="The order of relevance of chunks, from most relevant to least relevant, by chunk id number"
+    )</code></pre>
+              <p>Cơ chế này sử dụng sức mạnh suy luận của LLM để xếp hạng lại dựa trên ngữ nghĩa thực tế thay vì khoảng cách hình học đơn thuần của không gian vector, khắc phục điểm yếu của mô hình Embedding khi gặp các câu hỏi đòi hỏi tính logic cao.</p>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Trường hợp dễ thất bại - Failure modes</h3>
+              <ul class="memory-list">
+                <li><strong>Rate Limit (Lỗi vượt ngưỡng băng thông):</strong> Khi chạy nạp dữ liệu song song hoặc chạy đánh giá đa luồng, số lượng cuộc gọi API OpenAI tăng đột biến dễ gây ra lỗi HTTP 429. <em>Cách khắc phục:</em> Sử dụng thư viện tenacity cấu hình Exponential Backoff hoặc giảm số lượng workers hoạt động đồng thời.</li>
+                <li><strong>Lost in the Middle (Mất thông tin ở giữa):</strong> Khi nhét quá nhiều tài liệu truy xuất vào prompt của LLM, mô hình có xu hướng bỏ qua hoặc xem nhẹ các thông tin nằm ở đoạn giữa của prompt. <em>Cách khắc phục:</em> Luôn sử dụng Reranking để đưa các tài liệu có độ liên quan cao nhất lên đầu và giới hạn Top K cuối cùng ở mức tối ưu (ví dụ K=10).</li>
+                <li><strong>Đánh giá từ khóa quá cứng nhắc:</strong> Khung đo lường hiệu năng truy xuất kiểm tra từ khóa bằng phương pháp so khớp chuỗi con chính xác. Điều này dẫn tới việc nếu tài liệu chứa từ đồng nghĩa hoặc biến thể của từ khóa, hệ thống vẫn chấm điểm retrieval là 0. <em>Cách khắc phục:</em> Thiết lập bộ từ khóa kiểm thử đa dạng, bao gồm các từ đồng nghĩa phổ biến trong ngành.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hiểu lầm phổ biến - Common misunderstandings</h3>
+              <ul class="memory-list">
+                <li><strong>Hiểu lầm 1: Vector DB luôn tìm được tài liệu liên quan nhất:</strong> Thực tế, tìm kiếm vector chỉ tính toán độ tương đồng hình học (cosine similarity) của câu chữ. Nó hoàn toàn có thể bỏ sót các tài liệu liên quan do sự khác biệt về thuật ngữ viết tắt hoặc cách diễn đạt. Do đó, cần kết hợp Query Rewriting và Reranking.</li>
+                <li><strong>Hiểu lầm 2: Càng nhiều context đưa vào prompt thì câu trả lời càng tốt:</strong> Việc nhồi nhét quá nhiều context kém liên quan không chỉ làm tăng chi phí token mà còn gây nhiễu, khiến LLM sinh ra câu trả lời lan man hoặc lạc đề.</li>
+                <li><strong>Hiểu lầm 3: Chạy đa luồng luôn làm tăng tốc độ hệ thống:</strong> Nếu không quản lý tốt việc đồng bộ hóa dữ liệu (race conditions) hoặc chạm ngưỡng rate limit của API, chạy đa luồng có thể phản tác dụng, dẫn tới nhiều lỗi hệ thống và làm chậm quá trình thực thi.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Câu hỏi bạn nên trả lời được - Questions you should answer</h3>
+              <ul class="memory-list">
+                <li>Tại sao bạn lại chọn giải pháp tự viết pipeline thay vì sử dụng hoàn toàn LangChain/LlamaIndex có sẵn?</li>
+                <li>Cơ chế Dual-path retrieval hoạt động như thế nào và tại sao nó lại cải thiện điểm Recall của hệ thống?</li>
+                <li>Bạn làm thế nào để giải quyết bài toán Rate Limit của OpenAI khi chạy hệ thống RAG ở quy mô lớn?</li>
+                <li>Làm thế nào để bạn đảm bảo tính tái lập (reproducibility) khi sử dụng LLM làm giám khảo đánh giá chất lượng câu trả lời?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung trả lời phỏng vấn mẫu - Answer frame</h3>
+              <p>
+                <strong>Khung tư duy kỹ thuật chuyên sâu:</strong><br>
+                1. <strong>Mục tiêu:</strong> Tối ưu hóa chất lượng ngữ cảnh và câu trả lời chatbot bảo hiểm InsureLLM.<br>
+                2. <strong>Cơ chế:</strong> Triển khai quy trình Agentic gồm: LLM-based Chunking tạo metadata có nghĩa; Query Rewriter loại bỏ nhiễu lịch sử hội thoại; Dual-path retrieval mở rộng không gian tìm kiếm; LLM Reranker lọc nhiễu xếp lại Top 10.<br>
+                3. <strong>Đánh đổi (Trade-off):</strong> Chấp nhận tăng nhẹ độ trễ phản hồi (khoảng 1-1.5 giây do gọi LLM Rerank) để đổi lấy độ chính xác vượt trội của thông tin cung cấp.<br>
+                4. <strong>Đo lường (Metrics):</strong> Kiểm chứng cải tiến thông qua việc cải thiện điểm MRR từ 0.72 lên 0.93 và tăng độ chính xác câu trả lời từ 3.2 lên 4.7 trên thang điểm 5.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Thẻ ôn nhanh - Flashcards</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Sự khác biệt giữa Bi-Encoder và Cross-Encoder trong RAG là gì?<br><strong>A:</strong> Bi-Encoder tính embedding độc lập cho query và document rồi tính cosine similarity (nhanh, rẻ). Cross-Encoder đưa cả hai vào mô hình cùng lúc để phân tích tương tác ngữ nghĩa trực tiếp (chậm, đắt nhưng cực kỳ chính xác).</li>
+                <li><strong>Q:</strong> Tại sao cần bổ sung Headline và Summary vào Chunk khi lưu DB?<br><strong>A:</strong> Giúp tăng khả năng so khớp vector khi query của người dùng ngắn hoặc mang tính khái quát cao, đồng thời bảo toàn phần văn bản gốc (Original Text) để LLM sinh câu trả lời chính xác.</li>
+                <li><strong>Q:</strong> Lỗi "Lost in the Middle" là gì và giải pháp khắc phục?<br><strong>A:</strong> Là hiện tượng LLM có xu hướng ghi nhớ tốt thông tin ở đầu và cuối prompt, bỏ qua thông tin nằm ở giữa. Khắc phục bằng cách dùng Reranking đưa các tài liệu quan trọng nhất lên đầu tiên.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hỏi đáp phỏng vấn chuyên sâu - Interview Q&A</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Làm thế nào để thiết lập một hệ thống đánh giá RAG tự động tin cậy?<br><strong>A:</strong> Cần tách biệt đánh giá Retrieval (đo bằng MRR, nDCG dựa trên tập test từ khóa chuẩn) và đánh giá Generation (đo bằng LLM-as-a-judge chấm điểm Accuracy, Completeness, Relevance dựa trên câu trả lời tham chiếu). Đồng thời, cấu hình seed thống nhất để đảm bảo kết quả không bị thay đổi ngẫu nhiên giữa các lần chạy.</li>
+                <li><strong>Q:</strong> Tại sao lại sử dụng Dual-path retrieval kết hợp Merge & Deduplicate thay vì chỉ tìm kiếm bằng câu hỏi viết lại?<br><strong>A:</strong> Viết lại câu truy vấn đôi khi có thể làm mất đi các chi tiết kỹ thuật cụ thể có trong câu hỏi gốc của người dùng. Việc tìm kiếm song song cả hai luồng đảm bảo tính bao phủ thông tin tối đa, khâu Deduplicate sau đó giúp loại bỏ dư thừa để giữ prompt gọn gàng.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Bắt buộc phải nhớ - Must remember</h3>
+              <ol class="memory-list">
+                <li>Agentic RAG cải tiến chất lượng ngữ cảnh bằng việc tích hợp LLM vào khâu xử lý dữ liệu và tìm kiếm ngữ cảnh.</li>
+                <li>Sử dụng Structured Outputs (Pydantic + LiteLLM) để đảm bảo định dạng JSON trả về từ LLM chuẩn xác 100%.</li>
+                <li>Dual-path retrieval truy vấn song song câu hỏi gốc và câu hỏi viết lại để tăng tối đa tỷ lệ Recall.</li>
+                <li>Đo lường hiệu năng là cốt lõi: sử dụng MRR, nDCG cho truy xuất và LLM-as-a-judge cho câu trả lời.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Tự kiểm tra - Self-check</h3>
+              <ul class="memory-list">
+                <li>Bạn có thể giải thích cách hoạt động chi tiết của hàm <span class="inline-code">process_document</span> trong file <span class="inline-code">ingest.py</span> không?</li>
+                <li>Làm thế nào để thay đổi số lượng luồng đánh giá đồng thời trong Gradio Dashboard?</li>
+                <li>Nếu điểm MRR của hệ thống thấp nhưng điểm Accuracy của câu trả lời vẫn cao, điều này có nghĩa là gì và bạn sẽ tối ưu hóa khâu nào?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Định hướng phát triển - What comes next</h3>
+              <p>
+                1. <strong>Tích hợp Hybrid Search:</strong> Kết hợp tìm kiếm vector ngữ nghĩa (Dense Retrieval) với tìm kiếm từ khóa truyền thống (Sparse Retrieval như BM25) để tối ưu hóa khả năng truy xuất các mã số chính sách hoặc thuật ngữ chuyên ngành viết tắt.
+              </p>
+              <p style="margin-top: 10px;">
+                2. <strong>Context Caching:</strong> Triển khai giải pháp lưu trữ bộ nhớ đệm (caching) các tài liệu đã rerank cho các câu hỏi phổ biến để giảm độ trễ và tiết kiệm chi phí gọi API.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Dữ liệu còn thiếu - Missing inputs</h3>
+              <p>
+                Để kiểm định chất lượng ở quy mô lớn hơn, hệ thống cần được bổ sung thêm các file nhật ký hội thoại thực tế của người dùng (user chat logs) nhằm xây dựng tập dữ liệu kiểm thử (golden test set) đa dạng và bám sát thực tế hơn.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

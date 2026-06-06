@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic-RAG-InsureLLM Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --good-soft: #e8f6ef;
+      --good: #166534;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 74ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong,
+    .metric {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      box-shadow: none;
+    }
+
+    .inline-code,
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e8edf0;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .diagram {
+      margin-top: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: #fff7ed;
+    }
+
+    .diagram img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .diagram-caption {
+      padding: 14px 16px;
+      border-top: 1px solid var(--line-soft);
+      background: var(--surface);
+    }
+
+    .status-good {
+      color: var(--good);
+      font-weight: 700;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid #cce8d8;
+      border-radius: var(--radius);
+      background: var(--good-soft);
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Agentic RAG - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic-RAG-InsureLLM Study Guide</h1>
+          <p>
+            Tài liệu này tổng hợp repo <code>Agentic-RAG-InsureLLM</code> theo đúng tinh thần học để hiểu sâu:
+            kiến trúc hệ thống, pipeline, workflow, cách hoạt động nội bộ, cách triển khai, các kỹ thuật mới,
+            các tối ưu so với Day 5, và khung trả lời phỏng vấn ở mức system design.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm chính - Main focus</strong>
+              Agentic retrieval - truy xuất có tác tử, hierarchical chunking - chia chunk phân cấp,
+              tool routing - định tuyến bằng tool calling, self-reflective retry - tự đánh giá và retry.
+            </article>
+            <article class="mini-card">
+              <strong>Kết quả học tập - Learning outcome</strong>
+              Sau khi đọc xong, bạn nên giải thích được vì sao hệ thống này tốt hơn
+              Day 5 <em>Advanced RAG Pro</em> ở các câu hỏi spanning, holistic và numerical.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn chính - Primary sources</h3>
+            <p>
+              Template:
+              <a href="file:///G:/RAG/study_guide/study-guide-template.html">study-guide-template.html</a><br>
+              Repo hiện tại:
+              <a href="file:///G:/RAG/Agentic-RAG-InsureLLM/README.md">Agentic-RAG-InsureLLM/README.md</a><br>
+              Core code:
+              <span class="inline-code">implementation/ingest.py</span>,
+              <span class="inline-code">implementation/answer.py</span>,
+              <span class="inline-code">evaluation/eval.py</span>
+            </p>
+            <div class="tag-row">
+              <span class="tag">Agentic AI</span>
+              <span class="tag">RAG</span>
+              <span class="tag">Tool Calling</span>
+              <span class="tag">System Design</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Utilities - Tiện ích</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview Takeaways</a>
+          <a class="toc-link" href="#flashcards">12. Q&A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Reading progress - Tiến độ đọc</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Buổi học hiện tại - Current session</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Agentic-RAG-InsureLLM: từ Advanced RAG sang Agentic RAG có routing và self-correction.</li>
+                <li><strong>Main focus - Trọng tâm:</strong> hiểu cách một RAG pipeline tiến hóa thành hệ thống có quyết định, có nhiều retrieval strategy, có quality gate.</li>
+                <li><strong>Primary repo - Repo chính:</strong> <a href="file:///G:/RAG/Agentic-RAG-InsureLLM">G:\RAG\Agentic-RAG-InsureLLM</a></li>
+                <li><strong>Core files - Mã nguồn cốt lõi:</strong> <span class="inline-code">implementation/ingest.py</span>, <span class="inline-code">implementation/answer.py</span>, <span class="inline-code">evaluation/eval.py</span>, <span class="inline-code">evaluator.py</span></li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Liên hệ lộ trình cũ - Link to previous days</h3>
+              <ul class="memory-list">
+                <li>Day 1: trực giác RAG cơ bản.</li>
+                <li>Day 2: vectors for RAG - vector cho RAG, ingestion, vector store.</li>
+                <li>Day 3: complete RAG pipeline - ghép retrieval + generation + UI.</li>
+                <li>Day 4: evaluation - đánh giá retrieval và answer quality.</li>
+                <li>Day 5: advanced RAG - query rewriting, query expansion, reranking, evidence-driven optimization.</li>
+                <li>Buổi hiện tại: thêm agentic routing, parent-child hierarchy, evaluator-driven retry loop.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Reading intent - Mục tiêu đọc:</strong>
+            tài liệu này không cố mô tả mọi chi tiết của code, mà tập trung vào các ý khiến repo này khác biệt:
+            <span class="inline-code">hierarchical retrieval</span>,
+            <span class="inline-code">query-type aware routing</span>,
+            <span class="inline-code">self-reflective evaluation</span>.
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Core idea - Ý tưởng cốt lõi</h3>
+              <ul class="memory-list">
+                <li><strong>Agentic RAG - RAG có tác tử:</strong> không dùng một retrieval flow duy nhất cho mọi câu hỏi; hệ thống tự chọn chiến lược truy xuất phù hợp.</li>
+                <li><strong>Parent-child chunking - chia chunk phân cấp:</strong> child chunk để search chính xác, parent chunk để trả lại ngữ cảnh rộng và đầy đủ hơn cho LLM.</li>
+                <li><strong>Tool routing - định tuyến bằng tool calling:</strong> direct fact, multi-hop, holistic mỗi loại câu hỏi đi vào một tool retrieval khác nhau.</li>
+                <li><strong>Evaluator retry loop - vòng lặp tự đánh giá:</strong> nếu answer đầu tiên thiếu hoặc mơ hồ, hệ thống tự sinh refined query và retry một lần.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Upgrade over Day 5 - Nâng cấp so với Day 5</h3>
+              <ul class="memory-list">
+                <li>Day 5 đã có <span class="inline-code">rewrite + merge + rerank + eval</span>.</li>
+                <li>Repo này thêm <span class="inline-code">query router</span> dùng LLM tool calling.</li>
+                <li>Thêm <span class="inline-code">query decomposition</span> cho spanning / multi-hop retrieval.</li>
+                <li>Thêm <span class="inline-code">directory-wide aggregation</span> với adaptive retrieval K cho câu holistic.</li>
+                <li>Thêm <span class="inline-code">self-reflective evaluator agent</span> để kiểm tra answer và retry có kiểm soát.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="status-box">
+            <span class="status-good">Metric snapshot - Ảnh chụp chỉ số:</span>
+            Overall Accuracy <span class="metric">4.81/5</span>,
+            Keyword Coverage <span class="metric">98.2%</span>,
+            MRR <span class="metric">0.9043</span>,
+            nDCG <span class="metric">0.8908</span>.
+            Các nhóm được cải thiện mạnh theo README: <span class="metric">Numerical 5.0</span>,
+            <span class="metric">Spanning 5.0</span>, <span class="metric">Holistic 4.6</span>.
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Buổi này thực sự dạy gì?</h3>
+              <p>
+                Buổi này dạy cách suy nghĩ về RAG như một <strong>decision system - hệ thống ra quyết định</strong>,
+                không chỉ là một pipeline tuyến tính. Nếu Day 5 dạy bạn tối ưu retrieval bằng nhiều kỹ thuật,
+                thì repo này dạy bạn câu hỏi quan trọng hơn: <em>khi nào nên dùng kỹ thuật nào?</em>
+              </p>
+            </article>
+            <article class="card">
+              <h3>Vì sao quan trọng?</h3>
+              <p>
+                Trong thực tế, direct fact question, spanning question và holistic question có failure mode khác nhau.
+                Một pipeline cố định thường tối ưu cho một nhóm nhưng fail ở nhóm khác. Agentic RAG giải quyết vấn đề đó
+                bằng cách phân loại intent trước khi truy xuất.
+              </p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>One-line summary - Một câu chốt:</strong>
+            Agentic-RAG-InsureLLM là bước tiến từ
+            <span class="inline-code">advanced retrieval engineering</span>
+            sang
+            <span class="inline-code">retrieval orchestration - điều phối truy xuất</span>.
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Kiến thức phải nắm</h3>
+              <ul class="memory-list">
+                <li>Phân biệt được <strong>child chunk</strong> và <strong>parent chunk</strong>.</li>
+                <li>Giải thích được vì sao phải có <strong>query router agent</strong>.</li>
+                <li>Nói được khi nào dùng <strong>single fact lookup</strong>, <strong>multi-hop synthesis</strong>, <strong>directory-wide aggregation</strong>.</li>
+                <li>Hiểu cơ chế <strong>LLM-as-a-router</strong> và <strong>LLM-as-an-evaluator</strong>.</li>
+                <li>Biết cách nối evaluation với optimization loop.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Implementation mindset - Tư duy triển khai</h3>
+              <ul class="memory-list">
+                <li>Data structure trước, retrieval policy sau.</li>
+                <li>Search layer và context layer không nhất thiết phải giống nhau.</li>
+                <li>Không phải cứ thêm agent là tốt; phải map từng agent vào một failure mode cụ thể.</li>
+                <li>Mọi nâng cấp đều phải trả lời được trade-off về cost, latency và complexity.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Ngày học cũ</th>
+                <th>Đã có gì</th>
+                <th>Repo hiện tại nâng cấp gì</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Day 2</td>
+                <td>Vector store - kho lưu trữ vector, ingestion pipeline cơ bản.</td>
+                <td>Thêm parent DB + child vector DB, tách lớp index và lớp context.</td>
+              </tr>
+              <tr>
+                <td>Day 3</td>
+                <td>RAG end-to-end: retrieve -> prompt -> answer.</td>
+                <td>Không còn một luồng retrieve cố định; thay bằng nhiều tool retrieval khác nhau.</td>
+              </tr>
+              <tr>
+                <td>Day 4</td>
+                <td>MRR, nDCG, keyword coverage, LLM-as-a-judge.</td>
+                <td>Đưa tư duy đánh giá này vào trong runtime qua evaluator retry loop.</td>
+              </tr>
+              <tr>
+                <td>Day 5</td>
+                <td>Semantic chunking, query rewrite, query expansion, rerank.</td>
+                <td>Thêm intent-aware routing, query decomposition, adaptive retrieval breadth và self-correction.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <strong>Key difference from Day 5 - Khác biệt quan trọng:</strong>
+            Day 5 vẫn chủ yếu là một <span class="inline-code">optimized single pipeline</span>.
+            Repo này là <span class="inline-code">multi-strategy pipeline</span> do một router quyết định.
+          </div>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+
+          <details open>
+            <summary>1. Hierarchical parent-child chunking - Chia chunk phân cấp cha-con</summary>
+            <div class="note">
+              <p><strong>Concept - Khái niệm:</strong> dùng child chunks làm <em>index layer - lớp chỉ mục</em> để match chi tiết nhỏ; dùng parent chunks làm <em>context layer - lớp ngữ cảnh</em> để cung cấp đầy đủ thông tin khi LLM trả lời.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> LLM semantic chunking, explicit entity rewriting trong chunk, lưu parent vào SQLite, lưu child embeddings vào Chroma.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> OpenAI embeddings, LiteLLM structured output, ChromaDB, SQLite, Pydantic.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> ingestion đắt hơn, schema phức tạp hơn, nhưng retrieval chính xác hơn và generation grounded hơn.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi dữ liệu có nhiều câu hỏi fact nhỏ nhưng câu trả lời cuối vẫn cần ngữ cảnh rộng hoặc đầy đủ.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>2. Query router agent - Tác tử định tuyến truy vấn</summary>
+            <div class="note">
+              <p><strong>Concept - Khái niệm:</strong> hệ thống không assume mọi câu hỏi giống nhau; nó dùng một LLM router để chọn tool retrieval tốt nhất cho từng loại query.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> function calling, intent classification bằng prompt, tool schema chặt chẽ, single strategy selection.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> LiteLLM tool calling, Pydantic, custom retrieval functions.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> tăng latency và prompt complexity; nếu router chọn sai tool thì retrieval cả pipeline có thể lệch.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi test set hoặc user traffic có nhiều query classes với failure modes khác nhau.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>3. Query decomposition - Phân rã truy vấn cho multi-hop</summary>
+            <div class="note">
+              <p><strong>Concept - Khái niệm:</strong> một câu hỏi spanning thường ẩn nhiều sub-problems; decomposition biến nó thành các sub-queries ngắn và searchable.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> LLM tạo danh sách sub-queries độc lập, search song song theo từng query, merge kết quả, rerank theo câu hỏi gốc.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> LiteLLM structured output, vector search, reranker.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> recall tăng nhưng candidate set lớn hơn, cost cao hơn, dễ noisy hơn nếu decomposition kém.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi answer cần nối nhiều facts rải rác ở nhiều tài liệu.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>4. Self-reflective evaluator agent - Tác tử tự đánh giá câu trả lời</summary>
+            <div class="note">
+              <p><strong>Concept - Khái niệm:</strong> sau khi generate answer lần đầu, hệ thống tự kiểm tra xem answer có thiếu, vague hay nói “không tìm thấy” không. Nếu có thì tự tạo refined query để retry.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> LLM-as-a-judge trong runtime, controlled retry, critique-driven query refinement.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> LiteLLM structured output, Pydantic schema <span class="inline-code">RetryEvaluation</span>.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> tăng robustness nhưng cũng tăng latency và chi phí; phải giới hạn số lần retry để tránh loop.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi bài toán đòi độ đầy đủ cao, và có nhiều câu hỏi mà pass đầu tiên thường thiếu một nửa thông tin.</p>
+            </div>
+          </details>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+          <p>
+            Sơ đồ dưới đây là “bản đồ tư duy” tốt nhất để hiểu hệ thống. Hãy đọc nó theo hai nửa:
+            bên trái là <strong>build-time / ingest-time</strong>, bên phải là <strong>request-time / serving-time</strong>.
+          </p>
+
+          <div class="diagram">
+            <img src="file:///G:/RAG/Agentic-RAG-InsureLLM/agentic_rag_workflow.jpg" alt="Agentic RAG workflow diagram">
+            <div class="diagram-caption">
+              <strong>Diagram reading hint - Cách đọc sơ đồ:</strong>
+              dưới lên bên trái là data preparation; giữa sang phải là query routing, answer generation và evaluator retry loop.
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Definitions from the diagram - Định nghĩa từ sơ đồ</h3>
+              <ul class="memory-list">
+                <li><strong>Parent DB:</strong> kho lưu parent chunks lớn, giàu ngữ cảnh, được truy hồi bằng <span class="inline-code">parent_id</span>.</li>
+                <li><strong>Child chunk:</strong> mẩu văn bản nhỏ 1-2 câu, tối ưu cho semantic matching - khớp ngữ nghĩa chính xác.</li>
+                <li><strong>Vector DB:</strong> nơi lưu embedding của child chunks để truy xuất gần đúng theo vector similarity.</li>
+                <li><strong>Query Router Agent:</strong> LLM quyết định dùng retrieval tool nào dựa trên loại câu hỏi.</li>
+                <li><strong>Tool Call 1/2/3:</strong> ba chiến lược search khác nhau thay vì một pipeline cứng.</li>
+                <li><strong>Self-Reflective Evaluator Agent:</strong> bộ kiểm tra nội bộ xem answer đủ tốt chưa, có cần retry không.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>What the diagram is really saying</h3>
+              <p>
+                Repo này tách retrieval thành hai tầng:
+                <strong>search narrowly, answer broadly</strong>.
+                Nghĩa là hệ thống tìm bằng child chunks nhỏ để không bỏ lỡ detail, nhưng trả context bằng parent chunks lớn để LLM không bị thiếu ngữ cảnh.
+                Sau đó, thay vì luôn đi theo một đường thẳng, query được router phân loại rồi đi qua tool phù hợp nhất.
+              </p>
+            </article>
+          </div>
+
+          <details open>
+            <summary>Build-time flow - Luồng xây dữ liệu trước khi chạy</summary>
+            <div class="note">
+              <ol class="memory-list">
+                <li>Đọc markdown documents từ knowledge base.</li>
+                <li>LLM chia mỗi document thành nhiều <strong>parent chunks</strong> và danh sách <strong>child chunks</strong> tương ứng.</li>
+                <li>Gán <span class="inline-code">parent_id</span> cho từng parent chunk.</li>
+                <li>Lưu parent chunks vào SQLite <span class="inline-code">parent_chunks.db</span>.</li>
+                <li>Tạo embeddings cho toàn bộ child chunks và lưu vào Chroma <span class="inline-code">preprocessed_hierarchic_db</span>.</li>
+              </ol>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Request-time flow - Luồng xử lý khi user đặt câu hỏi</summary>
+            <div class="note">
+              <ol class="memory-list">
+                <li>User gửi query.</li>
+                <li><span class="inline-code">fetch_context_router()</span> dùng LLM tool calling để chọn:
+                  <strong>single fact</strong>, <strong>multi-hop</strong> hoặc <strong>directory scan</strong>.</li>
+                <li>Tool được chọn sẽ rewrite query hoặc decompose query rồi search vector DB bằng embeddings.</li>
+                <li>Kết quả vector search trả về child chunks + metadata chứa <span class="inline-code">parent_id</span>.</li>
+                <li>Hệ thống fetch parent chunks từ SQLite để “nâng” context từ mức chi tiết lên mức hiểu được.</li>
+                <li>Các chunks được merge, deduplicate và rerank.</li>
+                <li>LLM sinh answer từ original question + top reranked context.</li>
+                <li>Evaluator agent kiểm tra chất lượng answer. Nếu thấy thiếu, nó tạo refined query và chạy lại thêm một vòng.</li>
+              </ol>
+            </div>
+          </details>
+
+          <details>
+            <summary>Why this beats Day 5 - Vì sao sơ đồ này mạnh hơn Day 5</summary>
+            <div class="note">
+              <p>
+                Day 5 chủ yếu cải thiện một pipeline retrieval chung. Sơ đồ này thêm tầng ra quyết định:
+                direct fact không cần quét rộng như holistic;
+                spanning không thể chỉ rewrite một query là đủ;
+                câu holistic cần retrieval breadth lớn hơn. Tức là hệ thống bắt đầu
+                tối ưu <strong>chiến lược</strong>, không chỉ tối ưu <strong>câu truy vấn</strong>.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Technique</th>
+                <th>Problem - Vấn đề</th>
+                <th>How it works - Cách chạy</th>
+                <th>Trade-off - Đánh đổi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hierarchical semantic chunking</td>
+                <td>Chunk nhỏ dễ mất ngữ cảnh; chunk lớn khó search chính xác.</td>
+                <td>Tạo parent chunk để giữ nghĩa lớn, child chunk để index chính xác.</td>
+                <td>Ingestion phức tạp và tốn token hơn recursive splitter.</td>
+              </tr>
+              <tr>
+                <td>Query rewriting - viết lại truy vấn</td>
+                <td>User query mơ hồ hoặc thiếu entity.</td>
+                <td>LLM tạo refined query ngắn và searchable hơn.</td>
+                <td>Có nguy cơ query dilution - làm mất chi tiết quan trọng.</td>
+              </tr>
+              <tr>
+                <td>Query decomposition - phân rã truy vấn</td>
+                <td>Spanning question cần nhiều facts ở nhiều nơi.</td>
+                <td>Chia câu hỏi thành sub-queries độc lập để search nhiều hướng.</td>
+                <td>Recall tăng nhưng noise và chi phí cũng tăng.</td>
+              </tr>
+              <tr>
+                <td>Adaptive retrieval K</td>
+                <td>Câu holistic cần breadth lớn hơn direct fact.</td>
+                <td>Tính K theo số tài liệu trong thư mục mục tiêu.</td>
+                <td>Nếu K quá lớn, prompt có thể noisy.</td>
+              </tr>
+              <tr>
+                <td>LLM reranking - tái xếp hạng bằng LLM</td>
+                <td>Context đúng có trong candidate set nhưng xếp thấp.</td>
+                <td>LLM đọc danh sách chunks và trả về thứ tự relevance.</td>
+                <td>Nếu candidate set sai từ đầu, reranker không cứu được.</td>
+              </tr>
+              <tr>
+                <td>Self-reflective retry</td>
+                <td>Answer đầu tiên thiếu hoặc vague.</td>
+                <td>Evaluator judge answer rồi tạo refined query để retry một lần.</td>
+                <td>Tăng latency; cần chặn retry vô hạn.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Day 5 Pro</th>
+                <th>Agentic-RAG-InsureLLM</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Chunking</td>
+                <td><span class="inline-code">headline + summary + original_text</span></td>
+                <td><span class="inline-code">parent_headline + parent_chunk + child_chunks</span></td>
+                <td>Day 5 tối ưu retrieval; repo này tối ưu cả retrieval lẫn context reconstruction.</td>
+              </tr>
+              <tr>
+                <td>Storage</td>
+                <td>Một vector DB phẳng.</td>
+                <td>Chroma cho child vectors + SQLite cho parent chunks.</td>
+                <td>Tách lớp search và lớp grounding.</td>
+              </tr>
+              <tr>
+                <td>Routing</td>
+                <td>Một retrieval flow chung cho mọi query.</td>
+                <td>LLM router chọn tool retrieval phù hợp với loại query.</td>
+                <td>Tăng chất lượng trên tập query đa dạng.</td>
+              </tr>
+              <tr>
+                <td>Recall strategy</td>
+                <td>Original query + rewritten query.</td>
+                <td>Single query, decomposed queries hoặc directory scan tùy intent.</td>
+                <td>Không lãng phí breadth cho direct fact, không thiếu breadth cho holistic.</td>
+              </tr>
+              <tr>
+                <td>Quality control</td>
+                <td>Evaluation chủ yếu offline.</td>
+                <td>Evaluator loop chạy ngay trong runtime.</td>
+                <td>Runtime có khả năng tự sửa một số failure pass đầu tiên.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <strong>Công nghệ mới đáng chú ý - Notable newer ideas:</strong>
+            tool calling cho retrieval orchestration, parent-child dual-store design,
+            evaluator-controlled retry loop, và query-type aware adaptive retrieval breadth.
+          </div>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3><a href="file:///G:/RAG/Agentic-RAG-InsureLLM/implementation/ingest.py">implementation/ingest.py</a></h3>
+              <ul class="memory-list">
+                <li><span class="inline-code">fetch_documents()</span>: đọc knowledge base thành danh sách document.</li>
+                <li><span class="inline-code">Chunk</span> schema: định nghĩa parent headline, parent chunk, child chunks.</li>
+                <li><span class="inline-code">process_document()</span>: dùng LLM để semantic chunking có cấu trúc.</li>
+                <li><span class="inline-code">assign_parent_ids()</span>: tạo khóa nối giữa child retrieval và parent context.</li>
+                <li><span class="inline-code">create_embeddings()</span>: chỉ embed child chunks và lưu vào Chroma.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3><a href="file:///G:/RAG/Agentic-RAG-InsureLLM/implementation/answer.py">implementation/answer.py</a></h3>
+              <ul class="memory-list">
+                <li><span class="inline-code">fetch_context_unranked()</span>: vector search trên child chunks rồi tra lại parent DB.</li>
+                <li><span class="inline-code">rerank()</span>: LLM reranker sắp lại candidate chunks.</li>
+                <li><span class="inline-code">rewrite_query()</span> và <span class="inline-code">decompose_query()</span>: tối ưu truy vấn theo từng loại câu hỏi.</li>
+                <li><span class="inline-code">fetch_context_router()</span>: router agent dùng tool calling.</li>
+                <li><span class="inline-code">evaluate_answer_quality()</span>: quality gate trước khi trả answer cuối.</li>
+              </ul>
+            </article>
+          </div>
+
+          <details open>
+            <summary>File responsibility map - Bản đồ trách nhiệm file</summary>
+            <div class="note">
+              <p>
+                <strong>README.md</strong> giải thích ý tưởng và metric.<br>
+                <strong>implementation/ingest.py</strong> là data engineering pipeline.<br>
+                <strong>implementation/answer.py</strong> là orchestration logic.<br>
+                <strong>evaluation/eval.py</strong> đo retrieval và answer quality.<br>
+                <strong>evaluator.py</strong> là dashboard trực quan hóa kết quả.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Deployment note - Ghi chú triển khai thực tế</summary>
+            <div class="note">
+              <p>
+                Repo gốc trong thư mục <span class="inline-code">Agentic-RAG-InsureLLM</span> không kèm knowledge-base vì lý do IP của course.
+                Tuy nhiên trong workspace hiện tại bạn đang có knowledge base ở root project, nên về mặt học tập bạn vẫn hiểu được kiến trúc đầy đủ.
+                Nếu muốn chạy đúng repo gốc, cần chuẩn bị lại nguồn markdown tương ứng, tạo DB bằng ingest rồi mới chạy evaluator.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Trường hợp dễ fail</h3>
+              <ul class="memory-list">
+                <li><strong>Router misclassification - router chọn nhầm đường:</strong> câu spanning bị xem như direct fact làm hệ thống search quá hẹp.</li>
+                <li><strong>Weak decomposition - phân rã truy vấn kém:</strong> sub-queries quá giống nhau hoặc bỏ sót mảnh thông tin then chốt.</li>
+                <li><strong>Query dilution - loãng truy vấn:</strong> refined query bỏ mất số liệu, entity, điều kiện thời gian.</li>
+                <li><strong>Child-parent mismatch:</strong> child chunk match đúng nhưng parent chunk quá rộng hoặc chứa nhiều nhiễu.</li>
+                <li><strong>Retry overuse:</strong> evaluator cứ thấy answer chưa đẹp là retry, làm chi phí và latency tăng nhanh.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li><strong>“Có agent là thông minh hơn”:</strong> sai; agent chỉ đáng dùng nếu nó map đúng vào một decision point có giá trị.</li>
+                <li><strong>“Rerank rồi thì không cần recall mạnh”:</strong> sai; reranker không thể cứu context chưa từng được retrieve.</li>
+                <li><strong>“Chunk càng nhỏ càng tốt”:</strong> sai; chunk nhỏ tốt cho search nhưng tệ cho grounding nếu không có parent context.</li>
+                <li><strong>“Eval chỉ để làm dashboard”:</strong> sai; repo này cho thấy tư duy eval có thể đi vào runtime để điều khiển retry.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Questions you should answer - Câu nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>Agentic RAG khác Advanced RAG ở điểm nào?</li>
+                <li>Vì sao phải tách child chunk và parent chunk?</li>
+                <li>Khi nào dùng query decomposition thay vì chỉ rewrite query?</li>
+                <li>Self-reflective evaluator loop giúp gì và có rủi ro gì?</li>
+                <li>Trade-off cost/latency/complexity của hệ thống này là gì?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer frame - Khung trả lời</h3>
+              <p>
+                Trả lời theo cấu trúc:
+                <strong>Problem - vấn đề</strong> ->
+                <strong>Failure mode - lỗi cũ</strong> ->
+                <strong>Technique - kỹ thuật thêm vào</strong> ->
+                <strong>Mechanism - cách hoạt động</strong> ->
+                <strong>Trade-off - đánh đổi</strong> ->
+                <strong>Metric / evidence - bằng chứng</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Parent-child chunking giải quyết vấn đề gì?<br><strong>A:</strong> Nó tách “search precision” khỏi “answer context”, cho phép tìm bằng chunk nhỏ nhưng trả lời bằng context lớn.</li>
+                <li><strong>Q:</strong> Query router làm gì?<br><strong>A:</strong> Nó phân loại intent của query và gọi retrieval tool phù hợp thay vì dùng một flow duy nhất.</li>
+                <li><strong>Q:</strong> Vì sao spanning queries hưởng lợi từ query decomposition?<br><strong>A:</strong> Vì thông tin cần thiết nằm rải ở nhiều nơi; một query đơn thường không kéo đủ các mảnh liên quan.</li>
+                <li><strong>Q:</strong> Evaluator retry loop khác offline eval thế nào?<br><strong>A:</strong> Offline eval chỉ đo sau khi build; evaluator loop dùng đánh giá ngay trong runtime để quyết định có retry không.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&A - Hỏi đáp phỏng vấn</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Hãy mô tả đường đi của một query trong hệ thống này.<br><strong>A:</strong> Query đi vào router agent, router chọn tool retrieval, tool thực hiện rewrite hoặc decomposition, vector DB trả child chunks, hệ thống tra parent DB để lấy context rộng, rerank candidate chunks, generate answer, rồi evaluator quyết định có retry thêm một vòng không.</li>
+                <li><strong>Q:</strong> Repo này hơn Day 5 ở đâu?<br><strong>A:</strong> Day 5 tối ưu một retrieval pipeline; repo này tối ưu chiến lược retrieval theo loại query, thêm parent-child hierarchy và quality gate trong runtime, nên mạnh hơn trên numerical, spanning và holistic queries.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Must remember - Phải nhớ</h3>
+              <ol class="memory-list">
+                <li>Agentic RAG = RAG có thêm decision layer, không chỉ thêm retrieval tricks.</li>
+                <li>Child chunk để search; parent chunk để answer.</li>
+                <li>Router chọn tool theo query type: direct fact, spanning, holistic.</li>
+                <li>Evaluator loop là một quality gate nội bộ, không chỉ là dashboard metric.</li>
+                <li>So với Day 5, cải tiến lớn nhất là <strong>retrieval orchestration</strong>.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Self-check - Tự kiểm tra</h3>
+              <ul class="memory-list">
+                <li>Bạn có giải thích được từng block trong ảnh workflow không?</li>
+                <li>Bạn có phân biệt được khi nào dùng rewrite, decomposition, directory scan không?</li>
+                <li>Bạn có nói được 3 trade-off lớn nhất của hệ thống này không?</li>
+                <li>Bạn có nêu được vì sao hierarchical chunking tốt hơn flat chunking trong bài toán này không?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What comes next - Tiếp theo là gì</h3>
+              <p>
+                Sau khi nắm chắc repo này, hướng học tiếp hợp lý là:
+                hybrid retrieval - truy xuất lai BM25 + vector,
+                graph-aware retrieval,
+                planner-executor multi-agent workflows,
+                và cost-aware routing để giảm chi phí khi số lượng query lớn.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Missing inputs - Còn thiếu gì nếu muốn đào sâu hơn</h3>
+              <p>
+                Muốn làm bản sâu hơn nữa, bạn nên đọc thêm toàn bộ notebook Day 5, chạy thực nghiệm với test set 150 câu,
+                và tự so sánh 3 thế hệ:
+                <span class="inline-code">implementation</span> ->
+                <span class="inline-code">pro_implementation</span> ->
+                <span class="inline-code">Agentic-RAG-InsureLLM</span>.
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được tạo dựa trên template của project, các study guide Day 1-5,
+            và repo <span class="inline-code">Agentic-RAG-InsureLLM</span>.
+            Không chứa secrets, API keys, tokens hoặc credentials.
+          </div>
+          <p class="print-only">End of Agentic-RAG-InsureLLM study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function setActiveLink() {
+      let currentId = allSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of allSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

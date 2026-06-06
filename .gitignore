@@ -19,3 +19,7 @@ Phien_am/
 slide/
 vector_db/
 preprocessed_db/
+
+# Agentic RAG DBs
+Agentic-RAG-InsureLLM/parent_chunks.db
+Agentic-RAG-InsureLLM/preprocessed_hierarchic_db/
