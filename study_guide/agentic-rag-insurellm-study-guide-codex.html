@@ -591,6 +591,14 @@
             <span class="inline-code">query-type aware routing</span>,
             <span class="inline-code">self-reflective evaluation</span>.
           </div>
+          <div class="callout">
+            <strong>Implementation scope:</strong>
+            This guide now also documents the concrete implementation inside
+            <span class="inline-code">implementation/ingest.py</span> and
+            <span class="inline-code">implementation/answer.py</span>:
+            dual-store layout, schemas, prompt rules, retrieval strategies,
+            tool-calling contracts, reranking safeguards, and the retry loop.
+          </div>
         </section>
 
         <section id="cheat-sheet" class="section" data-section="cheat-sheet">
@@ -792,6 +800,49 @@
               <p><strong>When to use - Khi nào nên dùng:</strong> khi bài toán đòi độ đầy đủ cao, và có nhiều câu hỏi mà pass đầu tiên thường thiếu một nửa thông tin.</p>
             </div>
           </details>
+          <details open>
+            <summary>5. ingest.py implementation map - Implementation-complete view</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong>Environment and config:</strong> <span class="inline-code">load_dotenv(override=True)</span>, OpenAI client, exponential retry, <span class="inline-code">MODEL = "openai/gpt-4.1-nano"</span>, <span class="inline-code">AVERAGE_PARENT_CHUNK_SIZE = 1000</span>, <span class="inline-code">WORKERS = 3</span>, <span class="inline-code">embedding_model = "text-embedding-3-large"</span>.</li>
+                <li><strong>Dual-store layout:</strong> parent context is stored in <span class="inline-code">parent_chunks.db</span>; child vectors are stored in Chroma <span class="inline-code">preprocessed_hierarchic_db</span>.</li>
+                <li><strong>SQLite schema creation:</strong> <span class="inline-code">init_parent_chunk_db()</span> creates table <span class="inline-code">parent_chunks(parent_id, parent_headline, parent_chunk, metadata)</span>.</li>
+                <li><strong>Document loading:</strong> <span class="inline-code">fetch_documents()</span> scans every knowledge-base subfolder, reads every <span class="inline-code">.md</span> file, and normalizes each record to <span class="inline-code">{type, source, text}</span>.</li>
+                <li><strong>Structured contracts:</strong> <span class="inline-code">Result</span>, <span class="inline-code">Chunk</span>, and <span class="inline-code">Chunks</span> define the full ingestion contract.</li>
+                <li><strong>Prompt constraints:</strong> <span class="inline-code">make_prompt()</span> enforces parent/child hierarchy, 10-20% overlap, full-document coverage, child length 1-2 sentences, and explicit entity replacement for pronouns.</li>
+                <li><strong>Chunk processing:</strong> <span class="inline-code">process_document()</span> uses LiteLLM with <span class="inline-code">response_format=Chunks</span>, validates via Pydantic, then converts each item to <span class="inline-code">Result</span>.</li>
+                <li><strong>Parallel ingestion:</strong> <span class="inline-code">create_chunks()</span> uses <span class="inline-code">multiprocessing.Pool</span> plus <span class="inline-code">tqdm</span>; the code explicitly notes reducing workers if rate limits appear.</li>
+                <li><strong>Parent linkage:</strong> <span class="inline-code">assign_parent_ids()</span> writes <span class="inline-code">metadata["parent_id"]</span> after chunking finishes.</li>
+                <li><strong>Parent persistence:</strong> <span class="inline-code">insert_parent_chunk()</span> stores all parent chunks with <span class="inline-code">INSERT OR REPLACE</span> and JSON metadata.</li>
+                <li><strong>Embedding strategy:</strong> <span class="inline-code">create_embeddings()</span> flattens child chunks only, batches them, creates embeddings, and writes vectors with the same metadata key used for parent reconstruction.</li>
+                <li><strong>Main execution order:</strong> fetch documents -> create chunks -> assign parent ids -> initialize and save SQLite -> embed child chunks -> print <span class="inline-code">"Ingestion complete"</span>.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details open>
+            <summary>6. answer.py implementation map - Implementation-complete view</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong>Runtime config:</strong> <span class="inline-code">MODEL = "openrouter/openai/gpt-oss-120b"</span>, Chroma path <span class="inline-code">preprocessed_hierarchic_db</span>, SQLite path <span class="inline-code">parent_chunks.db</span>, and a knowledge-base path used for directory-aware retrieval breadth.</li>
+                <li><strong>Answer prompt:</strong> <span class="inline-code">SYSTEM_PROMPT</span> requires accurate, relevant, complete answers, bans invention, and explicitly asks for qualifying details on holistic or aggregate questions.</li>
+                <li><strong>Directory-aware utilities:</strong> <span class="inline-code">build_directory_doc_counts()</span> counts docs per folder; <span class="inline-code">fetch_parent_chunks_batch()</span> hydrates many parent chunks with a single SQL <span class="inline-code">IN (...)</span> query.</li>
+                <li><strong>Collection access:</strong> <span class="inline-code">get_collection()</span> opens or creates the Chroma collection at runtime.</li>
+                <li><strong>Candidate merge:</strong> <span class="inline-code">merge_chunks()</span> merges candidate lists and deduplicates by <span class="inline-code">child_chunks[0]</span>.</li>
+                <li><strong>Child-first retrieval:</strong> <span class="inline-code">fetch_context_unranked()</span> embeds the query, searches child vectors, extracts <span class="inline-code">parent_id</span>, then rebuilds each result with parent context from SQLite.</li>
+                <li><strong>Reranker safeguards:</strong> <span class="inline-code">sanitize_rank_order()</span> cleans malformed rank outputs, and <span class="inline-code">rerank()</span> falls back to the original order on failure.</li>
+                <li><strong>Single-doc strategy:</strong> <span class="inline-code">fetch_context_single_doc()</span> rewrites the query, searches with both original and rewritten forms, merges, reranks, and returns top <span class="inline-code">FINAL_K=10</span>.</li>
+                <li><strong>Multi-hop strategy:</strong> <span class="inline-code">decompose_query()</span> emits 1-5 sub-queries; <span class="inline-code">fetch_context_multi_hop()</span> searches the original question plus every sub-query.</li>
+                <li><strong>Directory-scan strategy:</strong> <span class="inline-code">fetch_context_directory_scan()</span> computes <span class="inline-code">adaptive_retrieval_k = doc_count + 5</span> for holistic or aggregate questions.</li>
+                <li><strong>Tool-calling contract:</strong> the <span class="inline-code">tools</span> array defines the JSON schema for all three strategies, including the allowed directory enum <span class="inline-code">company/products/employees/contracts/unknown</span>.</li>
+                <li><strong>Router execution:</strong> <span class="inline-code">handle_tool_call()</span> parses JSON arguments and dispatches to Python functions; <span class="inline-code">fetch_context_router()</span> forces <span class="inline-code">tool_choice="required"</span>.</li>
+                <li><strong>Generation step:</strong> <span class="inline-code">make_rag_messages()</span> builds context from source, parent headline, parent chunk, and the matched child chunk, then adds the original question and optional history.</li>
+                <li><strong>Evaluator schema:</strong> <span class="inline-code">RetryEvaluation</span> has only <span class="inline-code">allow_retry</span> and <span class="inline-code">refined_query</span>; the evaluator prompt decides whether retrieval should run again.</li>
+                <li><strong>Retry loop:</strong> <span class="inline-code">answer_question()</span> runs retrieve -> generate -> judge -> retry at most once; the retry changes only <span class="inline-code">search_query</span>, while generation still uses the original user question.</li>
+                <li><strong>Reliability wrapper:</strong> rewrite, decompose, rerank, route, and answer generation are wrapped in <span class="inline-code">@retry(wait=wait)</span>.</li>
+              </ul>
+            </div>
+          </details>
         </section>
 
         <section id="workflow" class="section" data-section="workflow">
@@ -863,6 +914,38 @@
                 <li>Các chunks được merge, deduplicate và rerank.</li>
                 <li>LLM sinh answer từ original question + top reranked context.</li>
                 <li>Evaluator agent kiểm tra chất lượng answer. Nếu thấy thiếu, nó tạo refined query và chạy lại thêm một vòng.</li>
+              </ol>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Exact build-time walkthrough - Implementation-accurate ingest flow</summary>
+            <div class="note">
+              <ol class="memory-list">
+                <li><span class="inline-code">fetch_documents()</span> đọc toàn bộ markdown và giữ nguyên ba trường <span class="inline-code">type</span>, <span class="inline-code">source</span>, <span class="inline-code">text</span>.</li>
+                <li><span class="inline-code">make_prompt()</span> ước lượng số parent chunks từ độ dài tài liệu rồi ép model tuân thủ overlap, full coverage, child-first retrieval design và explicit entity rewriting.</li>
+                <li><span class="inline-code">process_document()</span> dùng structured output để chunk hierarchy được validate bởi Pydantic ngay tại thời điểm ingest.</li>
+                <li><span class="inline-code">create_chunks()</span> chạy chunking song song bằng <span class="inline-code">multiprocessing.Pool</span>.</li>
+                <li><span class="inline-code">assign_parent_ids()</span> gán join key để child hits sau này nối lại đúng parent context.</li>
+                <li><span class="inline-code">insert_parent_chunk()</span> chỉ lưu parent chunks vào SQLite.</li>
+                <li><span class="inline-code">create_embeddings()</span> chỉ embed child chunks, batch request và lưu vectors cùng metadata vào Chroma.</li>
+                <li>Kết quả cuối là kiến trúc dual-store: SQLite cho broad context, Chroma cho precise semantic matching.</li>
+              </ol>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Exact request-time walkthrough - Implementation-accurate answer flow</summary>
+            <div class="note">
+              <ol class="memory-list">
+                <li><span class="inline-code">answer_question()</span> bắt đầu với <span class="inline-code">search_query = question</span> và tối đa hai attempts.</li>
+                <li><span class="inline-code">fetch_context_router()</span> bắt buộc router chọn đúng một retrieval tool trước khi generate answer.</li>
+                <li>Strategy được chọn có thể rewrite query, decompose thành sub-queries hoặc tăng retrieval breadth theo directory size.</li>
+                <li><span class="inline-code">fetch_context_unranked()</span> search child vectors, lấy <span class="inline-code">parent_id</span> và hydrate parent chunks từ SQLite.</li>
+                <li><span class="inline-code">merge_chunks()</span> và <span class="inline-code">rerank()</span> tạo ra final ranked context set.</li>
+                <li><span class="inline-code">make_rag_messages()</span> luôn generate bằng original question, kể cả khi retrieval retry dùng refined query.</li>
+                <li><span class="inline-code">evaluate_answer_quality()</span> quyết định answer đầu tiên có thiếu tới mức cần thêm một vòng retrieve/generate hay không.</li>
+                <li>Nếu retry được bật, code chỉ đổi <span class="inline-code">search_query</span>; intent của answer vẫn bám theo câu hỏi ban đầu của user.</li>
               </ol>
             </div>
           </details>
@@ -1023,6 +1106,98 @@
               </ul>
             </article>
           </div>
+
+          <details open>
+            <summary>Function-by-function ingest.py breakdown</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><span class="inline-code">init_parent_chunk_db()</span>: ensures the parent SQLite store exists before writing.</li>
+                <li><span class="inline-code">insert_parent_chunk()</span>: persists parent chunks only after <span class="inline-code">parent_id</span> assignment.</li>
+                <li><span class="inline-code">fetch_documents()</span>: bridges raw files into normalized document records.</li>
+                <li><span class="inline-code">Chunk.as_result()</span>: converts structured chunk output into the shared runtime object shape.</li>
+                <li><span class="inline-code">make_prompt()</span>: encodes retrieval assumptions directly into data preparation.</li>
+                <li><span class="inline-code">process_document()</span>: smallest LLM work unit of the ingestion pipeline.</li>
+                <li><span class="inline-code">create_chunks()</span>: throughput layer for the full knowledge base.</li>
+                <li><span class="inline-code">assign_parent_ids()</span>: writes the join key reused across SQLite and Chroma.</li>
+                <li><span class="inline-code">batch()</span>: helper to control embedding request size.</li>
+                <li><span class="inline-code">create_embeddings()</span>: converts child chunks into the searchable vector index.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Function-by-function answer.py breakdown</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><span class="inline-code">build_directory_doc_counts()</span>: supports holistic retrieval by knowing folder scale.</li>
+                <li><span class="inline-code">fetch_parent_chunks_batch()</span>: reduces I/O by hydrating many parent ids in one SQL query.</li>
+                <li><span class="inline-code">merge_chunks()</span>: merges candidate sets from multiple query forms or sub-queries.</li>
+                <li><span class="inline-code">fetch_context_unranked()</span>: performs the core child-vector search then parent reconstruction.</li>
+                <li><span class="inline-code">sanitize_rank_order()</span>: protects against malformed reranker output.</li>
+                <li><span class="inline-code">rerank()</span>: improves the ordering of retrieved context candidates.</li>
+                <li><span class="inline-code">rewrite_query()</span>: optimizes direct lookup questions.</li>
+                <li><span class="inline-code">decompose_query()</span>: produces sub-queries for spanning or holistic questions.</li>
+                <li><span class="inline-code">fetch_context_single_doc()</span>, <span class="inline-code">fetch_context_multi_hop()</span>, and <span class="inline-code">fetch_context_directory_scan()</span>: three concrete retrieval strategies.</li>
+                <li><span class="inline-code">handle_tool_call()</span> and <span class="inline-code">fetch_context_router()</span>: decision layer for the whole system.</li>
+                <li><span class="inline-code">make_rag_messages()</span>: assembles grounded context for generation.</li>
+                <li><span class="inline-code">evaluate_answer_quality()</span>: runtime quality gate before returning the answer.</li>
+                <li><span class="inline-code">answer_question()</span>: final orchestration retrieve -> generate -> retry if needed.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Detailed ingest.py walkthrough - Giải thích chi tiết theo nhóm chức năng</summary>
+            <div class="note">
+              <p>
+                File <span class="inline-code">implementation/ingest.py</span> là toàn bộ pipeline chuẩn bị dữ liệu cho Agentic RAG.
+                Vai trò của nó không chỉ là "chia chunk và embed", mà là thiết kế lại knowledge base thành một cấu trúc hai lớp:
+                lớp <strong>context</strong> dùng để trả lời và lớp <strong>index</strong> dùng để tìm kiếm chính xác.
+              </p>
+              <ol class="memory-list">
+                <li><strong>1. Initialization and storage setup:</strong> file khởi tạo model chunking, embedding model, retry policy, OpenAI client, Chroma path và SQLite path. Ngay từ đây có thể thấy ingest được thiết kế cho dual-store architecture chứ không phải một vector DB phẳng.</li>
+                <li><strong>2. Parent store creation:</strong> <span class="inline-code">init_parent_chunk_db()</span> tạo bảng <span class="inline-code">parent_chunks</span>. Đây là nơi lưu các đoạn văn bản lớn, đủ ngữ cảnh, để runtime có thể "nâng" từ child hit lên parent context khi cần trả lời.</li>
+                <li><strong>3. Raw document normalization:</strong> <span class="inline-code">fetch_documents()</span> duyệt knowledge base theo thư mục con, đọc từng file markdown và chuẩn hóa tất cả về cùng một shape dữ liệu. Việc giữ lại <span class="inline-code">type</span> và <span class="inline-code">source</span> ngay từ đầu giúp metadata nhất quán xuyên suốt pipeline.</li>
+                <li><strong>4. Structured output contracts:</strong> <span class="inline-code">Result</span>, <span class="inline-code">Chunk</span> và <span class="inline-code">Chunks</span> là lớp bảo vệ quan trọng. Thay vì tin rằng model sẽ luôn trả text đúng format, pipeline dùng Pydantic để ép đầu ra vào đúng schema ngay lúc chunking.</li>
+                <li><strong>5. Chunking prompt as architecture control:</strong> <span class="inline-code">make_prompt()</span> chính là nơi phần lớn tư duy kiến trúc được encode vào ingest. Prompt không chỉ nói "hãy chia tài liệu", mà nói rõ parent chunk dùng cho contextual grounding, child chunk dùng cho precise retrieval, yêu cầu overlap 10-20%, phủ toàn bộ tài liệu, child chunk dài 1-2 câu và không được để unresolved pronouns.</li>
+                <li><strong>6. LLM chunk generation:</strong> <span class="inline-code">process_document()</span> là đơn vị xử lý cốt lõi cho một tài liệu. Nó gọi LiteLLM với <span class="inline-code">response_format=Chunks</span>, parse kết quả vào schema, rồi convert sang danh sách <span class="inline-code">Result</span> để dùng thống nhất ở các bước sau.</li>
+                <li><strong>7. Parallel ingestion:</strong> <span class="inline-code">create_chunks()</span> dùng <span class="inline-code">multiprocessing.Pool</span> để xử lý nhiều document song song. Điều này cho thấy ingest được tối ưu cho throughput, nhưng code cũng thừa nhận trade-off bằng comment: nếu rate limit thì hạ <span class="inline-code">WORKERS</span> xuống 1.</li>
+                <li><strong>8. Join-key assignment:</strong> <span class="inline-code">assign_parent_ids()</span> gán <span class="inline-code">parent_id</span> sau khi chunking hoàn tất. Đây là khóa liên kết quan trọng nhất giữa child vectors và parent context. Không có bước này thì retrieval child-first sẽ không hydrate lại được ngữ cảnh lớn.</li>
+                <li><strong>9. Parent persistence:</strong> <span class="inline-code">insert_parent_chunk()</span> lưu parent chunks vào SQLite bằng <span class="inline-code">INSERT OR REPLACE</span>. Metadata được serialize thành JSON để runtime có thể tái tạo thông tin nguồn khi cần.</li>
+                <li><strong>10. Child embedding pipeline:</strong> <span class="inline-code">create_embeddings()</span> flatten toàn bộ child chunks, chia batch, tạo embeddings rồi lưu vào Chroma cùng metadata. Chỉ child chunks được embed, vì child layer được tối ưu cho semantic matching còn parent layer được tối ưu cho answer grounding.</li>
+                <li><strong>11. End-to-end execution order:</strong> phần <span class="inline-code">__main__</span> cho thấy thứ tự đầy đủ của ingest: load documents -> create chunks -> assign parent ids -> save parent store -> build child vector store. Điều này phản ánh rõ đây là một data engineering pipeline hoàn chỉnh chứ không phải script tiện ích nhỏ.</li>
+              </ol>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Detailed answer.py walkthrough - Giải thích chi tiết theo nhóm chức năng</summary>
+            <div class="note">
+              <p>
+                File <span class="inline-code">implementation/answer.py</span> là runtime chính của toàn hệ thống Agentic RAG.
+                Thay vì dùng một retrieval flow cố định cho mọi query, file này tổ chức một chuỗi quyết định gồm:
+                chọn strategy, retrieve theo strategy đó, tái xếp hạng context, generate answer, rồi tự đánh giá để retry nếu cần.
+              </p>
+              <ol class="memory-list">
+                <li><strong>1. Runtime initialization and answer contract:</strong> phần đầu file thiết lập model runtime, kết nối tới Chroma và SQLite, cùng với <span class="inline-code">SYSTEM_PROMPT</span> quy định chuẩn đầu ra cho answer. Prompt này rất quan trọng vì nó ép model không chỉ trả lời đúng mà còn đủ, nhất là với câu hỏi aggregate hoặc holistic.</li>
+                <li><strong>2. Retrieval-oriented data contract:</strong> schema <span class="inline-code">Result</span> ở runtime không giống chunk schema của ingest. Nó đại diện cho một context item đã được tái hợp nhất, gồm parent headline, parent chunk, child hit và metadata. Đây là object mà các bước rerank và generation thật sự tiêu thụ.</li>
+                <li><strong>3. Storage-aware helper layer:</strong> <span class="inline-code">build_directory_doc_counts()</span>, <span class="inline-code">fetch_parent_chunks_batch()</span> và <span class="inline-code">get_collection()</span> là các hàm hạ tầng giúp runtime dùng hiệu quả dual-store design. Đặc biệt, <span class="inline-code">fetch_parent_chunks_batch()</span> cho thấy tác giả chủ động tối ưu I/O bằng batch SQL thay vì query từng parent một.</li>
+                <li><strong>4. Raw retrieval reconstruction:</strong> <span class="inline-code">fetch_context_unranked()</span> là heart của retrieval. Nó embed query, search trên child vectors, lấy <span class="inline-code">parent_id</span> từ metadata, rồi query SQLite để lấy parent chunks tương ứng. Như vậy retrieval thực chất là quy trình hai bước: tìm nhỏ trước, kéo ngữ cảnh rộng sau.</li>
+                <li><strong>5. Candidate post-processing:</strong> sau retrieval thô, hệ thống dùng <span class="inline-code">merge_chunks()</span> để hợp nhất candidate sets từ nhiều query forms, rồi dùng <span class="inline-code">rerank()</span> để sắp lại theo relevance thực sự với câu hỏi gốc. <span class="inline-code">sanitize_rank_order()</span> là lớp phòng vệ giúp hệ thống sống sót khi reranker trả về JSON chưa sạch.</li>
+                <li><strong>6. Query optimization primitives:</strong> <span class="inline-code">rewrite_query()</span> và <span class="inline-code">decompose_query()</span> là hai primitive khác nhau. Rewrite phù hợp cho direct lookup, còn decomposition phù hợp cho spanning hoặc multi-hop queries nơi một query duy nhất khó kéo đủ dữ liệu.</li>
+                <li><strong>7. Three concrete retrieval tools:</strong> runtime triển khai ba chiến lược thật sự:
+                  <span class="inline-code">fetch_context_single_doc()</span> cho direct fact,
+                  <span class="inline-code">fetch_context_multi_hop()</span> cho spanning,
+                  và <span class="inline-code">fetch_context_directory_scan()</span> cho holistic hoặc aggregate.
+                  Khác biệt chính giữa chúng là cách tạo query set và breadth của retrieval.</li>
+                <li><strong>8. Router as decision layer:</strong> mảng <span class="inline-code">tools</span> mô tả contract function-calling, còn <span class="inline-code">fetch_context_router()</span> đóng vai trò agent định tuyến. Nó không trả lời user mà chỉ buộc model phải chọn đúng một retrieval strategy với <span class="inline-code">tool_choice="required"</span>.</li>
+                <li><strong>9. Generation assembly:</strong> <span class="inline-code">make_rag_messages()</span> ghép source, parent headline, parent chunk, child chunk, history và original question thành prompt cuối cho answer generation. Việc giữ original question ở đây rất quan trọng để refined query không làm lệch ý định thật của người dùng.</li>
+                <li><strong>10. Runtime evaluation and self-correction:</strong> <span class="inline-code">RetryEvaluation</span> và <span class="inline-code">evaluate_answer_quality()</span> biến offline evaluation mindset thành một control loop trong runtime. Judge không tạo câu trả lời mới; nó chỉ quyết định answer hiện tại có đủ tốt không và nếu chưa thì refined query nào sẽ giúp retrieval tốt hơn.</li>
+                <li><strong>11. Main orchestration loop:</strong> <span class="inline-code">answer_question()</span> là điểm hợp nhất toàn bộ hệ thống. Flow thực tế là retrieve by router -> generate answer -> judge answer -> nếu cần thì retry thêm đúng một vòng với refined query. Đây là nơi hệ thống thực sự trở thành "agentic", vì nó có khả năng quan sát kết quả trung gian và tự đổi chiến lược truy xuất.</li>
+                <li><strong>12. Reliability strategy:</strong> nhiều hàm quan trọng được bọc bằng <span class="inline-code">@retry(wait=wait)</span>. Điều này cho thấy runtime được thiết kế để chịu được lỗi tạm thời từ API, chứ không assume mọi lời gọi model đều thành công ngay lần đầu.</li>
+              </ol>
+            </div>
+          </details>
 
           <details open>
             <summary>File responsibility map - Bản đồ trách nhiệm file</summary>

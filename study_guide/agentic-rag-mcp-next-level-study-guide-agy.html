@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG Next Level - Study & Interview Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      box-shadow: none;
+    }
+
+    .template-note {
+      background: var(--accent-soft);
+      border-color: #bddfe2;
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e8edf0;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Agentic RAG with MCP - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic RAG Next Level Study Guide</h1>
+          <p>
+            Tài liệu ôn tập và phỏng vấn nâng cao về kiến trúc **Agentic RAG** kết hợp với **Model Context Protocol (MCP)**, 
+            xây dựng các Custom Tools động bằng **OpenAI Agents SDK** và triển khai định tuyến tối ưu phản hồi tức thì (Instant Bypass).
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm nâng cấp - Next level focus</strong>
+              Tối ưu hóa cửa sổ ngữ cảnh thông qua FAQ Indexing, xây dựng Custom Python Tool bằng decorator `@function_tool`, 
+              song song hóa cuộc gọi Tool, và rẽ nhánh phản hồi tĩnh trực tiếp (LLM Bypass).
+            </article>
+            <article class="mini-card">
+              <strong>Quy tắc thuật ngữ - Terminology rule</strong>
+              Các thuật ngữ kỹ thuật quan trọng được trình bày ở dạng song ngữ <span class="inline-code">English term - nghĩa tiếng Việt</span> 
+              để chuẩn bị tốt nhất cho các câu hỏi phỏng vấn quốc tế.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Tham chiếu mã nguồn - Source paths</h3>
+            <p>
+              Tài liệu được xây dựng trực tiếp dựa trên nội dung mã nguồn tại thư mục:
+              <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/">expert-next</a> bao gồm:
+              [ingest.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/ingest.ipynb), 
+              [next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb), 
+              [styles.py](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/styles.py) và 
+              [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl).
+            </p>
+            <div class="tag-row">
+              <span class="tag">MCP Stdio Server</span>
+              <span class="tag">OpenAI Agents SDK</span>
+              <span class="tag">Qdrant Vector DB</span>
+              <span class="tag">Instant Routing</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú - Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú - Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">In / Lưu PDF - Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview Takeaways</a>
+          <a class="toc-link" href="#flashcards">12. Q&amp;A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <article class="card">
+              <h3>Metadata buổi học - Session metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Nâng cấp Agentic RAG lên tầm cao mới (Taking Agentic RAG to the Next Level).</li>
+                <li><strong>Type - Loại:</strong> Thực hành tối ưu hóa hệ thống, tích hợp custom tools và rẽ nhánh định tuyến (Instant Routing).</li>
+                <li><strong>Main focus - Trọng tâm:</strong> Tối ưu cửa sổ ngữ cảnh, giảm thiểu độ trễ, và xử lý các bẫy đồng bộ lịch sử hội thoại ngắn hạn.</li>
+                <li><strong>Depth - Độ sâu:</strong> Sâu (Đi thẳng vào các chi tiết cấu trúc code, phân tích sự kiện stream, và giải quyết các lỗi logic cụ thể).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Nguồn dữ liệu khả dụng - Available inputs</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> [ingest.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/ingest.ipynb), [next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb), [styles.py](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/styles.py)</li>
+                <li><strong>Data - Dữ liệu:</strong> [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl) (Chứa 59 bản ghi câu hỏi và câu trả lời thường gặp).</li>
+                <li><strong>Transcript - Bản dịch băng ghi âm:</strong> [transcript.txt](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/transcript.txt) chi tiết thời lượng 12 phút về cách nâng cấp Agent.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Khắc phục nhược điểm của RAG truyền thống bằng mô hình kết hợp lai: tìm kiếm ngữ nghĩa mờ trên Vector DB (Qdrant) 
+                kết hợp tra cứu dữ liệu tĩnh chính xác (FAQ Tool). Áp dụng bộ định tuyến rẽ nhánh tức thì (Instant Bypass) để 
+                không gọi LLM đối với các câu hỏi tĩnh định trước, tối ưu hóa triệt để tài nguyên và tốc độ phản hồi.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>FAQ Indexing</strong>: Chỉ nạp danh sách tiêu đề câu hỏi được đánh số vào Prompt ngữ cảnh của Agent. Tránh phình Prompt.</li>
+                <li><strong>Custom Python Tool</strong>: Viết hàm Python tra cứu và bọc bằng `@function_tool` để Agent tự động gọi qua mô tả JSON Schema.</li>
+                <li><strong>Parallel Tool Calling</strong>: Cho phép Agent gọi song song Qdrant Vector search và FAQ tool nhằm tối ưu hóa thông tin context.</li>
+                <li><strong>LLM Bypass Routing</strong>: Lọc nhanh đầu vào. Nếu là mã câu hỏi tĩnh (như "Q3"), trả kết quả trực tiếp bằng code Python thuần.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Góc phỏng vấn - Interview angle</h3>
+              <p>
+                Nếu bị hỏi về cách thiết kế hệ thống RAG tối ưu cho hàng ngàn câu hỏi thường gặp, hãy trình bày giải pháp: 
+                Bypass các câu hỏi tĩnh bằng bộ lọc Regex/Dictionary (Fast Path) để đạt độ trễ ~0ms; đối với các câu hỏi phức tạp hơn (Smart Path), 
+                sử dụng Agent điều phối gọi công cụ động thay vì nhồi nhét toàn bộ tri thức tĩnh vào Prompt để tiết kiệm chi phí token và tránh hallucination.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <p>
+            Mã nguồn của buổi học [expert-next](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next) là một mô hình thực tế cực kỳ đắt giá 
+            giúp nâng cấp chatbot AI từ trạng thái chỉ tìm kiếm ngữ nghĩa mờ (Vector database) sang một hệ chuyên gia có độ tin cậy tuyệt đối.
+            Hệ thống giải quyết triệt để 3 vấn đề lớn của RAG truyền thống:
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>1. Độ chính xác thông tin tĩnh</h3>
+              <p>
+                Đối với các câu hỏi dạng FAQ cố định, việc tìm kiếm vector đôi khi trả về các phân đoạn (chunks) bị cắt nhỏ làm câu trả lời bị vụn nát. 
+                Sử dụng FAQ Tool giúp trả về câu trả lời nguyên bản định dạng Markdown do chính chuyên gia viết.
+              </p>
+            </article>
+            <article class="card">
+              <h3>2. Tiết kiệm chi phí vận hành</h3>
+              <p>
+                Cơ chế lọc và bỏ qua LLM (Bypass) giúp giảm tải số lượng API request gửi lên mô hình. 
+                Hệ thống chỉ kích hoạt LLM khi người dùng đặt các câu hỏi mở phức tạp.
+              </p>
+            </article>
+            <article class="card">
+              <h3>3. Trải nghiệm người dùng (UX)</h3>
+              <p>
+                Kết hợp streaming hội thoại thời gian thực qua `run_streamed` và cơ chế Client-side Auto-focus giúp người dùng tương tác mượt mà, 
+                không bị gián đoạn khi bot đang thực thi các cuộc gọi công cụ (tool calls) ở chế độ chạy nền.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mục tiêu kiến thức - Concept goals</h3>
+              <ul class="memory-list">
+                <li>Hiểu rõ nguyên lý hoạt động của cơ chế **Hybrid Retrieval** kết hợp giữa truy hồi ngữ nghĩa mờ (Dense Vector Store) và tra cứu chính xác (Exact FAQ Store).</li>
+                <li>Nắm vững tầm quan trọng của việc tối ưu hóa cửa sổ ngữ cảnh (**Context Window Optimization**) bằng cách chuyển đổi dữ liệu thô thành công cụ động.</li>
+                <li>Hiểu cơ chế đồng bộ hóa bộ nhớ hội thoại ngắn hạn (**Short-term Memory Syncing**) khi rẽ nhánh ứng dụng.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu thực hành - Practical goals</h3>
+              <ul class="memory-list">
+                <li>Triển khai thành công Custom Tool sử dụng decorator `[function_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L28)` của OpenAI Agents SDK.</li>
+                <li>Viết mã lệnh lọc định tuyến rẽ nhánh (Instant Routing) bằng Python code.</li>
+                <li>Bắt và xử lý các sự kiện phát trực tiếp (event stream) của tác tử để hiển thị trạng thái hoạt động của công cụ lên Gradio UI.</li>
+                <li>Phát hiện và sửa lỗi mất lịch sử chat ngắn hạn khi sử dụng cơ chế LLM Bypass.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Hệ thống [expert-next](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next) được xây dựng dựa trên nền tảng của bài học trước đó. 
+            Để hiểu được sự vượt trội, chúng ta hãy xem xét bảng so sánh tiến trình tiến hóa dưới đây:
+          </p>
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Giai đoạn thiết kế</th>
+                <th>Cơ chế hoạt động - Mechanism</th>
+                <th>Tối ưu hóa ngữ cảnh - Context Control</th>
+                <th>Điểm yếu - Weaknesses</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Traditional RAG</strong> (Day 3)</td>
+                <td>Nạp cứng toàn bộ ngữ cảnh tìm thấy từ Vector DB vào Prompt.</td>
+                <td>Không kiểm soát. Dễ làm tràn ngữ cảnh nếu tài liệu dài.</td>
+                <td>Chất lượng câu trả lời không ổn định đối với câu hỏi FAQ chi tiết.</td>
+              </tr>
+              <tr>
+                <td><strong>Agentic RAG với Qdrant MCP</strong> (Bài trước)</td>
+                <td>Agent tự gọi công cụ `qdrant_find` để tìm kiếm thông tin dài hạn (Long-term memory).</td>
+                <td>Khá tốt. Agent chỉ gọi và nạp ngữ cảnh khi thực sự cần thiết.</td>
+                <td>Thỉnh thoảng Agent bị kẹt (stuck) khi không tìm thấy kết quả tương đồng cao.</td>
+              </tr>
+              <tr>
+                <td><strong>Agentic RAG Next Level</strong> (Hiện tại)</td>
+                <td>Kết hợp song song Vector Search và Custom FAQ Tool Lookup. Có nhánh định tuyến rẽ nhanh (Bypass).</td>
+                <td>Tối ưu tuyệt đối. Chỉ đưa danh sách chỉ mục tiêu đề câu hỏi vào Prompt. Chi tiết câu trả lời nằm ở Tool.</td>
+                <td>Cần quản lý đồng bộ lịch sử hội thoại ngắn hạn thủ công khi thực hiện bypass.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các khái niệm then chốt - Key concepts</h3>
+              <ul class="memory-list">
+                <li><strong>Hybrid Retrieval - Truy xuất lai:</strong> Sự phối hợp giữa tìm kiếm không cấu trúc tương đồng (Vector Search) và tìm kiếm có cấu trúc chính xác (FAQ Key Lookup) để tận dụng ưu điểm của cả hai thế giới.</li>
+                <li><strong>Prompt Compression / Context Optimization - Tối ưu hóa ngữ cảnh:</strong> Kỹ thuật ẩn thông tin chi tiết vào các điểm cuối công cụ (Tool endpoints) và chỉ tiết lộ danh sách mục lục (Index list) cho LLM để giảm thiểu độ dài Prompt đầu vào.</li>
+                <li><strong>Rule-Based Routing - Định tuyến dựa trên quy tắc:</strong> Sử dụng các điều kiện logic lập trình cứng (như regex, regex khớp chuỗi) để xử lý các truy vấn đơn giản, bảo vệ LLM khỏi việc lãng phí tài nguyên tính toán.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mối quan hệ hoạt động - Component relationships</h3>
+              <p>
+                Khi nhận câu hỏi từ người dùng, hệ thống sẽ rẽ nhánh: 
+                Nếu câu hỏi khớp mẫu viết tắt của FAQ, ứng dụng sẽ chạy đường tắt (Bypass LLM), truy xuất trực tiếp từ file [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl), 
+                phản hồi ngay và cập nhật lịch sử vào SQLite (Short-term memory). 
+                Nếu câu hỏi là tự do, tác tử được đánh thức. Dựa vào danh sách chỉ mục câu hỏi FAQ được đính kèm trong System Instructions, Agent sẽ quyết định gọi song song 
+                `qdrant-find` (tìm dữ liệu mờ) và [faq_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L178) (tìm câu trả lời chính xác). Kết quả của các tool được LLM tổng hợp để tạo câu trả lời mạch lạc nhất.
+              </p>
+            </article>
+          </div>
+
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Cụm kỹ thuật - Technical Cluster</th>
+                <th>Concept - Khái niệm</th>
+                <th>Why it matters - Vì sao quan trọng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Model Context Protocol (MCP)</strong></td>
+                <td>Giao thức chuẩn hóa giúp LLM giao tiếp trực tiếp với môi trường ngoài (file, database) qua Standard I/O.</td>
+                <td>Loại bỏ mã nguồn trung gian (glue code), giúp tái sử dụng các MCP server tiêu chuẩn có sẵn của cộng đồng.</td>
+              </tr>
+              <tr>
+                <td><strong>SQLiteSession</strong></td>
+                <td>Lớp lưu trữ lịch sử cuộc gọi chat ngắn hạn của OpenAI Agents SDK vào cơ sở dữ liệu SQLite cục bộ.</td>
+                <td>Duy trì trạng thái hội thoại bền vững qua các phiên khởi chạy ứng dụng chatbot.</td>
+              </tr>
+              <tr>
+                <td><strong>@function_tool decorator</strong></td>
+                <td>Decorator bọc hàm Python thường thành một công cụ có mô tả schema tự động cho LLM Agent.</td>
+                <td>Tự động hóa việc sinh cấu trúc JSON Schema từ Type hints và Docstrings của hàm, giảm thiểu lỗi định nghĩa.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Quy trình Ingestion & Serving - Workflow</h3>
+              <ol class="memory-list">
+                <li><strong>Pha Ingestion (Nạp tri thức)</strong>:
+                  <ul>
+                    <li>Tác tử sử dụng `mcp-server-fetch` để tải mã HTML thô từ website.</li>
+                    <li>Tác tử trích xuất thông tin, kiểm tra trùng lặp thông qua `mcp-server-qdrant`.</li>
+                    <li>Lưu trữ các facts duy nhất vào Qdrant Vector Store dưới dạng Embeddings.</li>
+                  </ul>
+                </li>
+                <li><strong>Pha Serving (Phục vụ chat)</strong>:
+                  <ul>
+                    <li>Gradio nhận yêu cầu chat của người dùng.</li>
+                    <li>Gọi hàm [chat](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L280) để phân tích đầu vào.</li>
+                    <li>Nếu khớp Regex "Q{number}" -> Trả ngay câu trả lời từ file FAQ, ghi nhận vào bộ nhớ SQLite, bypass LLM.</li>
+                    <li>Nếu không khớp -> Khởi tạo Agent với instructions chứa danh sách tiêu đề FAQ.</li>
+                    <li>LLM gọi song song `qdrant-find` và [faq_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L178).</li>
+                    <li>Stream kết quả sự kiện trả về giao diện Gradio thông qua hàm xử lý sự kiện.</li>
+                  </ul>
+                </li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Luồng điều khiển dữ liệu - Control / Data Flow</h3>
+              <p>
+                Mọi tương tác trong pha Smart Path đều được truyền tải dưới dạng các Sự kiện (Events) của OpenAI Agents SDK. 
+                Dữ liệu đi qua hàm [text_from_event](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L244) để lọc ra các sự kiện chính:
+              </p>
+              <ul class="memory-list">
+                <li><strong>ResponseTextDeltaEvent</strong>: Nhận các đoạn text phản hồi được sinh ra từ LLM để nối tiếp tục và hiển thị cho người dùng.</li>
+                <li><strong>tool_called</strong>: Phát hiện khi Agent bắt đầu kích hoạt một công cụ. Trả về đoạn mã HTML hiển thị trạng thái đang tải: `<small class="tool-status">Calling {tool_name}...</small>`.</li>
+                <li><strong>tool_output</strong>: Phát hiện khi công cụ trả kết quả về cho LLM. Hiển thị trạng thái: `<small class="tool-status">Tool returned. Thinking...</small>`.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>1. Dynamic Prompt Construction</h3>
+              <p>
+                Đọc file tri thức tĩnh [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl) khi khởi chạy chương trình, 
+                sau đó sử dụng vòng lặp Python để tự động ghép nối tiêu đề câu hỏi vào system instructions của Agent. 
+                Điều này đảm bảo danh sách câu hỏi luôn được cập nhật tự động khi file dữ liệu JSONL thay đổi mà không cần sửa code.
+              </p>
+            </article>
+            <article class="card">
+              <h3>2. Instant Answer Regex Matching</h3>
+              <p>
+                Sử dụng các hàm xử lý chuỗi tối giản để kiểm tra định dạng nhập liệu. 
+                Hàm [has_instant_answer](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L218) sử dụng phương thức `startswith` và `isdigit` 
+                để phát hiện nhanh mã câu hỏi mà không cần nạp các thư viện Regex phức tạp, giúp tối ưu hóa hiệu năng CPU.
+              </p>
+            </article>
+            <article class="card">
+              <h3>3. DOM MutationObserver</h3>
+              <p>
+                Nhúng mã Javascript tùy biến trong [styles.py](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/styles.py) để giám sát DOM của trang Gradio. 
+                Mã sẽ theo dõi sự thay đổi thuộc tính `disabled` hoặc `readonly` của thẻ `textarea` đầu vào để tự động đặt lại tiêu điểm (focus) ngay khi Bot dừng phản hồi.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Cụm kỹ thuật - Technical Cluster</th>
+                <th>Problem - Vấn đề cần giải quyết</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tối ưu tri thức FAQ</strong></td>
+                <td>Làm sao để Agent trả lời chính xác FAQ mà không tràn bộ nhớ context.</td>
+                <td>
+                  1. Đưa toàn bộ vào prompt<br>
+                  2. Dùng Vector search thuần<br>
+                  3. Đưa danh sách index + Tool tra cứu (expert-next)
+                </td>
+                <td>
+                  Cách 3 giúp kiểm soát token tốt, đảm bảo câu trả lời nguyên bản nhưng làm phình instructions nếu danh sách câu hỏi quá dài (trên 100 câu).
+                </td>
+                <td>
+                  Khi hệ thống có dưới 100 câu hỏi FAQ quan trọng cần trả lời chuẩn chỉnh, nguyên bản từ chuyên gia.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Bộ nhớ ngắn hạn (Short-term)</strong></td>
+                <td>Lưu trữ lịch sử chat của người dùng giữa các lượt hội thoại.</td>
+                <td>
+                  1. Lưu RAM (List)<br>
+                  2. SQLite Session (SQLiteSession)<br>
+                  3. Redis / Database ngoài
+                </td>
+                <td>
+                  SQLite Session dễ cài đặt, duy trì trạng thái khi khởi động lại ứng dụng nhưng không hỗ trợ phân tán tải (horizontal scaling).
+                </td>
+                <td>
+                  Phù hợp cho các chatbot chạy trên 1 server đơn lẻ, môi trường phát triển (development) hoặc dự án quy mô vừa và nhỏ.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Kết nối công cụ (Tooling)</strong></td>
+                <td>Kết nối LLM với các ứng dụng bên ngoài để thực hiện tác vụ.</td>
+                <td>
+                  1. Viết API wrapper thủ công<br>
+                  2. Sử dụng Model Context Protocol (MCP)<br>
+                  3. Dùng LangChain Toolkits
+                </td>
+                <td>
+                  MCP giúp tái sử dụng server cực tốt, chuẩn hóa giao thức nhưng đòi hỏi cấu hình môi trường chạy nền (stdio server) phức tạp hơn.
+                </td>
+                <td>
+                  Khi muốn tích hợp nhanh các công cụ tiêu chuẩn (Qdrant, Postgres, Fetch, Slack) đã được cộng đồng đóng gói sẵn.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mã nguồn hoạt động như thế nào - Under the hood</h3>
+              <p>
+                Trong [next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb), ứng dụng khởi chạy một MCP server stdio 
+                kết nối với Qdrant cục bộ. Khác với phiên bản cũ, hàm [chat](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L280) 
+                nhận tin nhắn của người dùng và thực hiện kiểm tra điều kiện cứng trước. 
+                Nếu tin nhắn khớp định dạng "Q{number}", hệ thống lấy trực tiếp câu trả lời từ file FAQ và trả về ngay (Bypass). 
+                Đối với các tin nhắn thông thường, nó sẽ chạy hàm [run](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L262) 
+                để gọi Agent thực thi suy luận bất đồng bộ, sử dụng Qdrant MCP server và [faq_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L178) song song.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Lý do của thiết kế này - Design decisions</h3>
+              <p>
+                - **Sử dụng `@function_tool`**: Giúp lập trình viên tập trung viết logic xử lý bằng Python thuần, giảm thiểu tối đa các khai báo 
+                JSON Schema thủ công vốn dễ sai sót.
+                - **Custom CSS/JS**: Khắc phục nhược điểm giao diện mặc định thô sơ của Gradio. Custom CSS giúp UI phẳng, hiện đại và tập trung. 
+                Đoạn JS bổ sung giải quyết triệt để vấn đề trải nghiệm người dùng khó chịu khi phải bấm chuột lại vào ô nhập liệu sau mỗi lượt chat.
+              </p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Phân tích sâu cơ chế gọi công cụ song song - Parallel Tool Calling Deep Dive</summary>
+            <div class="note">
+              <p>
+                Trong OpenAI Agents SDK, khi Agent nhận được Prompt của người dùng (ví dụ: "What job can I get after your courses?"), 
+                nó phân tích và thấy rằng câu hỏi này vừa liên quan đến một câu trong danh sách FAQ chỉ mục (câu hỏi số 2), 
+                vừa có thể có thêm thông tin chi tiết trong Vector store.
+              </p>
+              <p>
+                Thay vì thực hiện tuần tự (Sequential) gây tăng độ trễ: gọi tool 1 -> chờ kết quả -> gọi tool 2 -> chờ kết quả; 
+                OpenAI Models hỗ trợ gọi công cụ song song (Parallel Tool Calling). LLM sẽ trả về lệnh gọi cả hai công cụ `faq_tool(question_number=2)` 
+                và `qdrant-find(query="job opportunities after courses")` trong cùng một lượt phản hồi. SDK sẽ thực thi đồng thời hai hàm này, 
+                sau đó gửi toàn bộ kết quả về cho LLM tổng hợp. Điều này giúp tối ưu hóa đáng kể độ trễ hội thoại (conversational latency).
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các lỗi logic thực tế - Failure modes</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Mất lịch sử chat ngắn hạn khi Bypass LLM:</strong> Trong mã nguồn gốc của [next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L280), 
+                  khi người dùng nhập "Q3", hệ thống trả về ngay câu trả lời nhưng không lưu cặp tin nhắn này vào [SQLiteSession](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb#L200). 
+                  Ở lượt chat tiếp theo, Agent sẽ hoàn toàn mất ngữ cảnh của câu Q3 vừa hỏi. 
+                  <br><em>Giải pháp:</em> Phải gọi `await convo.add_items([{"role": "user", "content": message}, {"role": "assistant", "content": answer}])` trong khối bypass.
+                </li>
+                <li>
+                  <strong>Tràn ngữ cảnh khi danh sách câu hỏi FAQ quá dài:</strong> Nếu file [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl) phình to lên 500 câu hỏi, 
+                  việc nối toàn bộ tiêu đề vào instructions sẽ làm phình Prompt thô đầu vào, tăng chi phí và làm loãng khả năng chú ý của LLM.
+                  <br><em>Giải pháp:</em> Dùng bộ tìm kiếm vector nhẹ (hoặc so khớp từ khóa BM25) để lọc ra top 5 câu hỏi FAQ liên quan nhất đến tin nhắn người dùng, 
+                  và chỉ đưa 5 tiêu đề đó vào instructions của Agent trước mỗi lượt chạy.
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hiểu lầm phổ biến - Common misunderstandings</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Hiểu lầm rằng MCP server tự động nhúng (embed) dữ liệu:</strong> Thực tế, máy chủ `mcp-server-qdrant` mặc định tự sử dụng mô hình nhúng cục bộ `all-MiniLM-L6-v2`. 
+                  Nếu bạn thay đổi mô hình nhúng ở phía Ingestion mà không cấu hình lại MCP Server, hệ thống sẽ bị lệch vector nhúng (embedding mismatch), dẫn đến việc tìm kiếm ngữ nghĩa không trả về kết quả chính xác.
+                </li>
+                <li>
+                  <strong>Hiểu lầm rằng SQLiteSession tự động đồng bộ mọi tin nhắn:</strong> `SQLiteSession` chỉ tự động lưu các tin nhắn đi qua hàm `Runner.run` hoặc `Runner.run_streamed`. 
+                  Mọi tin nhắn được sinh ra ngoài luồng này (như xử lý bypass bằng code thuần) bắt buộc phải được lập trình viên bổ sung thủ công vào cơ sở dữ liệu session.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các câu hỏi phỏng vấn hóc búa - Tough questions</h3>
+              <ul class="memory-list">
+                <li>Làm thế nào để thiết kế một hệ thống RAG vừa đảm bảo trả lời chính xác các câu hỏi FAQ chuẩn của doanh nghiệp, vừa linh hoạt xử lý các câu hỏi mở của khách hàng?</li>
+                <li>Giải thích cách tối ưu hóa chi phí token và độ trễ khi hệ thống phải đối mặt với hàng trăm câu trả lời FAQ rất dài (mỗi câu dài vài trang giấy)?</li>
+                <li>Làm sao để đảm bảo trải nghiệm người dùng không bị gián đoạn (lag/freeze) khi Agent đang thực hiện các cuộc gọi công cụ (tool calls) ngầm có độ trễ lớn?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung cấu trúc trả lời phỏng vấn - Answer frame</h3>
+              <p>
+                Khi trả lời phỏng vấn, hãy áp dụng cấu trúc 5 bước chuyên nghiệp:
+                <br><strong>1. Goal (Mục tiêu)</strong>: Giảm thiểu độ trễ, tối ưu hóa ngữ cảnh và chi phí token.
+                <br><strong>2. Mechanism (Cách hoạt động)</strong>: Tách biệt tiêu đề câu hỏi (đưa vào prompt chỉ mục) và nội dung chi tiết (để ở custom tool). Rẽ nhánh Bypass bằng code lập trình cứng đối với câu hỏi tĩnh.
+                <br><strong>3. Trade-off (Đánh đổi)</strong>: Tiết kiệm chi phí token và tăng tốc độ phản hồi đáng kể, nhưng đòi hỏi phải quản lý và đồng bộ bộ nhớ hội thoại thủ công ở nhánh bypass.
+                <br><strong>4. Pitfalls (Bẫy thực tế)</strong>: Lỗi đứt gãy mạch hội thoại ngắn hạn nếu quên đồng bộ SQLite Session khi chạy bypass.
+                <br><strong>5. When to use (Khi nào dùng)</strong>: Khi xây dựng chatbot chăm sóc khách hàng doanh nghiệp có danh mục FAQ rõ ràng và cần tối ưu hóa chi phí vận hành API.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&amp;A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Thẻ ôn nhanh - Flashcards</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q:</strong> Kỹ thuật ẩn câu trả lời FAQ chi tiết vào Custom Tool được gọi là gì?<br>
+                  <strong>A:</strong> Kỹ thuật tối ưu hóa ngữ cảnh thông qua gọi công cụ động (Context Optimization via Dynamic Tool Lookup).
+                </li>
+                <li>
+                  <strong>Q:</strong> Làm thế nào để tự động focus con trỏ vào ô nhập liệu Gradio sau khi Bot dừng stream?<br>
+                  <strong>A:</strong> Sử dụng Javascript `MutationObserver` để theo dõi thuộc tính `disabled` hoặc `readonly` của thẻ `textarea` và gọi hàm `focus()`.
+                </li>
+                <li>
+                  <strong>Q:</strong> Tại sao phải dùng SQLiteSession thay vì lưu lịch sử hội thoại trong biến List của RAM?<br>
+                  <strong>A:</strong> Để đảm bảo tính bền vững của dữ liệu hội thoại (persistence). Lịch sử chat sẽ không bị mất khi ứng dụng khởi động lại hoặc server gặp sự cố.
+                </li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hỏi đáp tuyển dụng - Interview Q&amp;A</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q:</strong> Giả sử hệ thống có 10,000 câu FAQ. Làm thế nào để áp dụng thiết kế của expert-next?<br>
+                  <strong>A:</strong> Với 10,000 câu, chúng ta không thể nạp hết tiêu đề vào instructions. Cần áp dụng quy trình 2 bước: Bước 1 dùng thuật toán tìm kiếm vector hoặc BM25 siêu nhanh trên Client để tìm ra top 5 câu hỏi liên quan nhất. Bước 2 chỉ nối 5 tiêu đề câu hỏi này kèm số ID tương ứng vào Prompt của Agent để LLM quyết định có nên gọi `faq_tool` hay không. Điều này giữ kích thước Prompt luôn nhỏ và ổn định.
+                </li>
+                <li>
+                  <strong>Q:</strong> Trong file next_level.ipynb, nếu người dùng nhập "Q3" và hệ thống trả kết quả ngay, chuyện gì xảy ra với ngữ cảnh hội thoại ở câu hỏi tiếp theo?<br>
+                  <strong>A:</strong> Ở câu hỏi tiếp theo, Agent sẽ bị mất ngữ cảnh vì câu hỏi "Q3" và câu trả lời tương ứng không được lưu vào SQLiteSession. Đây là lỗi logic (bug) nghiêm trọng trong bản code gốc. Để khắc phục, lập trình viên phải ghi nhận dữ liệu thủ công bằng cách sử dụng phương thức `convo.add_items` của SQLiteSession trước khi trả kết quả về cho giao diện chat.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Những điểm bắt buộc phải ghi nhớ - Must remember</h3>
+              <ol class="memory-list">
+                <li>Chỉ đưa tiêu đề câu hỏi được đánh số vào System Prompt, giữ câu trả lời chi tiết trong cơ sở dữ liệu phía Tool.</li>
+                <li>Sử dụng decorator `@function_tool` để OpenAI Agents SDK tự động sinh JSON Schema mô tả công cụ cho Agent.</li>
+                <li>Luôn đồng bộ thủ công lịch sử hội thoại ngắn hạn (`convo.add_items`) khi đi qua luồng Bypass LLM.</li>
+                <li>Sử dụng `Runner.run_streamed` kết hợp lọc sự kiện để mang lại trải nghiệm streaming UI mượt mà nhất cho người dùng.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Câu hỏi tự kiểm tra - Self-check</h3>
+              <ul class="memory-list">
+                <li>Bạn có tự viết được hàm decorator `@function_tool` để truy xuất dữ liệu từ một từ điển Python hay không?</li>
+                <li>Bạn có giải thích được tại sao việc gọi công cụ song song (Parallel Tool Calling) lại giúp giảm đáng kể độ trễ phản hồi của hệ thống RAG hay không?</li>
+                <li>Nếu không dùng Qdrant MCP Server, bạn sẽ cấu hình custom tool để kết nối với cơ sở dữ liệu Vector của riêng mình như thế nào?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Kế hoạch học tập và phát triển - What comes next</h3>
+              <p>
+                - **Tích hợp Hybrid Search**: Nâng cấp công cụ truy hồi dài hạn bằng cách kết hợp thuật toán tìm kiếm từ khóa BM25 (Sparse search) 
+                và tìm kiếm ngữ nghĩa vector (Dense search) để tăng độ bao phủ thông tin.
+                - **RAG Triad Evaluation**: Áp dụng các framework đánh giá tự động (như TruLens hoặc Ragas) để đo lường độ chính xác 
+                (Faithfulness, Answer Relevance, Context Recall) của Agentic RAG này.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Nguồn dữ liệu còn thiếu - Missing inputs</h3>
+              <p>
+                Để kiểm tra độ ổn định của hệ thống ở môi trường thực tế, chúng ta cần thu thập thêm tệp nhật ký cuộc gọi API (API call logs) 
+                để đo lường chính xác độ trễ trung bình của các cuộc gọi công cụ song song và tỉ lệ lỗi kết nối Stdio của MCP Server trên các hệ điều hành khác nhau.
+              </p>
+            </article>
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

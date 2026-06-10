@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --good-soft: #e8f6ef;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 74ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .image-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4,
+    .image-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong,
+    .metric {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      box-shadow: none;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid #cce8d8;
+      border-radius: var(--radius);
+      background: var(--good-soft);
+    }
+
+    .inline-code,
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e8edf0;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line-soft);
+      background: var(--surface-alt);
+    }
+
+    .flow-index {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #0f4c5c);
+    }
+
+    .diagram {
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .diagram img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .diagram-caption {
+      padding: 12px 14px;
+      border-top: 1px solid var(--line-soft);
+      background: var(--surface);
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .image-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Agentic RAG - Study &amp; Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic RAG Study Guide</h1>
+          <p>
+            Tài liệu này tổng hợp buổi học trong thư mục
+            <a href="file:///G:/RAG/ed/Agentic_RAG"><code>G:\RAG\ed\Agentic_RAG</code></a>
+            theo đúng tinh thần học để hiểu sâu: Traditional RAG là gì, Agentic RAG khác ở đâu,
+            retrieval agent hoạt động thế nào, research agent mở rộng ra sao, và vì sao
+            evaluation-driven experimentation là cách chọn tool đúng trong thực tế.
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm chính - Main focus</strong>
+              <span class="inline-code">semantic search - truy xuất theo ngữ nghĩa</span>,
+              <span class="inline-code">tool calling - gọi công cụ</span>,
+              <span class="inline-code">retrieval agent - tác tử truy xuất</span>,
+              <span class="inline-code">research agent - tác tử nghiên cứu</span>.
+            </article>
+            <article class="mini-card">
+              <strong>Kết quả học tập - Learning outcome</strong>
+              Sau khi đọc xong, bạn nên mô tả được 4 mức tiến hóa:
+              Traditional RAG, Agentic RAG cơ bản, Retrieval Agent, và Research Agent đa công cụ.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn chính - Primary sources</h3>
+            <p>
+              Transcript:
+              <a href="file:///G:/RAG/ed/Agentic_RAG/transcript.txt">transcript.txt</a><br>
+              Notebook:
+              <a href="file:///G:/RAG/ed/Agentic_RAG/1_rag.ipynb">1_rag.ipynb</a>,
+              <a href="file:///G:/RAG/ed/Agentic_RAG/2_agentic_rag.ipynb">2_agentic_rag.ipynb</a><br>
+              Diagrams:
+              <a href="file:///G:/RAG/ed/Agentic_RAG/pic1.png">pic1.png</a>,
+              <a href="file:///G:/RAG/ed/Agentic_RAG/pic2.png">pic2.png</a>,
+              <a href="file:///G:/RAG/ed/Agentic_RAG/pic3.png">pic3.png</a>,
+              <a href="file:///G:/RAG/ed/Agentic_RAG/pic4.png">pic4.png</a>
+            </p>
+            <div class="tag-row">
+              <span class="tag">OpenAI</span>
+              <span class="tag">Chroma</span>
+              <span class="tag">Embeddings</span>
+              <span class="tag">Agents SDK</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Utilities - Tiện ích</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview Takeaways</a>
+          <a class="toc-link" href="#flashcards">12. Q&amp;A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Reading progress - Tiến độ đọc</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Buổi học hiện tại - Current session</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Agentic RAG is powerful but it's simpler than you might think.</li>
+                <li><strong>Type - Loại:</strong> mixed tutorial gồm transcript, notebook demo và sơ đồ kiến trúc.</li>
+                <li><strong>Main focus - Trọng tâm:</strong> concept, workflow, code logic và architecture progression.</li>
+                <li><strong>Depth - Độ sâu:</strong> medium; đây là demo ngắn nhưng có đủ implementation skeleton để học tư duy thiết kế.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Available inputs - Nguồn đầu vào</h3>
+              <ul class="memory-list">
+                <li><strong>Transcript / notes - Transcript / ghi chú:</strong> có đầy đủ trong <code>transcript.txt</code>.</li>
+                <li><strong>Code - Mã nguồn:</strong> có 2 notebook, tập trung vào Python + OpenAI + Chroma + Agents SDK.</li>
+                <li><strong>Diagrams - Sơ đồ:</strong> có 4 PNG mô tả 4 mức kiến trúc.</li>
+                <li><strong>Discussion - Trao đổi:</strong> đã đối chiếu thêm với Day 4, Day 5 và guide Agentic-RAG-InsureLLM để đặt bài học vào lộ trình rộng hơn.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Important scope note - Lưu ý phạm vi:</strong>
+            Đây là bài học giải thích khái niệm bằng demo tối giản, không phải production repo hoàn chỉnh.
+            Điểm mạnh của nó là làm rõ bản chất của <span class="inline-code">agentic retrieval - truy xuất có tác tử</span>,
+            không phải khoe một hệ thống nhiều nghìn dòng code.
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Agentic RAG ở phiên bản đơn giản nhất chỉ là:
+                <span class="inline-code">LLM + retrieval tool</span>.
+                Khi model tự quyết định lúc nào cần gọi semantic search để lấy context phục vụ answer,
+                RAG đã chuyển từ pipeline cứng sang hệ thống có decision layer.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li>Traditional RAG: retrieve trước, rồi mới gọi LLM.</li>
+                <li>Agentic RAG: LLM có tool retrieval và tự gọi tool.</li>
+                <li>Retriever agent: tách trách nhiệm retrieval khỏi answer.</li>
+                <li>Research agent: một retriever nhiều tool như vector search, SQL, web search, memory.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview angle - Góc phỏng vấn</h3>
+              <p>
+                Nếu bị hỏi về Agentic RAG, cần nói được:
+                mục tiêu, cơ chế tool calling, trade-off với RAG thường, và vì sao evaluation mới quyết định tool nào đáng dùng.
+              </p>
+            </article>
+          </div>
+          <div class="status-box">
+            <strong>One-line summary - Tóm tắt 1 dòng:</strong>
+            Agentic RAG không nhất thiết phức tạp; nó trở nên mạnh hơn khi retrieval được đặt vào tay một agent có tool và được tối ưu bằng thực nghiệm.
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Main idea - Ý tưởng chính</h3>
+              <p>
+                Bài học bắt đầu từ RAG cơ bản với vector search, sau đó thêm quyền gọi tool cho LLM,
+                rồi tiếp tục tách retrieval thành một agent riêng. Đây là một bài về kiến trúc quyết định,
+                không chỉ là bài về syntax của Agents SDK.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Why it matters - Vì sao quan trọng</h3>
+              <p>
+                Nhiều người dùng từ “Agentic RAG” như một buzzword. Buổi này bóc tách khái niệm đó xuống mức thực thi:
+                cụ thể model gọi gì, dữ liệu đi qua đâu, và lợi ích thật sự đến từ việc tách responsibility thế nào.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Expected outcome - Kết quả mong muốn</h3>
+              <p>
+                Sau buổi học, bạn nên dựng lại được một demo Agentic RAG tối thiểu, biết khi nào nên dừng ở mức đó,
+                và khi nào nên phát triển tiếp thành retrieval agent hay research agent đa nguồn.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Concept goals - Mục tiêu kiến thức</h3>
+              <ul class="memory-list">
+                <li>Hiểu <span class="inline-code">semantic search - truy xuất theo ngữ nghĩa</span> khác string search ở đâu.</li>
+                <li>Hiểu vì sao “LLM with tools in a loop” chính là một agent.</li>
+                <li>Hiểu lợi ích của việc tách retrieval thành retriever agent và research agent.</li>
+                <li>Hiểu rằng không có kiến trúc mặc định tốt nhất; phải chọn bằng evaluation.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Practical goals - Mục tiêu thực hành</h3>
+              <ul class="memory-list">
+                <li>Đọc notebook và chỉ ra khối code nào làm embeddings, vector store, retrieval, tool wrapping và agent orchestration.</li>
+                <li>Mô tả được đường đi của một query qua từng mức kiến trúc.</li>
+                <li>Biết các extension hợp lý tiếp theo: SQL, web search, graph DB, memory.</li>
+                <li>Biết vì sao cần một bộ test questions + reference answers trước khi mở rộng research agent.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Stage - Giai đoạn</th>
+                <th>What it taught - Dạy gì</th>
+                <th>Buổi hiện tại mở rộng gì</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Day 4 RAG evals</td>
+                <td>RAG phải được đo bằng metric, không tối ưu bằng cảm giác.</td>
+                <td>Agentic RAG thừa hưởng tư duy đó: thêm tool nào cũng phải test, không thêm vì nghe hay.</td>
+              </tr>
+              <tr>
+                <td>Day 5 Advanced RAG</td>
+                <td>Rewrite query, query expansion, rerank, eval loop.</td>
+                <td>Buổi này đơn giản hơn về code nhưng nâng level tư duy: retrieval không còn là một bước cố định, mà là thứ agent tự quyết định.</td>
+              </tr>
+              <tr>
+                <td>Agentic-RAG-InsureLLM</td>
+                <td>Production-style routing, parent-child retrieval, retry loop.</td>
+                <td>Buổi hiện tại là phiên bản tối giản để hiểu nền tảng trước khi bước vào kiến trúc lớn hơn như repo đó.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <strong>Suggested reading order - Thứ tự đọc gợi ý:</strong>
+            Day 4 để hiểu evaluation, Day 5 để hiểu retrieval optimization, rồi mới đến buổi Agentic RAG này để hiểu decision layer nằm ở đâu.
+          </div>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Semantic retrieval - truy xuất theo ngữ nghĩa</h3>
+              <p><strong>Concept - Khái niệm:</strong> dùng <span class="inline-code">embedding model - mô hình nhúng vector</span> để biến text và query thành vector, rồi tìm những điểm gần nhau về nghĩa trong vector space.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> embeddings, nearest-neighbor search, vector store query.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> OpenAI embeddings, Chroma, t-SNE cho visualization.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> mạnh hơn keyword search nhưng cần preprocessing, vector storage và tuning top-k.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi câu hỏi và tài liệu có thể diễn đạt khác từ nhưng cùng nghĩa.</p>
+            </article>
+
+            <article class="card">
+              <h3>Traditional RAG - RAG truyền thống</h3>
+              <p><strong>Concept - Khái niệm:</strong> hệ thống retrieve relevant context trước, sau đó nhét context vào prompt rồi mới gọi LLM trả lời.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> top-k semantic retrieval, prompt augmentation.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> Chroma, chat completion API.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> đơn giản, dễ hiểu, dễ debug, nhưng orchestration cứng và không linh hoạt theo từng query.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> MVP, demo nhỏ, hoặc use case có retrieval flow tương đối đồng nhất.</p>
+            </article>
+
+            <article class="card">
+              <h3>Agentic RAG - RAG có tác tử</h3>
+              <p><strong>Concept - Khái niệm:</strong> LLM được cấp tool retrieval và tự quyết định khi nào cần gọi tool để lấy context.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> tool calling, JSON schema generation từ type hints và docstrings, agent run loop.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> OpenAI Agents SDK, <code>@function_tool</code>.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> linh hoạt hơn nhưng khó kiểm soát hơn; agent có thể gọi tool không tối ưu hoặc trả lời khi đáng ra nên chỉ retrieve.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi retrieval không còn là bước luôn luôn phải chạy trước theo một pattern cứng.</p>
+            </article>
+
+            <article class="card">
+              <h3>Retrieval / Research agent - tác tử truy xuất / nghiên cứu</h3>
+              <p><strong>Concept - Khái niệm:</strong> tách retrieval thành một agent riêng để tối ưu cho nhiệm vụ tìm context, không trực tiếp answer.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> prompt specialization, agent-as-tool, multi-tool orchestration.</p>
+              <p><strong>Tools / Models / Frameworks / Services - Công cụ / mô hình / framework / dịch vụ:</strong> vector DB, SQL query, web search, graph DB, memory stores.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> rõ trách nhiệm hơn nhưng tăng latency, complexity, cost và surface area để debug.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi context đến từ nhiều nguồn hoặc cần nhiều kiểu truy vấn khác nhau.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+
+          <div class="image-grid">
+            <figure class="diagram">
+              <img src="file:///G:/RAG/ed/Agentic_RAG/pic1.png" alt="Traditional RAG diagram">
+              <figcaption class="diagram-caption">
+                <strong>pic1:</strong> Traditional RAG = retrieve trước, gọi LLM sau.
+              </figcaption>
+            </figure>
+            <figure class="diagram">
+              <img src="file:///G:/RAG/ed/Agentic_RAG/pic2.png" alt="Basic Agentic RAG diagram">
+              <figcaption class="diagram-caption">
+                <strong>pic2:</strong> Agentic RAG cơ bản = LLM gọi retrieval tool.
+              </figcaption>
+            </figure>
+            <figure class="diagram">
+              <img src="file:///G:/RAG/ed/Agentic_RAG/pic3.png" alt="Retrieval Agent diagram">
+              <figcaption class="diagram-caption">
+                <strong>pic3:</strong> tách retrieval agent khỏi expert agent.
+              </figcaption>
+            </figure>
+            <figure class="diagram">
+              <img src="file:///G:/RAG/ed/Agentic_RAG/pic4.png" alt="Research Agent diagram">
+              <figcaption class="diagram-caption">
+                <strong>pic4:</strong> research agent nhiều tool, nhiều nguồn dữ liệu.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="flow-index">1</div>
+              <div>
+                <h3>Build knowledge base - Xây knowledge base</h3>
+                <p>
+                  Notebook 1 đọc <code>facts.jsonl</code>, tạo embeddings cho 36 facts về Ed,
+                  rồi lưu text + vectors vào Chroma <span class="inline-code">vector store - kho lưu trữ vector</span>.
+                </p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-index">2</div>
+              <div>
+                <h3>Traditional query flow - Luồng query truyền thống</h3>
+                <p>
+                  User hỏi -> embed query -> query Chroma lấy top-3 docs -> ghép context vào prompt ->
+                  gọi chat model -> trả lời. Không có decision layer trong LLM.
+                </p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-index">3</div>
+              <div>
+                <h3>Basic agentic flow - Luồng agentic cơ bản</h3>
+                <p>
+                  User hỏi -> expert agent nhận question -> agent tự gọi
+                  <code>retrieve_relevant_context_tool</code> nếu thấy cần ->
+                  lấy context -> trả answer. Retrieval giờ là tool, không còn là bước cứng ở ngoài.
+                </p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-index">4</div>
+              <div>
+                <h3>Retriever delegation - Ủy quyền cho retriever</h3>
+                <p>
+                  Expert agent không gọi semantic search trực tiếp nữa, mà gọi một
+                  <span class="inline-code">retrieval agent - tác tử truy xuất</span>.
+                  Retrieval agent này có instructions riêng và có thể được biến thành một tool cho expert agent.
+                </p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-index">5</div>
+              <div>
+                <h3>Research agent extension - Mở rộng thành research agent</h3>
+                <p>
+                  Retrieval agent được trang bị thêm SQL, web search, graph DB, memory.
+                  Khi đó Agentic RAG trở thành một phần của hệ kiến trúc agent lớn hơn,
+                  nơi retrieval là một nhiệm vụ nghiên cứu đa nguồn.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Embedding-based search - tìm kiếm dựa trên vector nhúng</h3>
+              <p>
+                Đây là kỹ thuật nền để RAG hoạt động. Query và documents được đưa vào cùng một không gian vector,
+                rồi dùng độ gần để chọn context liên quan nhất.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Tool wrapping - đóng gói function thành tool</h3>
+              <p>
+                Hàm retrieval được bọc bằng <code>@function_tool</code>, thêm type hints và docstring
+                để SDK tự sinh description và JSON schema cho model dùng.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Agent-as-tool - agent như một công cụ</h3>
+              <p>
+                Retrieval agent được biến thành tool bằng <code>as_tool()</code>.
+                Đây là pattern quan trọng để ghép nhiều tác tử mà vẫn giữ giao diện gọi đơn giản.
+              </p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Optimization insight - Insight tối ưu:</strong>
+            điểm mới của buổi học không phải một retrieval algorithm mới,
+            mà là thay đổi chỗ đặt quyết định: orchestration được đẩy từ code cứng sang agent.
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cluster - Cụm kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Retrieval orchestration</td>
+                <td>Làm sao để query lấy đúng context thay vì trả lời “mù”.</td>
+                <td>Traditional RAG pipeline, Agentic RAG with one tool, Retrieval Agent.</td>
+                <td>Pipeline đơn giản dễ debug; agentic linh hoạt hơn nhưng khó kiểm soát hơn.</td>
+                <td>Dùng pipeline cho MVP; dùng agentic khi retrieval decision không còn đồng nhất.</td>
+              </tr>
+              <tr>
+                <td>Knowledge access</td>
+                <td>Dữ liệu có thể đến từ nhiều nguồn khác nhau.</td>
+                <td>Vector DB, SQL access, web search, graph DB, memory store.</td>
+                <td>Nguồn càng nhiều thì coverage càng tốt nhưng latency, cost và debugging complexity càng tăng.</td>
+                <td>Dùng khi câu hỏi thực tế cần research qua nhiều kho dữ liệu.</td>
+              </tr>
+              <tr>
+                <td>Tool interface</td>
+                <td>Làm sao để model gọi function ổn định.</td>
+                <td>typed function, docstring, JSON schema, agent-as-tool.</td>
+                <td>Schema chặt chẽ giúp ổn định hơn nhưng tốn công thiết kế tool contract.</td>
+                <td>Dùng khi muốn orchestration đáng tin cậy, đặc biệt trong multi-agent setup.</td>
+              </tr>
+              <tr>
+                <td>System validation</td>
+                <td>Chọn tool nào là đúng cho use case.</td>
+                <td>golden dataset, reference answers, offline evals, A/B experiments.</td>
+                <td>Tốn thời gian chuẩn bị test set nhưng là cách duy nhất để không tối ưu bằng cảm giác.</td>
+                <td>Luôn dùng nếu hệ thống chuẩn bị đi vào use case thật hoặc có nhiều phương án công cụ.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3><a href="file:///G:/RAG/ed/Agentic_RAG/1_rag.ipynb">1_rag.ipynb</a></h3>
+              <ul class="memory-list">
+                <li><strong>Setup block:</strong> import <code>OpenAI</code>, <code>PersistentClient</code>, <code>TSNE</code>, <code>plotly</code>, load env.</li>
+                <li><strong>Data loading block:</strong> đọc <code>facts.jsonl</code> và xây tập facts dùng cho demo.</li>
+                <li><strong>Vector store block:</strong> tạo embeddings bằng <code>text-embedding-3-small</code>, add documents vào Chroma.</li>
+                <li><strong>Visualization block:</strong> dùng t-SNE 2D/3D để trực quan hóa vector clusters; mục tiêu là giúp học trực giác về vector space.</li>
+                <li><strong>RAG block:</strong> embed câu hỏi, query top-3 docs, ghép context vào prompt, gọi model lần hai để ra answer grounded.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3><a href="file:///G:/RAG/ed/Agentic_RAG/2_agentic_rag.ipynb">2_agentic_rag.ipynb</a></h3>
+              <ul class="memory-list">
+                <li><strong>retrieve_relevant_context():</strong> đây là retrieval core function, lấy query vector rồi query Chroma.</li>
+                <li><strong>@function_tool wrapper:</strong> chuyển retrieval function thành tool mà agent hiểu được.</li>
+                <li><strong>Agent without tool:</strong> baseline để chứng minh agent không có context thì vẫn “mù”.</li>
+                <li><strong>basic_agentic_rag:</strong> expert agent được cấp trực tiếp retrieval tool.</li>
+                <li><strong>retrieval_agent + as_tool():</strong> tách retrieval thành tác tử riêng rồi biến nó thành tool cho expert agent.</li>
+              </ul>
+            </article>
+          </div>
+
+          <details open>
+            <summary>What the code is really teaching - Code thực sự đang dạy điều gì</summary>
+            <div class="note">
+              <p>
+                Dù notebook rất ngắn, nó dạy 3 ý kiến trúc quan trọng:
+                <span class="inline-code">retrieval is a capability - retrieval là một năng lực</span>,
+                <span class="inline-code">tools need contracts - tool cần contract rõ</span>,
+                và <span class="inline-code">responsibility can be separated - trách nhiệm có thể tách lớp</span>.
+                Đây là những ý có giá trị lâu dài hơn chính code demo.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Missing artifacts - Các phần còn thiếu trong thư mục hiện tại</summary>
+            <div class="note">
+              <p>
+                Notebook tham chiếu <code>facts.jsonl</code> và file <code>.env</code>, nhưng thư mục hiện tại không chứa chúng.
+                Nghĩa là đây là artifact học tập để hiểu flow, chưa phải snapshot hoàn chỉnh có thể chạy lại nguyên trạng chỉ bằng các file hiện có.
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Trường hợp dễ fail</h3>
+              <ul class="memory-list">
+                <li><strong>Agent answers too early:</strong> model trả lời luôn thay vì retrieve, đặc biệt nếu instructions không đủ chặt.</li>
+                <li><strong>Tool misuse - dùng tool không tối ưu:</strong> agent gọi tool sai lúc, sai query, hoặc gọi quá nhiều lần gây tốn cost.</li>
+                <li><strong>Research sprawl - research lan man:</strong> thêm quá nhiều tool mà không có evaluation, làm system rộng ra nhưng không tốt hơn.</li>
+                <li><strong>False confidence:</strong> demo nhỏ chạy tốt không có nghĩa pipeline đó đã sẵn sàng cho dữ liệu thật nhiều nguồn.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li><strong>“Agentic RAG phải nhiều agent”:</strong> sai; bản tối thiểu chỉ cần LLM có retrieval tool là đã đủ agentic.</li>
+                <li><strong>“Có thêm tool là luôn tốt hơn”:</strong> sai; mỗi tool thêm vào đều tăng latency, cost và complexity.</li>
+                <li><strong>“Semantic search là tìm vector chứ không phải text”:</strong> sai; text vẫn là phần giá trị được lưu, vector chỉ là chỉ mục để truy xuất nhanh theo nghĩa.</li>
+                <li><strong>“Research agent là production-ready by default”:</strong> sai; nó chỉ là pattern kiến trúc, còn chọn tool nào vẫn phải qua thực nghiệm.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Questions you should answer - Câu nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>Agentic RAG khác Traditional RAG ở điểm nào về control flow?</li>
+                <li>Vì sao nên tách retrieval agent khỏi expert agent?</li>
+                <li>Khi nào một retriever nên được nâng cấp thành research agent?</li>
+                <li>Tool schema và docstring có vai trò gì trong tool calling?</li>
+                <li>Tại sao evaluation mới là tiêu chí quyết định nên thêm SQL hay web search?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer frame - Khung trả lời</h3>
+              <p>
+                Hãy trả lời theo cấu trúc:
+                <strong>Problem - vấn đề</strong> ->
+                <strong>Baseline - cách cũ</strong> ->
+                <strong>New mechanism - cơ chế mới</strong> ->
+                <strong>Trade-off - đánh đổi</strong> ->
+                <strong>When to use - khi nào dùng</strong> ->
+                <strong>Validation - đánh giá bằng gì</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&amp;A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Traditional RAG là gì?<br><strong>A:</strong> Retrieve relevant context trước, augment prompt, rồi mới gọi LLM trả lời.</li>
+                <li><strong>Q:</strong> Agentic RAG tối thiểu cần gì?<br><strong>A:</strong> Một agent có retrieval tool và quyền tự gọi tool đó.</li>
+                <li><strong>Q:</strong> Retriever agent khác retrieval tool thế nào?<br><strong>A:</strong> Tool là function capability; agent là một layer quyết định có thể dùng nhiều tool và có instructions riêng.</li>
+                <li><strong>Q:</strong> Research agent dùng khi nào?<br><strong>A:</strong> Khi context phải được gom từ nhiều nguồn như vector DB, SQL, web search hoặc memory.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&amp;A - Hỏi đáp phỏng vấn</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Vì sao Agentic RAG không chỉ là một buzzword?<br><strong>A:</strong> Vì nó thay đổi chỗ đặt quyết định trong hệ thống. Retrieval không còn là bước code cứng ở ngoài, mà trở thành một capability agent có thể gọi tự chủ để đạt goal answer question tốt hơn.</li>
+                <li><strong>Q:</strong> Nếu thêm SQL và web search vào retriever, bạn kiểm chứng giá trị thế nào?<br><strong>A:</strong> Tạo test set đại diện, chạy baseline với vector-only retrieval, rồi A/B test các cấu hình tool khác nhau để đo accuracy, latency, cost và failure category. Tool chỉ đáng giữ nếu metric tốt hơn rõ ràng trên use case thật.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Must remember - Phải nhớ</h3>
+              <ol class="memory-list">
+                <li>Semantic search là nền tảng của cả Traditional RAG lẫn Agentic RAG.</li>
+                <li>Agentic RAG cơ bản = LLM được cấp retrieval tool.</li>
+                <li>Retriever agent tách retrieval responsibility khỏi answer responsibility.</li>
+                <li>Research agent là retriever nhiều tool, không còn giới hạn ở vector DB.</li>
+                <li>Tool thêm vào chỉ có giá trị nếu được chứng minh bằng evaluation.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Self-check - Tự kiểm tra</h3>
+              <ul class="memory-list">
+                <li>Bạn có mô tả được 4 sơ đồ PNG bằng lời không?</li>
+                <li>Bạn có giải thích được vì sao notebook 2 chỉ thêm ít dòng code nhưng thay đổi lớn về kiến trúc không?</li>
+                <li>Bạn có nêu được 2 lý do khiến nên tách retriever thành agent riêng không?</li>
+                <li>Bạn có trả lời được khi nào không nên biến mọi thứ thành research agent không?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What comes next - Tiếp theo là gì</h3>
+              <p>
+                Sau bài này, hướng học hợp lý là:
+                nối buổi này với Day 4 evaluations để chọn tool bằng metric,
+                rồi nối với các project lớn hơn như Agentic-RAG-InsureLLM để thấy pattern này đi vào runtime production-style thế nào.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Practice tasks - Bài luyện tập</h3>
+              <ul class="memory-list">
+                <li>Viết lại demo bằng dữ liệu của chính bạn thay cho <code>facts.jsonl</code>.</li>
+                <li>Thêm một tool SQL giả lập và test retriever agent trên câu hỏi cần bảng dữ liệu.</li>
+                <li>So sánh 3 cấu hình: Traditional RAG, Basic Agentic RAG, Retrieval Agent.</li>
+                <li>Thiết kế bộ 10-20 câu hỏi reference để kiểm tra tool nào thực sự giúp use case của bạn.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được tạo từ template của project, transcript, notebook và sơ đồ trong
+            <span class="inline-code">G:\RAG\ed\Agentic_RAG</span>.
+            Không chứa secrets, API keys, tokens hoặc credentials.
+          </div>
+          <p class="print-only">End of Agentic RAG study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function setActiveLink() {
+      let currentId = allSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of allSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

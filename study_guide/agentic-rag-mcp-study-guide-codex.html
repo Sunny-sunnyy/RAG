@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG + MCP Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --good-soft: #e8f6ef;
+      --good: #166534;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code,
+    .inline-code {
+      font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+      font-size: 0.92em;
+      background: #eef2f5;
+      border: 1px solid #dbe3e8;
+      border-radius: 6px;
+      padding: 0.12rem 0.34rem;
+      color: #10212b;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 16ch;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 74ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel,
+    .note {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong,
+    .metric {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-size: 1.65rem;
+    }
+
+    .section p + p {
+      margin-top: 12px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--warm);
+      background: var(--warn-soft);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comparison-table th {
+      color: var(--ink);
+      font-size: 0.95rem;
+      background: #f1f5f7;
+    }
+
+    .memory-list,
+    .section ul,
+    .section ol {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .note {
+      margin-top: 14px;
+    }
+
+    details {
+      margin-top: 16px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 16px;
+      font-weight: 700;
+      color: var(--ink);
+      background: #f9fbfc;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details .note {
+      margin: 0;
+      border: 0;
+      border-top: 1px solid var(--line-soft);
+      border-radius: 0;
+      background: var(--surface);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    .hidden-section {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .layout,
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .meta-grid,
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .toc,
+      .actions {
+        display: none !important;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="eyebrow">Agentic RAG + MCP - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic RAG with MCP: Expert Agent Study Guide</h1>
+          <p>
+            Tài liệu này tóm tắt buổi học xây dựng một <strong>Expert Agent</strong> bằng
+            <strong>OpenAI Agents SDK</strong>, <strong>MCP - Model Context Protocol</strong>,
+            <strong>Qdrant</strong> và <strong>Gradio</strong>. Trọng tâm không phải là một hệ RAG lớn,
+            mà là cách dùng <em>tooling có sẵn</em> để dựng rất nhanh một demo có
+            <strong>ingestion</strong>, <strong>long-term memory</strong>, <strong>short-term memory</strong>
+            và <strong>chat UI</strong>.
+          </p>
+          <div class="hero-points">
+            <div class="mini-card">
+              <strong>Core shift - Chuyển dịch cốt lõi</strong>
+              Retrieval không còn là code hard-coded; nó trở thành tool mà agent có thể tự gọi.
+            </div>
+            <div class="mini-card">
+              <strong>Main value - Giá trị chính</strong>
+              Dùng MCP để tái sử dụng web fetch và vector memory thay vì tự xây từ đầu.
+            </div>
+            <div class="mini-card">
+              <strong>Interview focus - Trọng tâm phỏng vấn</strong>
+              Nói rõ được pipeline ingest, query flow, memory layers và trade-off của cách làm này.
+            </div>
+            <div class="mini-card">
+              <strong>Upgrade path - Hướng nâng cấp</strong>
+              Từ vector-only memory sang hybrid tool retrieval với FAQ tool và streamed UX.
+            </div>
+          </div>
+          <div class="tag-row">
+            <span class="tag">MCP - Model Context Protocol</span>
+            <span class="tag">OpenAI Agents SDK</span>
+            <span class="tag">Qdrant - vector store</span>
+            <span class="tag">SQLiteSession - short-term memory</span>
+            <span class="tag">Gradio UI</span>
+          </div>
+        </div>
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Sources - Nguồn chính</h3>
+            <ul class="memory-list" style="margin-top: 10px;">
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/transcript.txt">transcript.txt</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb">ingest.ipynb</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb">next_level.ipynb</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/README.md">README.md</a></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Cách dùng nhanh - Quick usage</h3>
+            <p>
+              Đọc theo thứ tự:
+              <span class="inline-code">cheat-sheet</span> ->
+              <span class="inline-code">workflow</span> ->
+              <span class="inline-code">implementation</span> ->
+              <span class="inline-code">pitfalls</span> ->
+              <span class="inline-code">flashcards</span>.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Utilities - Tiện ích</h3>
+            <div class="actions">
+              <button class="button" id="expandAll" type="button">Expand all</button>
+              <button class="button" id="collapseAll" type="button">Collapse all</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview</a>
+          <a class="toc-link" href="#flashcards">12. Q&amp;A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Session metadata - Metadata buổi học</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Agentic RAG with MCP - Building an Expert Agent</li>
+                <li><strong>Type - Loại:</strong> mixed - theory + notebook walkthrough + small project</li>
+                <li><strong>Main focus - Trọng tâm:</strong> architecture, implementation, interview</li>
+                <li><strong>Depth - Độ sâu:</strong> medium to deep</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Available inputs - Nguồn đầu vào</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> <span class="inline-code">ingest.ipynb</span>, <span class="inline-code">next_level.ipynb</span>, <span class="inline-code">styles.py</span></li>
+                <li><strong>Docs / notes:</strong> <span class="inline-code">README.md</span>, <span class="inline-code">FAQ.md</span></li>
+                <li><strong>Transcript - Ghi âm chép lại:</strong> có, là narrative chính của bài gốc</li>
+                <li><strong>Knowledge artifact:</strong> <span class="inline-code">knowledge/faq.jsonl</span>; <span class="inline-code">knowledge/vectordb</span> là runtime artifact, không commit sẵn</li>
+              </ul>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Reading note - Ghi chú đọc repo:</strong>
+            repo này có hai lớp nội dung. <span class="inline-code">ingest.ipynb</span> là bài học chính trong transcript;
+            <span class="inline-code">next_level.ipynb</span> là phần mở rộng thêm tool FAQ, streaming và cải thiện UX.
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Bài này chứng minh rằng bạn có thể dựng một <strong>Agentic RAG</strong> khá hữu dụng chỉ bằng cách
+                ghép <strong>Agents SDK</strong> với các <strong>MCP servers</strong> có sẵn. Agent được cấp tool để
+                fetch dữ liệu, lưu memory vào vector store và sau đó truy hồi memory khi chat.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>MCP server</strong> expose tool cho agent qua một giao thức chuẩn.</li>
+                <li><strong>Qdrant</strong> đóng vai trò <em>long-term memory - bộ nhớ dài hạn</em>.</li>
+                <li><strong>SQLiteSession</strong> giữ <em>short-term memory - bộ nhớ ngắn hạn</em> của cuộc hội thoại.</li>
+                <li><strong>next_level</strong> thêm <span class="inline-code">faq_tool</span> để hybrid retrieval.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview angle - Góc phỏng vấn</h3>
+              <p>
+                Khi bị hỏi, hãy nói được:
+                <strong>goal - mục tiêu</strong>,
+                <strong>pipeline - luồng</strong>,
+                <strong>memory layers - các lớp bộ nhớ</strong>,
+                <strong>trade-off - đánh đổi</strong>,
+                và <strong>failure modes - chỗ dễ hỏng</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <p>
+            Buổi học hiện tại là một bản demo mang tính sư phạm rất rõ: thay vì xây một RAG stack lớn với nhiều module tự viết,
+            tác giả dùng các thành phần ngoài hộp để chứng minh một điều quan trọng:
+            <strong>agent + tools + memory</strong> có thể tạo ra một hệ thống hỏi đáp theo domain rất nhanh.
+          </p>
+          <p>
+            So với các study guide trước:
+            Day 4 thiên về <strong>evaluation</strong>,
+            Day 5 thiên về <strong>advanced retrieval techniques</strong>,
+            Agentic RAG cơ bản thiên về <strong>retrieval as a tool</strong>,
+            còn bài này thiên về <strong>practical integration</strong>:
+            dùng <strong>MCP</strong> như lớp kết nối tool chuẩn, giảm mạnh lượng code custom phải viết.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Main idea - Ý tưởng chính</h3>
+              <p>
+                Dạy cách dựng một <em>expert chatbot</em> biết trả lời về một domain cụ thể sau khi tự ingest knowledge từ web.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Why it matters - Vì sao quan trọng</h3>
+              <p>
+                Đây là cầu nối rất thực dụng giữa theory của RAG và cách một agent system dùng tools ngoài đời.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Expected outcome - Kết quả mong muốn</h3>
+              <p>
+                Sau bài này bạn phải mô tả được full flow từ website -> memories -> vector store -> agent answer -> streamed UI.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Concept goals - Mục tiêu kiến thức</h3>
+              <ul class="memory-list">
+                <li>Hiểu <strong>MCP - Model Context Protocol</strong> ở mức dùng thực tế cho agent tooling.</li>
+                <li>Phân biệt <strong>short-term memory</strong> và <strong>long-term memory</strong> trong agent systems.</li>
+                <li>Hiểu vì sao <strong>function tool</strong> và <strong>MCP tool</strong> có thể phối hợp trong cùng một agent.</li>
+                <li>Nhận ra đây là một <strong>lightweight Agentic RAG</strong>, không phải production RAG hoàn chỉnh.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Practical goals - Mục tiêu thực hành</h3>
+              <ul class="memory-list">
+                <li>Biết cấu hình MCP servers bằng <span class="inline-code">MCPServerStdio</span>.</li>
+                <li>Biết tạo flow ingest bằng <span class="inline-code">Runner.run(..., max_turns=50)</span>.</li>
+                <li>Biết dựng chat callback có session và vector memory.</li>
+                <li>Biết thêm một deterministic tool như <span class="inline-code">faq_tool</span> để giảm hallucination cho common questions.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Bài này nên được nhìn như một bước tiếp nối từ các guide trước trong workspace:
+            từ <strong>RAG evaluation</strong> ở Day 4, sang <strong>advanced retrieval design</strong> ở Day 5,
+            rồi đến <strong>Agentic RAG</strong> và <strong>Agentic-RAG-InsureLLM</strong>.
+            Điểm khác ở đây là phạm vi gọn hơn nhiều, nhưng khái niệm "retrieval becomes a callable capability"
+            lại được thể hiện rất rõ.
+          </p>
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="card">
+              <h3>What it inherits - Nó kế thừa gì</h3>
+              <ul class="memory-list">
+                <li>Từ <span class="inline-code">day4</span>: tư duy không tin demo cảm tính, phải biết kiểm tra memory và output.</li>
+                <li>Từ <span class="inline-code">day5</span>: chú ý trade-off giữa simplicity, quality, latency và maintainability.</li>
+                <li>Từ <span class="inline-code">agentic-rag-study-guide</span>: retrieval được biến thành tool cho agent.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>What it simplifies - Nó rút gọn gì</h3>
+              <ul class="memory-list">
+                <li>Không tự viết retriever phức tạp.</li>
+                <li>Không tự viết vector memory layer từ đầu.</li>
+                <li>Không thêm router agent hay planner phức tạp.</li>
+                <li>Dùng MCP để tận dụng tool đã có sẵn.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>MCP - Model Context Protocol</h3>
+              <p><strong>Concept - Khái niệm:</strong> chuẩn giao tiếp để tool/server có thể expose capabilities cho model hoặc agent theo cách nhất quán.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> chạy MCP server qua STDIO, liệt kê tools, cấp các server đó cho agent.</p>
+              <p><strong>Tools / Frameworks - Công cụ / framework:</strong> <span class="inline-code">MCPServerStdio</span>, <span class="inline-code">mcp-server-fetch</span>, <span class="inline-code">mcp-server-qdrant</span>.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> tái sử dụng nhanh nhưng phụ thuộc chất lượng tool server và schema đã có.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi bạn muốn tích hợp tools nhanh và chuẩn hóa thay vì tự viết glue code riêng cho từng tool.</p>
+            </article>
+            <article class="card">
+              <h3>Agentic RAG - RAG có tác tử</h3>
+              <p><strong>Concept - Khái niệm:</strong> agent được cấp retrieval capabilities và tự quyết định khi nào cần dùng chúng.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> natural-language tasking, multi-turn tool use, memory lookup trước khi answer.</p>
+              <p><strong>Tools / Models / Frameworks:</strong> OpenAI Agents SDK, LiteLLM-backed model, Qdrant MCP tool.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> linh hoạt hơn code cứng, nhưng khó kiểm soát hơn và dễ gọi tool không tối ưu.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi retrieval không còn là bước luôn cố định và cần cho agent quyền điều phối.</p>
+            </article>
+            <article class="card">
+              <h3>Long-term memory - Bộ nhớ dài hạn</h3>
+              <p><strong>Concept - Khái niệm:</strong> facts hoặc memories được nhúng vector và lưu trong vector store để truy hồi về sau.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> ingest từ web, deduplicate, store payload vào collection <span class="inline-code">knowledge</span>.</p>
+              <p><strong>Tools / Services - Công cụ / dịch vụ:</strong> Qdrant local path, sentence-transformer mặc định của MCP server.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> useful cho recall dài hạn nhưng chất lượng phụ thuộc vào dữ liệu ingest và query formulation.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi tri thức domain cần tồn tại qua nhiều phiên chat.</p>
+            </article>
+            <article class="card">
+              <h3>Short-term memory - Bộ nhớ ngắn hạn</h3>
+              <p><strong>Concept - Khái niệm:</strong> lưu conversation history để agent hiểu follow-up questions và context đang diễn ra.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> dùng <span class="inline-code">SQLiteSession</span> truyền vào <span class="inline-code">Runner.run</span> hoặc <span class="inline-code">run_streamed</span>.</p>
+              <p><strong>Tools / Frameworks:</strong> OpenAI Agents SDK sessions, SQLite-backed persistence.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> tốt cho hội thoại nhưng không thay thế knowledge base dài hạn.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> gần như luôn dùng cho chatbot có nhiều lượt trao đổi.</p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Concept relationship - Quan hệ giữa khái niệm:</strong>
+            MCP cung cấp tools. Agent dùng tools để ingest và retrieve. Qdrant giữ long-term memory.
+            SQLiteSession giữ short-term memory. Khi thêm <span class="inline-code">faq_tool</span>,
+            hệ thống chuyển từ vector-only retrieval sang <strong>hybrid retrieval - truy hồi lai</strong>.
+          </div>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>High-level flow - Luồng tổng quát</h3>
+              <ol class="memory-list">
+                <li>Chọn model và test agent tối thiểu.</li>
+                <li>Khai báo URLs làm nguồn knowledge.</li>
+                <li>Mở <span class="inline-code">fetch MCP server</span> và <span class="inline-code">qdrant MCP server</span>.</li>
+                <li>Tạo ingest agent với instruction lưu memories duy nhất.</li>
+                <li>Chạy loop qua nhiều URL để populate vector store.</li>
+                <li>Kiểm tra collection trong Qdrant.</li>
+                <li>Tạo expert chat agent chỉ dùng memory tools để trả lời.</li>
+                <li>Ở bản nâng cấp, thêm FAQ tool và streamed chat UX.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Data / control flow - Luồng dữ liệu / điều khiển</h3>
+              <p>
+                Input của pha ingest là website URLs. Fetch tool lấy nội dung web.
+                Agent đọc nội dung, tìm facts quan trọng, kiểm tra duplicate bằng memory lookup,
+                rồi dùng Qdrant tool để store. Output là collection <span class="inline-code">knowledge</span>.
+              </p>
+              <p>
+                Ở pha chat, input là user message. Agent dùng vector memory để retrieve context.
+                Ở <span class="inline-code">next_level.ipynb</span>, nếu câu hỏi map vào FAQ thì có thể gọi
+                <span class="inline-code">faq_tool</span>; nếu người dùng nhập dạng <span class="inline-code">Q2</span>,
+                hệ thống bypass model và trả lời trực tiếp, nhưng vẫn ghi vào session để giữ continuity.
+              </p>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Pipeline summary - Tóm tắt pipeline:</strong>
+            website ->
+            <span class="inline-code">fetch</span> ->
+            ingest agent ->
+            <span class="inline-code">qdrant-store / qdrant-find</span> ->
+            local vector DB ->
+            expert agent ->
+            <span class="inline-code">SQLiteSession</span> ->
+            Gradio chat UI.
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Tool-based ingestion - ingest bằng tool</h3>
+              <p>
+                Agent không được đưa raw documents sẵn trong prompt; thay vào đó nó chủ động fetch và store bằng tools.
+                Đây là một pattern quan trọng vì retrieval/storage được tách khỏi prompt text thuần.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Dedup-aware memory population - nạp memory có kiểm tra trùng</h3>
+              <p>
+                Instruction yêu cầu agent check memory trước khi thêm mới. Điều này dạy một mindset đúng:
+                ingest không chỉ là append dữ liệu, mà còn phải quan tâm noise và duplicate.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Hybrid retrieval - truy hồi lai</h3>
+              <p>
+                Bản <span class="inline-code">next_level</span> dùng cả vector memory và deterministic FAQ tool.
+                Đây là một cải tiến rất thực dụng vì common questions không nên phụ thuộc hoàn toàn vào semantic search.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Streaming - phản hồi theo luồng</h3>
+              <p>
+                Dùng <span class="inline-code">Runner.run_streamed</span> và event parsing để hiển thị token output
+                cùng trạng thái gọi tool. Đây là cải tiến UX chứ không phải retrieval improvement, nhưng rất đáng giá.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cluster - Cụm kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tool integration - tích hợp công cụ</td>
+                <td>Làm sao để agent dùng được web fetch, memory, search, DB mà không tự viết adapter dài.</td>
+                <td>MCP servers, function tools, custom SDK wrappers.</td>
+                <td>MCP nhanh và chuẩn hơn; custom wrappers linh hoạt hơn nhưng tốn công hơn.</td>
+                <td>Khi muốn ship prototype nhanh hoặc cần chuẩn giao tiếp thống nhất cho nhiều tools.</td>
+              </tr>
+              <tr>
+                <td>Memory storage - lưu bộ nhớ</td>
+                <td>Làm sao để tri thức tồn tại qua nhiều phiên hỏi đáp.</td>
+                <td>Qdrant, Pinecone, Weaviate, pgvector.</td>
+                <td>Local Qdrant dễ demo; managed service dễ scale hơn nhưng tăng infra cost.</td>
+                <td>Khi domain knowledge cần lưu dài hạn và truy hồi theo meaning.</td>
+              </tr>
+              <tr>
+                <td>Short-term context - ngữ cảnh ngắn hạn</td>
+                <td>Làm sao để agent hiểu follow-up questions trong cùng conversation.</td>
+                <td>SQLite session, Redis session, DB-backed conversation state.</td>
+                <td>SQLite đơn giản; distributed store phù hợp scale cao hơn nhưng phức tạp hơn.</td>
+                <td>Khi chatbot có multi-turn interaction thật sự.</td>
+              </tr>
+              <tr>
+                <td>FAQ / deterministic answers</td>
+                <td>Làm sao để câu hỏi lặp đi lặp lại được trả lời ổn định và grounded hơn.</td>
+                <td>JSONL FAQ + function tool, SQL lookup, rules engine.</td>
+                <td>Deterministic hơn vector search nhưng cần dữ liệu có cấu trúc và bảo trì riêng.</td>
+                <td>Khi có nhóm common questions và muốn giảm hallucination/cost.</td>
+              </tr>
+              <tr>
+                <td>Model provider - nhà cung cấp mô hình</td>
+                <td>Đảm bảo speed, cost và compatibility với agent stack.</td>
+                <td>OpenAI models, Cerebras via LiteLLM, OpenRouter.</td>
+                <td>Mỗi provider khác nhau về latency, cost, quality và operational risk.</td>
+                <td>Khi bạn cần linh hoạt đổi backend model mà không thay nhiều orchestration code.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What the code does - Code đang làm gì</h3>
+              <p>
+                <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb">ingest.ipynb</a>
+                làm ba việc chính:
+                chọn model, tạo local vector DB path, rồi chạy ingest agent để đổ knowledge từ web vào Qdrant.
+                Sau đó notebook chuyển sang pha chat bằng một hàm <span class="inline-code">chat()</span>
+                chỉ vài dòng nhưng đã có model + memory + session.
+              </p>
+              <p>
+                <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb">next_level.ipynb</a>
+                mở rộng bằng cách đọc <span class="inline-code">knowledge/faq.jsonl</span>,
+                dựng <span class="inline-code">faq_tool</span>, thêm streaming event handling,
+                và thêm đường tắt direct answer cho các câu kiểu <span class="inline-code">Q2</span>.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Why this design - Vì sao chọn thiết kế này</h3>
+              <p>
+                Thiết kế này tối ưu cho <strong>teaching speed</strong> và <strong>concept clarity</strong>.
+                Người học thấy ngay:
+                retrieval có thể là tool,
+                memory có thể là MCP server,
+                session là short-term memory,
+                và UI có thể ghép rất nhanh.
+              </p>
+              <p>
+                Trade-off là hệ thống này intentionally đơn giản:
+                chưa có eval harness riêng, chưa có ingestion quality control sâu,
+                chưa có router phức tạp, và domain data source còn nhỏ.
+                Nhưng đó lại là điểm mạnh cho việc học nền tảng.
+              </p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Code map - Bản đồ file code quan trọng</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb">ingest.ipynb</a>:</strong> bài gốc, dựng ingest flow và chat flow cơ bản.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb">next_level.ipynb</a>:</strong> thêm FAQ tool, streaming, direct answer path.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/knowledge/faq.jsonl">knowledge/faq.jsonl</a>:</strong> FAQ data có cấu trúc, 58 dòng JSONL.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/FAQ.md">FAQ.md</a>:</strong> spec để tạo hoặc cập nhật file FAQ JSONL.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/styles.py">styles.py</a>:</strong> CSS/JS cho Gradio, tập trung UX chứ không đổi logic RAG.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/pyproject.toml">pyproject.toml</a>:</strong> xác nhận stack Python, Gradio, OpenAI Agents SDK, Qdrant client.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>Notable implementation details - Chi tiết dễ bị bỏ qua</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong><span class="inline-code">list_tools()</span> trước khi dùng:</strong> đây là bước tốt để inspect capabilities thật sự của MCP server.</li>
+                <li><strong><span class="inline-code">max_turns=50</span> trong ingest:</strong> cho agent đủ chỗ để fetch, check memory, rồi store nhiều lần.</li>
+                <li><strong>Instant answer path phải ghi vào session:</strong> nếu không thêm <span class="inline-code">await convo.add_items(...)</span> thì lịch sử hội thoại sẽ bị lệch.</li>
+                <li><strong><span class="inline-code">knowledge/vectordb</span> bị ignore:</strong> vector DB là generated artifact, không phải source file commit cùng repo.</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Trường hợp dễ fail</h3>
+              <ul class="memory-list">
+                <li><strong>Weak ingestion - ingest yếu:</strong> web content nghèo hoặc instruction không rõ sẽ làm memories nông và không hữu ích.</li>
+                <li><strong>Duplicate/noisy memory:</strong> nếu agent hoặc tool không kiểm tra kỹ, vector DB dễ đầy facts trùng hoặc quá nhỏ lẻ.</li>
+                <li><strong>Over-trusting vector search:</strong> câu hỏi FAQ có thể retrieve không ổn định nếu chỉ dựa vào semantic memory.</li>
+                <li><strong>Session inconsistency:</strong> bypass model nhưng không ghi session sẽ làm follow-up bị mất ngữ cảnh.</li>
+                <li><strong>Environment friction:</strong> README cảnh báo Windows có thể phải dùng WSL2 để MCP chạy ổn định.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li><strong>"MCP là vector DB":</strong> sai; MCP là protocol/layer expose tools, còn Qdrant chỉ là một server/tool cụ thể.</li>
+                <li><strong>"Long-term memory thay thế short-term memory":</strong> sai; một cái giữ domain knowledge, một cái giữ hội thoại hiện tại.</li>
+                <li><strong>"Có nhiều tools thì agent chắc chắn tốt hơn":</strong> sai; nhiều tools hơn cũng tăng ambiguity, latency và cost.</li>
+                <li><strong>"Demo chạy nhanh tức là production-ready":</strong> sai; đây là demo học kiến trúc, chưa phải hardened system.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Questions you should answer - Câu nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>MCP giúp gì cho agent systems so với tự viết custom integrations?</li>
+                <li>Vì sao Qdrant trong bài này được xem là long-term memory?</li>
+                <li>Short-term memory và long-term memory phối hợp ra sao trong query flow?</li>
+                <li>Khi nào nên thêm deterministic tool như FAQ thay vì chỉ rely vào vector retrieval?</li>
+                <li>Trade-off chính của demo này so với một production RAG system là gì?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer frame - Khung trả lời</h3>
+              <p>
+                Trả lời theo cấu trúc:
+                <strong>Goal - mục tiêu</strong> ->
+                <strong>Mechanism - cách hoạt động</strong> ->
+                <strong>Components - thành phần</strong> ->
+                <strong>Trade-off - đánh đổi</strong> ->
+                <strong>Pitfalls - bẫy</strong> ->
+                <strong>When to use - khi nào dùng</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&amp;A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> MCP là gì?<br><strong>A:</strong> Một protocol/layer chuẩn để tools hoặc servers expose capabilities cho model/agent.</li>
+                <li><strong>Q:</strong> Qdrant trong bài này đóng vai trò gì?<br><strong>A:</strong> Long-term memory - bộ nhớ dài hạn, lưu memories theo vector để retrieve về sau.</li>
+                <li><strong>Q:</strong> SQLiteSession dùng để làm gì?<br><strong>A:</strong> Giữ short-term conversation history để agent hiểu context nhiều lượt chat.</li>
+                <li><strong>Q:</strong> Vì sao thêm <span class="inline-code">faq_tool</span>?<br><strong>A:</strong> Để trả lời common questions ổn định hơn, giảm phụ thuộc hoàn toàn vào vector retrieval.</li>
+                <li><strong>Q:</strong> Streaming cải thiện gì?<br><strong>A:</strong> Cải thiện UX và khả năng quan sát tool-use, không trực tiếp nâng retrieval quality.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&amp;A - Hỏi đáp phỏng vấn</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Hãy mô tả full pipeline của repo này.<br><strong>A:</strong> Agent đầu tiên dùng fetch MCP lấy nội dung website, dùng qdrant-find/qdrant-store để tạo memories trong vector DB. Sau khi knowledge base được populate, expert agent dùng vector memory để trả lời user, còn session lưu lịch sử chat. Bản nâng cấp thêm FAQ tool để xử lý nhóm câu hỏi phổ biến và dùng streaming cho phản hồi realtime hơn.</li>
+                <li><strong>Q:</strong> Nếu product thật dùng pattern này, bạn sẽ nâng cấp gì trước?<br><strong>A:</strong> Tôi sẽ thêm evaluation cho ingest và answer quality, thêm telemetry cho tool calls, kiểm soát schema của stored memories, và phân biệt rõ query classes nào nên đi qua deterministic lookup thay vì vector retrieval. Sau đó mới cân nhắc thêm router hoặc nhiều data sources hơn.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Must remember - Phải nhớ</h3>
+              <ol class="memory-list">
+                <li>MCP giảm công tích hợp tools bằng cách chuẩn hóa cách agent nhìn thấy tools.</li>
+                <li>Agentic RAG ở bài này là một pattern nhẹ: agent tự gọi tools để ingest và retrieve.</li>
+                <li>Qdrant = long-term memory; SQLiteSession = short-term memory.</li>
+                <li><span class="inline-code">next_level.ipynb</span> nâng hệ thống từ vector-only sang hybrid tool retrieval.</li>
+                <li>Điểm mạnh của repo là clarity và speed; điểm yếu là chưa phải production architecture hoàn chỉnh.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Self-check - Tự kiểm tra</h3>
+              <ul class="memory-list">
+                <li>Bạn có giải thích được vì sao bài này vẫn là RAG dù không có pipeline retrieve-then-answer cứng không?</li>
+                <li>Bạn có mô tả được khi nào nên dùng FAQ tool thay vì chỉ semantic search không?</li>
+                <li>Bạn có nói được 3 trade-off lớn nhất của việc thêm nhiều tools vào agent không?</li>
+                <li>Bạn có phân biệt rõ narrative của <span class="inline-code">ingest.ipynb</span> và phần upgrade của <span class="inline-code">next_level.ipynb</span> không?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What comes next - Tiếp theo là gì</h3>
+              <p>
+                Hướng học tiếp hợp lý là:
+                nối bài này với Day 4 để nghĩ về evaluation,
+                nối với Day 5 để nghĩ về retrieval quality,
+                và nối với các guide Agentic RAG trước đó để hiểu lúc nào một demo nhẹ nên được nâng thành hệ đa tool hoặc đa agent.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Missing inputs - Còn thiếu gì</h3>
+              <p>
+                Nếu muốn làm bản sâu hơn nữa, nên có thêm:
+                kết quả chạy thực tế của vectordb sau ingest,
+                log tool calls,
+                một bộ câu hỏi đánh giá,
+                và dữ liệu so sánh giữa vector-only answer với FAQ-assisted answer.
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được tạo từ template trong
+            <span class="inline-code">G:\RAG\study_guide\study-guide-template.html</span>,
+            các study guide trước trong <span class="inline-code">G:\RAG\study_guide</span>,
+            và repo hiện tại trong <span class="inline-code">G:\RAG\ed\Agentic_Rag_MCP\expert-main</span>.
+            Không chứa secrets, API keys, tokens hoặc credentials.
+          </div>
+          <p class="print-only">End of Agentic RAG + MCP study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

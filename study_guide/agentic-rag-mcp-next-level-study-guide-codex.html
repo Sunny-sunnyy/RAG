@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG MCP Next Level Study Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --good-soft: #e8f6ef;
+      --good: #166534;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code,
+    .inline-code {
+      font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+      font-size: 0.92em;
+      background: #eef2f5;
+      border: 1px solid #dbe3e8;
+      border-radius: 6px;
+      padding: 0.12rem 0.34rem;
+      color: #10212b;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 74ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel,
+    .note {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong,
+    .metric {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-size: 1.65rem;
+    }
+
+    .section p + p {
+      margin-top: 12px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--warm);
+      background: var(--warn-soft);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .comparison-table th {
+      color: var(--ink);
+      font-size: 0.95rem;
+      background: #f1f5f7;
+    }
+
+    .memory-list,
+    .section ul,
+    .section ol {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .note {
+      margin-top: 14px;
+    }
+
+    details {
+      margin-top: 16px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 16px;
+      font-weight: 700;
+      color: var(--ink);
+      background: #f9fbfc;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details .note {
+      margin: 0;
+      border: 0;
+      border-top: 1px solid var(--line-soft);
+      border-radius: 0;
+      background: var(--surface);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    .hidden-section {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .layout,
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .meta-grid,
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .toc,
+      .actions {
+        display: none !important;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="eyebrow">Agentic RAG Next Level - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic RAG with MCP: Next Level Expert Guide</h1>
+          <p>
+            Đây là bản nâng cấp của demo <strong>Agentic RAG + MCP</strong> trước đó.
+            Trọng tâm không còn là chỉ ingest web vào <strong>vector store - kho lưu trữ vector</strong>,
+            mà là làm hệ thống <strong>agentic hơn</strong> bằng cách bổ sung
+            <strong>FAQ tool - công cụ FAQ</strong>, cho phép
+            <strong>hybrid retrieval - truy hồi lai</strong>,
+            <strong>streaming - phản hồi theo luồng</strong>,
+            và một đường <strong>instant answer - trả lời tức thì</strong> không cần qua LLM trong một số trường hợp.
+          </p>
+          <div class="hero-points">
+            <div class="mini-card">
+              <strong>Core upgrade - Nâng cấp cốt lõi</strong>
+              Từ vector memory-only sang kết hợp vector memory với deterministic FAQ lookup.
+            </div>
+            <div class="mini-card">
+              <strong>Main lesson - Bài học chính</strong>
+              Không phải lúc nào LLM cũng là lời giải tốt nhất; có lúc code path trực tiếp hiệu quả hơn.
+            </div>
+            <div class="mini-card">
+              <strong>Interview focus - Trọng tâm phỏng vấn</strong>
+              Nói được lý do thêm tool, cách tool song song với memory, và trade-off giữa flexibility với control.
+            </div>
+            <div class="mini-card">
+              <strong>Implementation focus - Trọng tâm triển khai</strong>
+              `faq.jsonl`, `@function_tool`, streamed events, direct `Qn` bypass, và session behavior.
+            </div>
+          </div>
+          <div class="tag-row">
+            <span class="tag">FAQ JSONL</span>
+            <span class="tag">function tool - công cụ hàm</span>
+            <span class="tag">hybrid retrieval - truy hồi lai</span>
+            <span class="tag">streaming - phản hồi theo luồng</span>
+            <span class="tag">MCP + Qdrant</span>
+          </div>
+        </div>
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Sources - Nguồn chính</h3>
+            <ul class="memory-list" style="margin-top: 10px;">
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/transcript.txt">transcript.txt</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb">next_level.ipynb</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/ingest.ipynb">ingest.ipynb</a></li>
+              <li><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl">knowledge/faq.jsonl</a></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Quick usage - Cách dùng nhanh</h3>
+            <p>
+              Nếu ôn nhanh, đọc theo thứ tự:
+              <span class="inline-code">cheat-sheet</span> ->
+              <span class="inline-code">workflow</span> ->
+              <span class="inline-code">implementation</span> ->
+              <span class="inline-code">pitfalls</span> ->
+              <span class="inline-code">flashcards</span>.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Utilities - Tiện ích</h3>
+            <div class="actions">
+              <button class="button" id="expandAll" type="button">Expand all</button>
+              <button class="button" id="collapseAll" type="button">Collapse all</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview</a>
+          <a class="toc-link" href="#flashcards">12. Q&amp;A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Session metadata - Metadata buổi học</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Taking Agentic RAG to the next level</li>
+                <li><strong>Type - Loại:</strong> notebook walkthrough + design upgrade</li>
+                <li><strong>Main focus - Trọng tâm:</strong> implementation, architecture, interview</li>
+                <li><strong>Depth - Độ sâu:</strong> medium</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Available inputs - Nguồn đầu vào</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> <span class="inline-code">next_level.ipynb</span>, <span class="inline-code">ingest.ipynb</span>, <span class="inline-code">styles.py</span></li>
+                <li><strong>Data - Dữ liệu:</strong> <span class="inline-code">knowledge/faq.jsonl</span> với 58 FAQ</li>
+                <li><strong>Docs:</strong> <span class="inline-code">README.md</span>, <span class="inline-code">FAQ.md</span></li>
+                <li><strong>Transcript:</strong> có, mô tả mục tiêu và flow của video nâng cấp</li>
+              </ul>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Scope note - Ghi chú phạm vi:</strong>
+            Buổi này không xây lại hệ từ đầu.
+            Nó giả định bạn đã có local vector DB từ bài trước, rồi nâng chất lượng trả lời bằng một tool mới và một số logic điều phối thực dụng hơn.
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý chính</h3>
+              <p>
+                Hệ `expert` trước đó đã có
+                <strong>vector memory - bộ nhớ vector</strong>.
+                Bản next level thêm
+                <strong>FAQ tool</strong> để câu trả lời chắc hơn với các câu hỏi phổ biến,
+                đồng thời vẫn giữ khả năng dùng Qdrant memory cho câu hỏi mở.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>FAQ answers</strong> không được nhét hết vào prompt; chỉ nhét danh sách câu hỏi.</li>
+                <li><strong>function_tool</strong> biến một Python function thành tool mà agent hiểu được.</li>
+                <li><strong>run_streamed</strong> cải thiện UX nhưng thêm phần event handling hơi janky.</li>
+                <li><strong>Q-number shortcut</strong> là ví dụ rõ nhất cho tư duy “LLM is not always the answer”.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview angle - Góc phỏng vấn</h3>
+              <p>
+                Bạn cần nói được vì sao đây là
+                <strong>hybrid retrieval - truy hồi lai</strong>,
+                vì sao không nên cho toàn bộ FAQ answers vào context ngay từ đầu,
+                và khi nào bypass LLM là quyết định tốt hơn.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <p>
+            Đây là một buổi rất điển hình của tư duy agent engineering thực dụng:
+            không cố làm hệ thống “thông minh hơn” bằng prompt dài hơn,
+            mà bằng cách cho nó thêm một capability đúng chỗ.
+            Cụ thể, thay vì buộc model nhớ toàn bộ nội dung FAQ,
+            hệ thống chỉ cho model biết danh sách câu hỏi nào tồn tại,
+            rồi cấp cho nó một tool để lấy câu trả lời đầy đủ khi cần.
+          </p>
+          <p>
+            So với guide [agentic-rag-mcp-study-guide-codex.html](G:/RAG/study_guide/agentic-rag-mcp-study-guide-codex.html),
+            phần cốt lõi ở đây là
+            <strong>tool augmentation - tăng cường bằng tool</strong>,
+            <strong>parallel tool use - gọi tool song song</strong>,
+            và
+            <strong>LLM bypass - bỏ qua LLM khi có thể</strong>.
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Main idea - Ý tưởng chính</h3>
+              <p>Thêm FAQ tool để biến agent từ “đọc memory và suy luận” thành “chọn đúng nguồn trả lời”.</p>
+            </article>
+            <article class="card">
+              <h3>Why it matters - Vì sao quan trọng</h3>
+              <p>Đây là bước chuyển từ demo RAG đơn giản sang hệ có khả năng phối hợp nhiều nguồn tri thức.</p>
+            </article>
+            <article class="card">
+              <h3>Expected outcome - Kết quả mong muốn</h3>
+              <p>Bạn phải mô tả được flow: user query -> instant answer hoặc agent -> vector memory + FAQ tool -> streamed answer.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Concept goals - Mục tiêu kiến thức</h3>
+              <ul class="memory-list">
+                <li>Hiểu vì sao `all answers in prompt` là lựa chọn tệ khi FAQ dài.</li>
+                <li>Hiểu `function tool - công cụ hàm` khác `MCP tool` ở chỗ nào.</li>
+                <li>Hiểu `hybrid retrieval - truy hồi lai` trong ngữ cảnh vector memory + structured FAQ lookup.</li>
+                <li>Hiểu khi nào nên bypass LLM và dùng code path trực tiếp.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Practical goals - Mục tiêu thực hành</h3>
+              <ul class="memory-list">
+                <li>Biết đọc `faq.jsonl` và biến nó thành dictionary lookup.</li>
+                <li>Biết dùng `@function_tool` để expose hàm lookup cho agent.</li>
+                <li>Biết stream output của agent trong Gradio.</li>
+                <li>Biết chỉ ra điểm mạnh và điểm yếu của nhánh `instant answer` hiện có.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Buổi này kế thừa trực tiếp toàn bộ nền của bài `expert-main`:
+            đã có `ingest.ipynb` để populate vector DB,
+            đã có `Qdrant MCP server`,
+            đã có `SQLiteSession`,
+            và đã có giao diện Gradio chat.
+            Nếu không có knowledge base trước, notebook này không đủ để tự đứng độc lập.
+          </p>
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="card">
+              <h3>What it keeps - Nó giữ lại gì</h3>
+              <ul class="memory-list">
+                <li>Qdrant local vector database.</li>
+                <li>MCP-based memory retrieval.</li>
+                <li>Short-term memory qua `SQLiteSession`.</li>
+                <li>Gradio chat UI và CSS/JS từ `styles.py`.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>What it adds - Nó thêm gì</h3>
+              <ul class="memory-list">
+                <li>`faq.jsonl` làm nguồn tri thức có cấu trúc.</li>
+                <li>`faq_tool` để lookup answer theo question number.</li>
+                <li>Event parsing cho streamed output.</li>
+                <li>`Qn` shortcut để trả lời không cần LLM.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>FAQ tool - công cụ FAQ</h3>
+              <p><strong>Concept - Khái niệm:</strong> một deterministic tool cho phép agent lấy nguyên văn câu trả lời FAQ khi nhận ra câu hỏi phù hợp.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> lưu FAQ dạng JSONL, đưa danh sách câu hỏi vào instructions, tra answer qua tool khi cần.</p>
+              <p><strong>Tools / Frameworks - Công cụ / framework:</strong> Python dict lookup, `@function_tool`, Agents SDK tool schema.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> grounded hơn nhưng cần curated data và bảo trì riêng ngoài vector memory.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi có nhóm câu hỏi lặp lại, câu trả lời dài, quan trọng, và muốn ổn định cao.</p>
+            </article>
+
+            <article class="card">
+              <h3>Hybrid retrieval - truy hồi lai</h3>
+              <p><strong>Concept - Khái niệm:</strong> không phụ thuộc một nguồn retrieval duy nhất; agent phối hợp vector memory với structured FAQ lookup.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> luôn dùng memory tool, và nếu query match FAQ thì dùng thêm FAQ tool song song.</p>
+              <p><strong>Tools / Models / Services - Công cụ / mô hình / dịch vụ:</strong> Qdrant MCP server, FAQ function tool, GPT-5.5 hoặc model tương đương.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> độ đúng tăng, nhưng orchestration phức tạp hơn và đòi prompt rõ hơn.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi domain có cả câu hỏi mở lẫn câu hỏi “known canonical answers”.</p>
+            </article>
+
+            <article class="card">
+              <h3>Streaming - phản hồi theo luồng</h3>
+              <p><strong>Concept - Khái niệm:</strong> thay vì chờ xong toàn bộ answer, UI nhận dần text và trạng thái tool-use.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> dùng `Runner.run_streamed`, loop qua `stream_events()`, phân loại event types.</p>
+              <p><strong>Tools / Frameworks - Công cụ / framework:</strong> Agents SDK streamed response, `ResponseTextDeltaEvent`, Gradio generator callback.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> UX tốt hơn nhưng code phức tạp và “janky” hơn so với blocking call.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi muốn người dùng thấy hệ đang gọi tool và phản hồi dần như chat app thật.</p>
+            </article>
+
+            <article class="card">
+              <h3>Instant answer path - nhánh trả lời tức thì</h3>
+              <p><strong>Concept - Khái niệm:</strong> nếu input rất có cấu trúc như `Q37`, không cần tốn chi phí LLM; code có thể trả lời trực tiếp.</p>
+              <p><strong>Methods / Techniques - Phương pháp / kỹ thuật:</strong> parse pattern input, map sang question number, gọi local lookup.</p>
+              <p><strong>Tools / Frameworks - Công cụ / framework:</strong> Python string logic, FAQ dict, Gradio chat callback.</p>
+              <p><strong>Trade-off - Đánh đổi:</strong> nhanh và rẻ hơn, nhưng dễ làm lệch session state nếu không sync với conversation memory.</p>
+              <p><strong>When to use - Khi nào nên dùng:</strong> khi có những query cực kỳ deterministic và không cần reasoning.</p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Key relationship - Quan hệ cốt lõi:</strong>
+            vector memory giải quyết câu hỏi mở và context nền;
+            FAQ tool giải quyết câu hỏi canonical;
+            instant-answer path giải quyết câu hỏi cực kỳ deterministic;
+            streaming chỉ là lớp UX để người dùng nhìn thấy hệ thống hoạt động.
+          </div>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>High-level flow - Luồng tổng quát</h3>
+              <ol class="memory-list">
+                <li>Đọc local vector DB đã ingest từ bài trước.</li>
+                <li>Đọc `knowledge/faq.jsonl` và parse từng dòng JSONL.</li>
+                <li>Xây system instructions với ba phần: Role, Memory, FAQ.</li>
+                <li>Chỉ đưa danh sách câu hỏi FAQ vào prompt, không đưa toàn bộ câu trả lời.</li>
+                <li>Tạo `faq_tool` từ Python function để lookup answer theo question number.</li>
+                <li>Nếu user nhập `Qn`, trả lời trực tiếp bằng code path.</li>
+                <li>Nếu không, chạy agent với memory tool + FAQ tool, stream answer về Gradio.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Control flow - Luồng điều khiển</h3>
+              <p>
+                Có ba nhánh chính:
+                <strong>direct path</strong> cho `Qn`,
+                <strong>memory-only tendency</strong> cho câu hỏi mở không match FAQ rõ ràng,
+                và
+                <strong>memory + FAQ parallel path</strong> cho câu hỏi vừa cần context vừa cần canonical answer.
+              </p>
+              <p>
+                Trong transcript, tác giả nhấn mạnh rằng agent có thể gọi cả `qdrant-find` và `faq_tool`
+                song song để tổng hợp câu trả lời tốt hơn.
+                Đây là một bước “agentic hơn” so với bài trước,
+                nơi memory là nguồn chính gần như duy nhất lúc answer.
+              </p>
+            </article>
+          </div>
+          <div class="callout">
+            <strong>Pipeline summary - Tóm tắt pipeline:</strong>
+            user message ->
+            kiểm tra `Qn` shortcut ->
+            nếu match thì direct FAQ lookup ->
+            nếu không match thì agent ->
+            `qdrant-find` + tùy chọn `faq_tool` ->
+            streamed answer ->
+            Gradio UI.
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Prompt slimming - làm gọn prompt</h3>
+              <p>
+                Chỉ liệt kê questions, không nhét answers vào context.
+                Đây là kỹ thuật giảm context bloat nhưng vẫn giữ agent awareness về những FAQ tồn tại.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Tool schema as instruction - schema tool như một phần hướng dẫn</h3>
+              <p>
+                `@function_tool` không chỉ expose function;
+                nó còn tạo description và JSON schema để model biết tool nhận tham số gì và dùng trong trường hợp nào.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Parallel tool use - gọi tool song song</h3>
+              <p>
+                Instructions nói rõ “make all tool calls in parallel”.
+                Ý tưởng là vừa lấy memory nền vừa lookup FAQ cụ thể để tăng answer quality mà không phải serialize mọi bước.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Bypass logic - logic bỏ qua LLM</h3>
+              <p>
+                Đây là kỹ thuật tối ưu cost/latency rất thực tế:
+                nhận ra khi nào bài toán chỉ là lookup chứ không cần language reasoning.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cluster - Cụm kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Canonical Q&amp;A storage</td>
+                <td>Câu trả lời chuẩn quá dài hoặc quá quan trọng để chỉ dựa vào semantic recall.</td>
+                <td>JSONL FAQ, SQL table, CMS-backed knowledge records, rules engine.</td>
+                <td>Chính xác hơn nhưng cần maintain curated data.</td>
+                <td>Khi có nhiều common questions hoặc policy answers.</td>
+              </tr>
+              <tr>
+                <td>Retrieval strategy - chiến lược truy hồi</td>
+                <td>Một nguồn retrieval duy nhất không đủ tốt cho mọi loại query.</td>
+                <td>Vector-only, FAQ-only, hybrid vector + FAQ, vector + SQL + web search.</td>
+                <td>Hybrid tốt hơn nhưng orchestration khó hơn.</td>
+                <td>Khi query distribution đa dạng và có cả open-ended lẫn deterministic queries.</td>
+              </tr>
+              <tr>
+                <td>Response delivery - cách trả lời</td>
+                <td>Người dùng cần phản hồi nhanh và minh bạch hơn.</td>
+                <td>Blocking answer, streamed answer, streamed answer with tool-status messages.</td>
+                <td>Streaming cần thêm event handling và UI complexity.</td>
+                <td>Khi chatbot có latency đủ lớn để người dùng thấy chờ đợi.</td>
+              </tr>
+              <tr>
+                <td>Shortcut execution - thực thi đường tắt</td>
+                <td>Không phải query nào cũng cần LLM reasoning.</td>
+                <td>Regex/path matching, command routing, FAQ number shortcut, direct API calls.</td>
+                <td>Rẻ và nhanh hơn, nhưng dễ làm split logic nếu không quản tốt session/state.</td>
+                <td>Khi input có pattern rất rõ và deterministic.</td>
+              </tr>
+              <tr>
+                <td>Model provider - nhà cung cấp mô hình</td>
+                <td>Cân bằng speed, cost và compatibility cho agent runtime.</td>
+                <td>GPT-5.5, GPT-5.4-mini, Cerebras via LiteLLM, OpenRouter.</td>
+                <td>Model tốt hơn thường đắt hoặc chậm hơn; model nhanh hơn có thể suy luận tool-use kém hơn.</td>
+                <td>Khi cần đổi backend model mà vẫn giữ architecture chung.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What the code does - Code đang làm gì</h3>
+              <p>
+                [next_level.ipynb](G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb)
+                bắt đầu bằng cách mở local vector DB,
+                rồi đọc [faq.jsonl](G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl)
+                thành danh sách FAQ.
+                Sau đó notebook build một `instructions` string theo kiểu markdown:
+                `Role`, `Memory`, `FAQ`,
+                rồi append tất cả FAQ questions theo số thứ tự.
+              </p>
+              <p>
+                Tiếp theo, code tạo `faqs_lookup`,
+                viết `find_faq(question_number)`,
+                rồi bọc nó thành `faq_tool` bằng `@function_tool`.
+                Agent cuối cùng được tạo với
+                `tools=[faq_tool]` và `mcp_servers=[vectorstore_mcp]`,
+                nghĩa là nó vừa có function tool vừa có MCP memory tool.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Why this design - Vì sao chọn thiết kế này</h3>
+              <p>
+                Thiết kế này giải đúng một vấn đề cụ thể:
+                FAQ answers quá dài để nạp hết vào prompt,
+                nhưng lại quá quan trọng để chỉ giao cho semantic search.
+                Thay vì chọn một trong hai, notebook chọn phương án ở giữa:
+                để model thấy “question catalog” và tự gọi tool để lấy “answer body”.
+              </p>
+              <p>
+                Đây là một design rất senior theo nghĩa thực dụng:
+                dùng LLM ở nơi cần judgment,
+                dùng deterministic lookup ở nơi đã có ground truth rõ ràng.
+              </p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Code map - Bản đồ code quan trọng</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/next_level.ipynb">next_level.ipynb</a>:</strong> bài chính của buổi này, chứa toàn bộ logic upgrade.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/ingest.ipynb">ingest.ipynb</a>:</strong> dependency từ bài trước để tạo vector DB.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/knowledge/faq.jsonl">knowledge/faq.jsonl</a>:</strong> dữ liệu FAQ có cấu trúc, 58 dòng JSONL.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/FAQ.md">FAQ.md</a>:</strong> spec để tạo hoặc cập nhật `faq.jsonl`.</li>
+                <li><strong><a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-next/styles.py">styles.py</a>:</strong> chỉ lo UI/UX cho Gradio.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>Important implementation detail - Chi tiết dễ bị bỏ qua</summary>
+            <div class="note">
+              <ul class="memory-list">
+                <li><strong>Tool description matters:</strong> docstring của `faq_tool` chính là phần description agent sẽ nhìn thấy.</li>
+                <li><strong>Schema matters:</strong> function tool tự tạo JSON schema cho param `question_number`, giúp model gọi tool đúng format.</li>
+                <li><strong>Prompt budget matters:</strong> chỉ đưa questions vào prompt là một quyết định tiết kiệm context window rất quan trọng.</li>
+                <li><strong>State consistency risk:</strong> trong repo `expert-next` hiện tại, nhánh `instant answer` chỉ `yield` kết quả trực tiếp mà không ghi vào `SQLiteSession`; điều này đơn giản hơn nhưng có thể làm follow-up context kém nhất quán hơn so với bản có sync session.</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Trường hợp dễ fail</h3>
+              <ul class="memory-list">
+                <li><strong>FAQ mismatch:</strong> model không nhận ra câu hỏi người dùng map vào FAQ nào, nên chỉ dùng vector memory và trả lời kém chắc.</li>
+                <li><strong>Over-reliance on memory:</strong> instructions không đủ rõ làm agent không tận dụng FAQ tool khi đáng ra nên dùng.</li>
+                <li><strong>Prompt overload risk:</strong> nếu đưa cả questions lẫn answers vào prompt, context sẽ phình và đắt hơn nhiều.</li>
+                <li><strong>Streaming complexity:</strong> event handling dễ rối và khó debug hơn flow blocking đơn giản.</li>
+                <li><strong>Session drift on bypass path:</strong> direct answer nhanh nhưng có thể làm conversation history không đồng bộ với hành vi user thấy trên UI.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Common misunderstandings - Hiểu lầm phổ biến</h3>
+              <ul class="memory-list">
+                <li><strong>“FAQ tool thay thế vector store”:</strong> sai; nó bổ sung cho vector memory, không thay thế câu hỏi mở.</li>
+                <li><strong>“Tool càng nhiều càng tốt”:</strong> sai; mỗi tool thêm vào làm tăng search space cho agent.</li>
+                <li><strong>“Streaming làm model thông minh hơn”:</strong> sai; streaming chỉ đổi cách trình bày output.</li>
+                <li><strong>“Nếu có shortcut thì bỏ luôn agent”:</strong> sai; shortcut chỉ giải quyết một lớp query rất hẹp.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Questions you should answer - Câu nên trả lời được</h3>
+              <ul class="memory-list">
+                <li>Vì sao không nên đưa toàn bộ FAQ answers vào prompt ngay từ đầu?</li>
+                <li>`function_tool` giúp gì khác với một helper function bình thường?</li>
+                <li>Vì sao bài này là hybrid retrieval chứ không chỉ là vector search?</li>
+                <li>Khi nào nên bypass LLM hoàn toàn?</li>
+                <li>Trade-off lớn nhất của streamed tool-using chat là gì?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Answer frame - Khung trả lời</h3>
+              <p>
+                Trả lời theo khung:
+                <strong>Problem - vấn đề</strong> ->
+                <strong>Baseline - cách cũ</strong> ->
+                <strong>New mechanism - cơ chế mới</strong> ->
+                <strong>Trade-off - đánh đổi</strong> ->
+                <strong>Failure mode - chỗ dễ fail</strong> ->
+                <strong>When to use - khi nào dùng</strong>.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&amp;A / Flashcards - Câu hỏi phỏng vấn / thẻ ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Tại sao chỉ đưa FAQ questions vào prompt?<br><strong>A:</strong> Để model biết câu hỏi nào tồn tại mà không tốn context window cho toàn bộ answers.</li>
+                <li><strong>Q:</strong> `@function_tool` làm gì?<br><strong>A:</strong> Nó biến Python function thành tool có description và parameter schema để agent gọi được.</li>
+                <li><strong>Q:</strong> Hybrid retrieval trong bài này là gì?<br><strong>A:</strong> Kết hợp vector memory retrieval với FAQ lookup có cấu trúc.</li>
+                <li><strong>Q:</strong> `Q37` shortcut cho thấy điều gì?<br><strong>A:</strong> Không phải bài toán nào cũng cần LLM; đôi khi direct lookup là giải pháp tốt nhất.</li>
+                <li><strong>Q:</strong> Streaming thêm gì cho người dùng?<br><strong>A:</strong> Cảm giác realtime và khả năng thấy tool-status khi agent đang làm việc.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Interview Q&amp;A - Hỏi đáp phỏng vấn</h3>
+              <ul class="memory-list">
+                <li><strong>Q:</strong> Hãy giải thích vì sao FAQ tool làm hệ “agentic hơn”.<br><strong>A:</strong> Vì agent không còn chỉ có một kiểu lấy thông tin là semantic recall từ vector DB. Nó được trao thêm một capability có cấu trúc, và phải tự quyết định khi nào nên gọi capability đó để lấy ground-truth answer. Agentic hơn ở đây là tăng quyền điều phối nguồn tri thức, không phải chỉ tăng số dòng prompt.</li>
+                <li><strong>Q:</strong> Nếu bạn muốn productionize pattern này, bạn sẽ cải tiến gì?<br><strong>A:</strong> Tôi sẽ thêm telemetry cho tool usage, đánh giá tách riêng FAQ-hit accuracy và memory-only accuracy, đồng bộ direct-answer path với session state, và cân nhắc thêm classifier/routing layer nếu số loại tool tăng lên quá nhiều.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Must remember - Phải nhớ</h3>
+              <ol class="memory-list">
+                <li>Bài này nâng hệ từ vector-only memory sang hybrid vector + FAQ tool.</li>
+                <li>Không nên nhét tất cả canonical answers vào prompt nếu có thể tra chúng bằng tool.</li>
+                <li>`function_tool` là cây cầu giữa Python function và agent tool calling.</li>
+                <li>Streaming là UX improvement, không phải retrieval improvement.</li>
+                <li>Bypass LLM là một design choice đúng khi query cực kỳ deterministic.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Self-check - Tự kiểm tra</h3>
+              <ul class="memory-list">
+                <li>Bạn có mô tả được vì sao FAQ tool tiết kiệm context hơn so với nhét full answers vào prompt không?</li>
+                <li>Bạn có phân biệt được `function tool` và `MCP server tool` không?</li>
+                <li>Bạn có nói được lợi ích và rủi ro của direct-answer path không?</li>
+                <li>Bạn có giải thích được vì sao transcript gọi đây là “more agentic” không?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>What comes next - Tiếp theo là gì</h3>
+              <p>
+                Sau bài này, hướng học tiếp hợp lý là:
+                thêm evaluation cho từng loại query,
+                thử thêm SQL hoặc web search như các nguồn tri thức mới,
+                rồi so sánh khi nào một simple hybrid tool setup là đủ và khi nào cần router hoặc multi-agent orchestration.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Missing inputs - Còn thiếu gì</h3>
+              <p>
+                Nếu muốn đào sâu hơn nữa, nên có:
+                logs của tool calls thực tế,
+                test set phân loại FAQ-like vs open-ended queries,
+                và benchmark latency/cost giữa
+                `memory-only`,
+                `memory + FAQ`,
+                và
+                `instant-answer bypass`.
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được tạo từ template trong
+            <span class="inline-code">G:\RAG\study_guide\study-guide-template.html</span>,
+            các study guide trước trong <span class="inline-code">G:\RAG\study_guide</span>,
+            và repo hiện tại trong <span class="inline-code">G:\RAG\ed\Agentic_Rag_MCP\expert-next</span>.
+            Không chứa secrets, API keys, tokens hoặc credentials.
+          </div>
+          <p class="print-only">End of Agentic RAG MCP next level study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>

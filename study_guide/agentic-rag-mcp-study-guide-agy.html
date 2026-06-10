@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic RAG with MCP - Study & Interview Guide</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #f4f7f7;
+      --line: #d8dee4;
+      --line-soft: #e9edf1;
+      --ink: #17202a;
+      --ink-soft: #52616f;
+      --accent: #176b75;
+      --accent-soft: #e7f3f4;
+      --warm: #9a5b13;
+      --warn-soft: #fff6e6;
+      --shadow: 0 14px 30px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+      --content-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    p,
+    li,
+    td {
+      color: var(--ink-soft);
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero,
+    .toc,
+    .section,
+    .callout,
+    details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    h1 {
+      margin-top: 14px;
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+    }
+
+    .hero-copy p {
+      margin-top: 14px;
+      max-width: 72ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-points,
+    .meta-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .meta-grid,
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .card,
+    .panel {
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+
+    .mini-card strong,
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .tag-row,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(23, 107, 117, 0.24);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--accent);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(23, 107, 117, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .toc h2 {
+      margin-bottom: 12px;
+      font-size: 1.08rem;
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: rgba(23, 107, 117, 0.18);
+    }
+
+    .progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line-soft);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 160ms linear;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .kicker {
+      color: var(--warm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card h3,
+    .panel h3 {
+      margin-bottom: 9px;
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--warn-soft);
+      box-shadow: none;
+    }
+
+    .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e8edf0;
+      color: var(--accent);
+    }
+
+    .memory-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .memory-list li + li {
+      margin-top: 8px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    details {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: var(--surface-alt);
+      box-shadow: none;
+    }
+
+    summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--ink-soft);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout,
+      .hero-points,
+      .meta-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-inline: 14px;
+      }
+
+      .hero,
+      .section {
+        padding: 20px 16px;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc,
+      .actions {
+        display: none;
+      }
+
+      .hero,
+      .section,
+      .callout,
+      details {
+        box-shadow: none;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Agentic RAG with MCP - Study & Interview Guide</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Agentic RAG with MCP Study Guide</h1>
+          <p>
+            Tài liệu tổng hợp lý thuyết, quy trình triển khai và chuẩn bị phỏng vấn về **Agentic RAG** 
+            kết hợp với **OpenAI Agents SDK** và **Model Context Protocol (MCP)** để xây dựng Tác tử Chuyên gia (Expert Agent).
+          </p>
+          <div class="hero-points">
+            <article class="mini-card">
+              <strong>Trọng tâm chính - Main focus</strong>
+              Giao thức Model Context Protocol (MCP), tích hợp fetch/qdrant servers, tự sinh công cụ bằng Python (@function_tool), và tối ưu hóa phản hồi chatbot tĩnh (Instant Answer).
+            </article>
+            <article class="mini-card">
+              <strong>Nguyên tắc thuật ngữ - Bilingual Terminology</strong>
+              Các thuật ngữ kỹ thuật được biểu diễn song ngữ: <span class="inline-code">English term - nghĩa tiếng Việt</span> giúp dễ dàng trả lời phỏng vấn chuẩn quốc tế.
+            </article>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel">
+            <h3>Nguồn tham chiếu - References</h3>
+            <p>
+              Notebooks: 
+              <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb">ingest.ipynb</a>, 
+              <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb">next_level.ipynb</a><br>
+              Styles: 
+              <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/styles.py">styles.py</a><br>
+              Transcript: 
+              <a href="file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/transcript.txt">transcript.txt</a>
+            </p>
+            <div class="tag-row">
+              <span class="tag">MCP</span>
+              <span class="tag">OpenAI Agents SDK</span>
+              <span class="tag">Qdrant Vector DB</span>
+              <span class="tag">Cerebras WSE</span>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Tiện ích - Utilities</h3>
+            <div class="actions">
+              <button class="button" type="button" id="expandAll">Mở rộng ghi chú - Expand notes</button>
+              <button class="button" type="button" id="collapseAll">Thu gọn ghi chú - Collapse notes</button>
+              <button class="button" type="button" onclick="window.print()">In / Lưu PDF - Print / Save PDF</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Navigation - Mục lục</h2>
+        <nav class="toc-list">
+          <a class="toc-link" href="#intake">0. Intake</a>
+          <a class="toc-link" href="#cheat-sheet">1. Cheat Sheet</a>
+          <a class="toc-link" href="#overview">2. Overview</a>
+          <a class="toc-link" href="#goals">3. Learning Goals</a>
+          <a class="toc-link" href="#dependencies">4. Previous Context</a>
+          <a class="toc-link" href="#core-theory">5. Core Theory</a>
+          <a class="toc-link" href="#workflow">6. Workflow / Pipeline</a>
+          <a class="toc-link" href="#techniques">7. Techniques</a>
+          <a class="toc-link" href="#options-landscape">8. Options Landscape</a>
+          <a class="toc-link" href="#implementation">9. Implementation Insights</a>
+          <a class="toc-link" href="#pitfalls">10. Pitfalls</a>
+          <a class="toc-link" href="#interview">11. Interview Takeaways</a>
+          <a class="toc-link" href="#flashcards">12. Q&A / Flashcards</a>
+          <a class="toc-link" href="#memory">13. Quick Memory</a>
+          <a class="toc-link" href="#next-step">14. Next Step</a>
+        </nav>
+        <div class="progress">
+          <p><strong>Tiến độ đọc - Reading progress</strong></p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="intake" class="section" data-section="intake" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 0</div>
+              <h2>Intake - Thông tin đầu vào</h2>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <article class="card">
+              <h3>Metadata buổi học - Session metadata</h3>
+              <ul class="memory-list">
+                <li><strong>Title - Tiêu đề:</strong> Agentic RAG với Model Context Protocol (MCP) và OpenAI Agents SDK.</li>
+                <li><strong>Type - Loại:</strong> Tích hợp công cụ hệ thống (tool integration), nạp tri thức tự động (ingestion pipeline), phát trực tiếp hội thoại (event streaming).</li>
+                <li><strong>Main focus - Trọng tâm:</strong> Tận dụng các máy chủ MCP tiêu chuẩn để loại bỏ code slop, quản lý bộ nhớ ngắn hạn và dài hạn, thiết lập custom Python function tools.</li>
+                <li><strong>Depth - Độ sâu:</strong> Medium (Triển khai thực tế cấp độ dự án tích hợp hệ thống).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Tài nguyên sử dụng - Input resources</h3>
+              <ul class="memory-list">
+                <li><strong>Code - Mã nguồn:</strong> [ingest.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb), [next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb), [styles.py](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/styles.py)</li>
+                <li><strong>Dữ liệu - Data:</strong> [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/knowledge/faq.jsonl) (Bộ câu hỏi thường gặp gồm 59 câu hỏi và câu trả lời chuẩn markdown).</li>
+                <li><strong>Ghi chú / Transcript:</strong> [transcript.txt](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/transcript.txt) (Video Youtube xây dựng Expert Agent trong 12 phút của Ed Donner).</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="cheat-sheet" class="section" data-section="cheat-sheet" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 1</div>
+              <h2>Cheat Sheet - Tóm tắt một trang</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Core idea - Ý tưởng cốt lõi</h3>
+              <p>
+                **Agentic RAG với MCP** thay thế luồng RAG truyền thống cứng nhắc bằng việc trao quyền cho LLM tự quyết định khi nào cần gọi công cụ. 
+                Sử dụng giao thức mở **MCP** giúp tái sử dụng các server cào dữ liệu và lưu trữ vector đã được phát triển sẵn, 
+                giúp giảm thiểu tối đa mã nguồn tự viết và dễ dàng kết nối tác tử với mọi môi trường hệ thống.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Must know - Cần nhớ</h3>
+              <ul class="memory-list">
+                <li><strong>MCP (Model Context Protocol)</strong> hoạt động thông qua giao tiếp Standard I/O (stdio), cho phép LLM tự do gọi các công cụ ngoài.</li>
+                <li><strong>Short-term memory - Bộ nhớ ngắn hạn</strong> được lưu trữ bởi SQLiteSession, duy trì lịch sử chat.</li>
+                <li><strong>Long-term memory - Bộ nhớ dài hạn</strong> lưu trong Qdrant Vector DB thông qua máy chủ MCP.</li>
+                <li><strong>Instant Answer Routing</strong> rẽ nhánh nhanh câu hỏi dạng mã tĩnh (như "q5") để lấy ngay từ FAQ, không tốn API token của LLM.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Góc phỏng vấn - Interview angle</h3>
+              <p>
+                Khi được hỏi về khả năng mở rộng của hệ thống Agentic RAG, hãy giải thích cách **MCP** tách biệt tầng chạy mô hình (LLM Client) 
+                và tầng cung cấp công cụ (MCP Servers). Tác tử có thể gọi song song (parallel tool calls) các máy chủ MCP fetch (cào dữ liệu) và Qdrant (lưu trữ vector) 
+                để thực hiện các tác vụ phức tạp một cách tự động và linh hoạt.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="overview" class="section" data-section="overview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 2</div>
+              <h2>Session Overview - Tổng quan buổi học</h2>
+            </div>
+          </div>
+          <p>
+            Nội dung này hướng dẫn xây dựng một trợ lý AI thông minh đóng vai trò **Chuyên gia (Expert Agent)** giải đáp thắc mắc về các khóa học của tác giả Ed Donner. 
+            Buổi học giải quyết hai bài toán kỹ thuật lớn:
+          </p>
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="card">
+              <h3>Nạp dữ liệu tác tử - Agentic Ingestion</h3>
+              <p>
+                Thay vì viết mã python cào web và chia nhỏ (chunking) thủ công, tác tử tự gọi công cụ `fetch` (đọc URL) và `qdrant_store` để lưu tri thức vĩnh viễn dưới dạng embeddings.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Hội thoại thông minh - Expert Chatbot</h3>
+              <p>
+                Tác tử kết hợp tìm kiếm ngữ nghĩa mờ trên vector store (Qdrant), tra cứu chính xác trên file câu hỏi tĩnh (FAQ Tool), và rẽ nhánh phản hồi tức thì (Instant Answer) cho các truy vấn tĩnh.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Suy luận siêu tốc - Fast Inference</h3>
+              <p>
+                Tích hợp Cerebras API để tối ưu hóa thời gian phản hồi của chatbot, mang lại trải nghiệm thời gian thực mượt mà cho người dùng cuối.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="goals" class="section" data-section="goals" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 3</div>
+              <h2>Learning Goals - Mục tiêu cần nắm</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Mục tiêu kiến thức - Concept goals</h3>
+              <ul class="memory-list">
+                <li>Hiểu rõ giao thức **Model Context Protocol (MCP)** và cách thức LLM tương tác với MCP server qua giao tiếp stdio.</li>
+                <li>Phân biệt sự khác nhau giữa **Short-term memory** (nhớ lịch sử chat cục bộ) và **Long-term memory** (nhớ tri thức vĩnh viễn trong Vector DB).</li>
+                <li>Nắm vững ưu nhược điểm của việc dùng LLM làm tác tử tự định đoạt hành động gọi công cụ (Agentic Tool Calling).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Mục tiêu thực hành - Practical goals</h3>
+              <ul class="memory-list">
+                <li>Định cấu hình chạy các MCP Servers tiêu chuẩn bằng lệnh `uvx`.</li>
+                <li>Khai báo và triển khai custom Python tools bằng decorator `@function_tool` của OpenAI Agents SDK.</li>
+                <li>Xử lý sự kiện phát trực tiếp (event streaming) từ `Runner.run_streamed` để hiển thị trạng thái gọi tool động của tác tử.</li>
+                <li>Cấu hình Gradio UI chuyên nghiệp với CSS và JS MutationObserver tùy biến.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="dependencies" class="section" data-section="dependencies" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 4</div>
+              <h2>Previous Context - Liên hệ với phần trước</h2>
+            </div>
+          </div>
+          <p>
+            Để hiểu được sự vượt trội của kiến trúc này, chúng ta cần đối chiếu con đường tiến hóa qua 4 giai đoạn RAG chính:
+          </p>
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Giai đoạn RAG</th>
+                <th>Cơ chế hoạt động - Mechanism</th>
+                <th>Ưu điểm - Advantages</th>
+                <th>Nhược điểm - Disadvantages</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Traditional RAG</strong> (Day 3)</td>
+                <td>Luồng xử lý cứng: Cào dữ liệu trước -> lưu vector -> embed câu hỏi -> lấy context -> sinh câu trả lời.</td>
+                <td>Đơn giản, dễ debug, latency ổn định.</td>
+                <td>Cứng nhắc; không xử lý được các câu hỏi đa luồng (multi-hop) hoặc câu hỏi không cần context.</td>
+              </tr>
+              <tr>
+                <td><strong>2. Advanced RAG Pro</strong> (Day 5 Pro)</td>
+                <td>Tối ưu hóa khâu truy xuất: Viết lại query ([rewrite_query](file:///G:/RAG/pro_implementation/answer.py#L90)), mở rộng query (expansion), xếp hạng lại kết quả bằng mô hình [rerank](file:///G:/RAG/pro_implementation/answer.py#L54).</td>
+                <td>Tăng độ chính xác (accuracy) và nDCG/MRR của tài liệu tìm thấy.</td>
+                <td>Tốn kém chi phí token, latency tăng do phải gọi LLM Reranker.</td>
+              </tr>
+              <tr>
+                <td><strong>3. Agentic RAG (InsureLLM)</strong></td>
+                <td>Tự động định tuyến (Intent-aware Routing), chia nhỏ tài liệu phân cấp (Parent-Child chunking) và tự đánh giá chất lượng câu trả lời để retry ([evaluate_answer_quality](file:///G:/RAG/Agentic-RAG-InsureLLM/implementation/answer.py#L501)).</td>
+                <td>Rất mạnh cho các câu hỏi phức tạp, tổng hợp (holistic) hoặc số liệu (numerical).</td>
+                <td>Kiến trúc phức tạp, phải viết nhiều mã tích hợp giữa SQLite (parent) và Chroma (child).</td>
+              </tr>
+              <tr>
+                <td><strong>4. Agentic RAG với MCP</strong> (Buổi hiện tại)</td>
+                <td>Tác tử tự điều khiển việc nạp và truy xuất dữ liệu thông qua giao thức tiêu chuẩn **MCP** (Fetch, Qdrant). Tự tạo công cụ bằng code Python và tối ưu luồng tĩnh.</td>
+                <td><strong>Không còn code slop</strong>; cực kỳ dễ mở rộng thêm công cụ (SQL, Gmail, Slack) mà không cần viết lại ứng dụng.</td>
+                <td>Cần cấu hình môi trường chạy máy chủ MCP (như node/wsl), dễ bị nghẽn ở lớp giao tiếp stdio.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="core-theory" class="section" data-section="core-theory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 5</div>
+              <h2>Core Theory - Lý thuyết cốt lõi</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Khái niệm cốt lõi - Key concepts</h3>
+              <ul class="memory-list">
+                <li><strong>Model Context Protocol (MCP) - Giao thức ngữ cảnh mô hình:</strong> Là một giao thức mở (open protocol) chuẩn hóa cách thức kết nối LLM với môi trường bên ngoài (cơ sở dữ liệu, file system, APIs).</li>
+                <li><strong>Short-term memory - Bộ nhớ ngắn hạn:</strong> Cơ chế ghi nhớ ngữ cảnh lịch sử trò chuyện trong phiên làm việc hiện tại, giúp duy trì mạch hội thoại mạch lạc.</li>
+                <li><strong>Long-term memory - Bộ nhớ dài hạn:</strong> Kho lưu trữ vĩnh viễn các tri thức của tác tử (trong cơ sở dữ liệu vector), được truy xuất thông qua phép so khớp tương đồng ngữ nghĩa.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Quan hệ giữa các thành phần - Component Relationships</h3>
+              <p>
+                Tác tử đóng vai trò bộ não điều phối trung tâm. Khi nhận yêu cầu từ người dùng:
+                Tác tử sẽ ghi câu hỏi vào **Short-term memory** (SQLite). Đồng thời, tác tử sử dụng **MCP** để truy vấn **Long-term memory** (Qdrant Vector DB). 
+                Nhờ vào mô tả công cụ rõ ràng (JSON Schema), tác tử tự quyết định gọi công cụ nào phù hợp để kéo context, sau đó tổng hợp câu trả lời cuối cùng cho người dùng.
+              </p>
+            </article>
+          </div>
+
+          <table class="comparison-table" style="margin-top: 16px;">
+            <thead>
+              <tr>
+                <th>Term - Thuật ngữ</th>
+                <th>Meaning - Nghĩa</th>
+                <th>Why it matters - Vì sao quan trọng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Model Context Protocol (MCP)</strong></td>
+                <td>Giao thức kết nối chuẩn hóa giữa AI và ứng dụng/dữ liệu.</td>
+                <td>Xóa bỏ việc viết code tích hợp API thủ công cho từng dự án AI.</td>
+              </tr>
+              <tr>
+                <td><strong>SQLiteSession</strong></td>
+                <td>Lớp quản lý lưu trữ lịch sử chat ngắn hạn của Agents SDK vào SQLite.</td>
+                <td>Giúp duy trì ngữ cảnh trò chuyện (chat history) bền vững giữa các lần khởi chạy chương trình.</td>
+              </tr>
+              <tr>
+                <td><strong>Cerebras High-speed inference</strong></td>
+                <td>Nền tảng tăng tốc phần cứng giúp suy luận LLM cực nhanh.</td>
+                <td>Giảm độ trễ chatbot xuống mức tối thiểu, mang lại phản hồi ngay lập tức cho người dùng.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="workflow" class="section" data-section="workflow" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 6</div>
+              <h2>Workflow / Pipeline - Quy trình / luồng hoạt động</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>1. Luồng nạp tri thức - Ingestion Pipeline</h3>
+              <ol class="memory-list">
+                <li>Khởi chạy tác tử `Ingester` liên kết với Fetch MCP Server và Qdrant MCP Server.</li>
+                <li>Tác tử nhận lệnh thu thập tri thức từ một URL cho trước.</li>
+                <li>Gọi công cụ `fetch` để lấy nội dung trang web thô và làm sạch text.</li>
+                <li>Gọi công cụ `qdrant_find` để kiểm tra thông tin có bị lặp với tri thức cũ trong Vector DB hay không.</li>
+                <li>Nếu chưa tồn tại, tác tử trích xuất tri thức chính (dưới 1-2 câu gọn gàng) và gọi công cụ `qdrant_store` để ghi vào bộ nhớ dài hạn.</li>
+                <li>Lặp lại cho đến khi tích lũy đủ 10 unique memories cho mỗi trang web.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>2. Luồng phục vụ hội thoại - Serving Chat Pipeline</h3>
+              <ol class="memory-list">
+                <li>Người dùng gửi câu hỏi từ Gradio UI chat.</li>
+                <li>Kiểm tra xem câu hỏi có thuộc dạng nhập tắt mã FAQ tĩnh (ví dụ: "q2"):
+                  <ul>
+                    <li>Nếu đúng: Lấy thẳng câu trả lời từ FAQ và lưu lại lịch sử chat vào SQLiteSession (Không gọi LLM).</li>
+                    <li>Nếu sai: Tiến hành bước 3.</li>
+                  </ul>
+                </li>
+                <li>Kích hoạt tác tử `Expert` được liên kết với Qdrant MCP Server và custom [faq_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L173).</li>
+                <li>Tác tử chạy vòng lặp suy luận, tự gọi công cụ tìm kiếm vector (`qdrant_find`) hoặc tra FAQ tĩnh (`faq_tool`) để thu thập ngữ cảnh.</li>
+                <li>Tác tử tổng hợp ngữ cảnh, sinh câu trả lời và phát trực tiếp (stream) kết quả về UI chat.</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <section id="techniques" class="section" data-section="techniques" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 7</div>
+              <h2>Techniques - Kỹ thuật sử dụng</h2>
+            </div>
+          </div>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Custom Python Function Tool</h3>
+              <p>
+                Sử dụng decorator `@function_tool` của OpenAI Agents SDK để tự động chuyển một hàm python thường thành công cụ của tác tử. 
+                SDK tự động trích xuất type hints và docstrings của hàm để sinh mô tả JSON Schema cung cấp cho mô hình gọi công cụ.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Instant Answer Routing</h3>
+              <p>
+                Rẽ nhánh xử lý nhanh cho các truy vấn tĩnh (static queries) có độ ưu tiên cao. Nếu người dùng nhập mã câu hỏi cố định, hệ thống trả về kết quả ngay lập tức để tiết kiệm token và thời gian phản hồi của mô hình.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Streaming Event Processing</h3>
+              <p>
+                Đọc luồng sự kiện từ `Runner.run_streamed` và trích xuất thông tin delta. Giúp chatbot hiển thị trạng thái động cho người dùng (ví dụ: "Calling faq_tool..." hoặc "Tool returned. Thinking...") trước khi xuất kết quả dạng text.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="options-landscape" class="section" data-section="options-landscape" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 8</div>
+              <h2>Options Landscape - Bản đồ lựa chọn phổ biến</h2>
+            </div>
+          </div>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Cluster - Cụm kỹ thuật</th>
+                <th>Problem - Vấn đề</th>
+                <th>Popular choices - Lựa chọn phổ biến</th>
+                <th>Trade-off - Đánh đổi</th>
+                <th>When to use - Khi nào nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ingestion Tooling</strong></td>
+                <td>Trích xuất và nạp nội dung từ website.</td>
+                <td>
+                  1. Viết code python cào web thủ công + LangChain Loader.<br>
+                  2. **Fetch MCP Server** (chạy dòng lệnh stdio).
+                </td>
+                <td>
+                  MCP Server dễ chạy và chuẩn hóa cấu trúc dữ liệu, nhưng phụ thuộc vào môi trường runtime node/python bên ngoài.
+                </td>
+                <td>Nên dùng MCP Server cho các dự án phát triển nhanh để tái sử dụng công cụ có sẵn.</td>
+              </tr>
+              <tr>
+                <td><strong>Vector Database Integration</strong></td>
+                <td>Tích hợp cơ sở dữ liệu vector để tìm kiếm ngữ nghĩa.</td>
+                <td>
+                  1. Gọi trực tiếp API client của vector DB trong code (Chroma/Qdrant).<br>
+                  2. **Qdrant MCP Server** (`mcp-server-qdrant`).
+                </td>
+                <td>
+                  Sử dụng Qdrant MCP Server giúp tách biệt mã ứng dụng với DB Client, tuy nhiên có độ trễ nhỏ do truyền tin qua stdio.
+                </td>
+                <td>Nên dùng khi xây dựng kiến trúc Agentic lỏng (loosely coupled agents) cần hoán đổi cơ sở dữ liệu linh hoạt.</td>
+              </tr>
+              <tr>
+                <td><strong>Chat State Management</strong></td>
+                <td>Lưu giữ lịch sử hội thoại ngắn hạn.</td>
+                <td>
+                  1. Lưu mảng json trong bộ nhớ RAM.<br>
+                  2. **SQLiteSession** (lưu tệp SQLite cục bộ).
+                </td>
+                <td>
+                  SQLiteSession bền vững hơn qua các phiên chạy ứng dụng, nhưng cần dọn dẹp lịch sử khi hội thoại quá dài để tránh tràn ngữ cảnh (context window).
+                </td>
+                <td>Nên dùng cho các chatbot phục vụ môi trường thực tế cần lưu vết hội thoại lâu dài.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="implementation" class="section" data-section="implementation" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 9</div>
+              <h2>Implementation Insights - Góc nhìn triển khai</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Luồng nạp tri thức ([ingest.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/ingest.ipynb))</h3>
+              <p>
+                File này khởi tạo các tham số kết nối MCP: `fetch_params` và `vectorstore_params` bằng CLI command `uvx`. 
+                Vòng lặp duyệt danh sách `urls`, bọc trong context manager `MCPServerStdio` để chạy đồng thời Fetch Server và Qdrant Server. 
+                Tác tử `Ingester` sử dụng các server này để tự cào dữ liệu và ghi vào Qdrant DB. 
+                Sau đó, file sử dụng thư viện `qdrant_client` để cuộn (scroll) dữ liệu, kiểm tra các bản ghi đã nạp và in thông tin trích xuất.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Luồng trò chuyện chuyên gia ([next_level.ipynb](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb))</h3>
+              <p>
+                Nạp bộ FAQ từ file [faq.jsonl](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/knowledge/faq.jsonl). 
+                Xây dựng hàm [find_faq](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L165) và bọc thành [faq_tool](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L173) nhờ `@function_tool` để cung cấp cho mô hình gọi công cụ tĩnh.
+                Hàm [chat](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L295) thực hiện rẽ nhánh thông minh: nếu là mã FAQ thì trả kết quả tức thì nhờ [get_instant_answer](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L227), ngược lại thì gọi hàm [run](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L267) để chạy Expert Agent theo dạng phát trực tiếp (streaming) sự kiện thông qua hàm [text_from_event](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/next_level.ipynb#L249).
+              </p>
+            </article>
+          </div>
+
+          <details>
+            <summary>Phân tích styling Gradio trong styles.py</summary>
+            <div class="note">
+              <p>
+                File [styles.py](file:///G:/RAG/ed/Agentic_Rag_MCP/expert-main/styles.py) định nghĩa các biến CSS tĩnh để tùy chỉnh toàn diện giao diện mặc định của Gradio:
+              </p>
+              <ul class="memory-list">
+                <li>Biến màu chủ đạo (Gold, Blue, Purple) cùng chế độ Light/Dark Mode thông qua selector `body:not(.dark)`.</li>
+                <li>Thiết lập khung chat `.chatbot` không có viền bo tròn (`border-radius: 0`), tạo nét vuông vức, tối giản hiện đại.</li>
+                <li>Dùng JavaScript chèn dưới dạng mã JS để tìm các ô `textarea`, tự động focus con trỏ vào ô nhập tin nhắn ngay khi trang web tải xong.</li>
+                <li>Sử dụng `MutationObserver` trong JS để tự động focus lại vào ô nhập liệu khi trạng thái `disabled` được gỡ bỏ (sau khi tác tử hoàn thành việc phản hồi). Điều này mang lại trải nghiệm gõ liên tục cực kỳ mượt mà.</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
+        <section id="pitfalls" class="section" data-section="pitfalls" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 10</div>
+              <h2>Pitfalls - Lỗi / bẫy thường gặp</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Failure modes - Các lỗi thường gặp</h3>
+              <ul class="memory-list">
+                <li><strong>Lỗi kết nối stdio trên Windows (WSL2):</strong> Máy chủ MCP chạy trên Windows đôi khi không tương tác được với stdio của môi trường WSL2. Khắc phục bằng cách điều chỉnh cấu hình `.wslconfig` với `networkingMode=mirrored` và `dnsTunneling=true` để thông suốt kết nối mạng của máy ảo.</li>
+                <li><strong>Trùng lặp tri thức trong Vector DB:</strong> Nếu tác tử chạy nạp dữ liệu nhiều lần mà không kiểm tra trùng (deduplication check), Qdrant sẽ lưu trữ nhiều bản ghi trùng nghĩa, gây loãng context tìm kiếm. Khắc phục bằng cách yêu cầu tác tử luôn gọi `qdrant_find` kiểm tra trước khi ghi.</li>
+                <li><strong>Tool Calling Loop:</strong> LLM liên tục gọi đi gọi lại công cụ tìm kiếm vector với các từ khóa giống nhau khi không tìm thấy kết quả phù hợp. Khắc phục bằng cách cấu hình prompt nghiêm ngặt giới hạn số lần gọi tool hoặc cài đặt giới hạn vòng chạy `max_turns` ở mức an toàn (ví dụ: 10-20).</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hiểu lầm phổ biến - Common misunderstandings</h3>
+              <ul class="memory-list">
+                <li><strong>"MCP chỉ chạy được thông qua máy chủ Internet":</strong> Sai. MCP hoạt động thông suốt qua giao tiếp dòng lệnh tiêu chuẩn (stdio) của hệ thống cục bộ tại local.</li>
+                <li><strong>"Luôn cần gọi LLM để có phản hồi thông minh":</strong> Sai. Các câu hỏi tĩnh chuẩn hóa nên được lọc và trả kết quả tức thì (Instant Answer) để tiết kiệm tài nguyên và tăng độ ổn định của hệ thống.</li>
+                <li><strong>"Vector Database tự động lọc trùng lặp dữ liệu đầu vào":</strong> Sai. Hầu hết các Vector DB lưu trữ bản ghi phẳng theo ID tăng dần; lập trình viên hoặc tác tử phải tự kiểm tra tương đồng ngữ nghĩa trước khi thêm bản ghi mới.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="interview" class="section" data-section="interview" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 11</div>
+              <h2>Interview Takeaways - Ý chính cho phỏng vấn</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Các câu hỏi trọng tâm - Core Questions</h3>
+              <ul class="memory-list">
+                <li>Giải thích cách giao thức MCP hoạt động và tại sao nó tối ưu hơn việc tự viết mã tích hợp SDK của bên thứ ba?</li>
+                <li>Làm thế nào để kết hợp hiệu quả giữa bộ nhớ ngắn hạn (Short-term memory) và bộ nhớ dài hạn (Long-term memory) trong ứng dụng Agentic RAG?</li>
+                <li>Cơ chế Instant Answer giúp ích gì trong việc thiết kế chatbot AI quy mô doanh nghiệp?</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Khung câu trả lời mẫu - Answer Frame</h3>
+              <p>
+                Khi trả lời, hãy đi từ **Mục tiêu hệ thống (Goal)** -> **Cách hoạt động (Mechanism)** -> **Đánh đổi (Trade-off)** -> **Cách khắc phục (Mitigation)**. 
+                Ví dụ: "MCP giúp chuẩn hóa việc AI sử dụng công cụ bằng stdio. Điểm đánh đổi là tăng độ trễ và có thể gặp lỗi kết nối stdio trên môi trường Windows. 
+                Chúng tôi khắc phục bằng cách sử dụng các thư viện quản lý kết nối an toàn (MCPServerStdio) và cơ chế retry tự động (Tenacity)."
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="flashcards" class="section" data-section="flashcards" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 12</div>
+              <h2>Interview Q&A / Flashcards - Câu hỏi ôn tập</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Flashcards - Thẻ ôn nhanh</h3>
+              <ul class="memory-list">
+                <li><strong>Q: Giao thức mặc định của Qdrant MCP server dùng mô hình nhúng nào?</strong><br><strong>A:</strong> all-MiniLM-L6-v2 từ sentence-transformers (nhẹ và cực kỳ nhanh).</li>
+                <li><strong>Q: Làm sao để tác tử OpenAI SDK nhận diện tham số của một Python function tool?</strong><br><strong>A:</strong> SDK tự động phân tích type hints và nội dung docstring của hàm được bọc bởi `@function_tool`.</li>
+                <li><strong>Q: Tại sao cần sử dụng SQLiteSession cho lịch sử chat thay vì lưu vào RAM?</strong><br><strong>A:</strong> Lưu vào SQLite giúp bền vững dữ liệu khi khởi động lại chatbot và dễ quản lý phiên làm việc đa người dùng.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Hỏi đáp chuyên sâu - Interview Q&A</h3>
+              <ul class="memory-list">
+                <li>
+                  <strong>Q: Nếu MCP Server bị timeout hoặc ngắt kết nối stdio giữa chừng, làm sao ứng dụng của bạn tự phục hồi?</strong><br>
+                  <strong>A:</strong> Trong mã nguồn, tôi bọc các hàm khởi tạo tác tử và chạy dòng lệnh trong Tenacity decorator `@retry(wait=wait)` để tự động phục hồi kết nối. Đồng thời, thiết lập thời gian timeout hợp lý (ví dụ: 120 giây) trong `MCPServerStdio` để giải phóng tài nguyên bị treo.
+                </li>
+                <li>
+                  <strong>Q: Cách tối ưu chi phí token khi người dùng chat liên tục với tác tử RAG có kết nối Vector DB?</strong><br>
+                  <strong>A:</strong> Tôi triển khai cơ chế rẽ nhánh phản hồi tức thì (Instant Answer Routing) cho các mã tin nhắn tĩnh. Đồng thời sử dụng mô hình LLM siêu tốc, giá rẻ (như các mô hình chạy qua Cerebras) cho các tác vụ định tuyến hoặc hỏi đáp đơn giản.
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="memory" class="section" data-section="memory" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 13</div>
+              <h2>Quick Memory - Ôn nhanh cuối bài</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Quy tắc cốt lõi - Key Rules</h3>
+              <ol class="memory-list">
+                <li>MCP Server chạy độc lập bên ngoài ứng dụng AI, giao tiếp qua Standard I/O (stdio).</li>
+                <li>Mô tả công cụ (tools schema) càng rõ ràng thì LLM gọi công cụ càng chính xác.</li>
+                <li>Sử dụng `@function_tool` để viết nhanh các công cụ python cục bộ.</li>
+                <li>Dùng `Runner.run_streamed` để cải thiện trải nghiệm người dùng cuối bằng cách stream nội dung trả về.</li>
+              </ol>
+            </article>
+            <article class="card">
+              <h3>Tự kiểm tra - Self-check</h3>
+              <ul class="memory-list">
+                <li>Bạn đã cấu hình đúng cổng mạng và đường dẫn thư mục Vector DB cục bộ trong biến môi trường chưa?</li>
+                <li>Hàm định tuyến Instant Answer có khả năng ghi lịch sử chat vào SQLite trước khi trả kết quả không?</li>
+                <li>Custom tool của bạn đã được viết docstring mô tả chi tiết các tham số đầu vào và đầu ra chưa?</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="next-step" class="section" data-section="next-step" data-enabled="true">
+          <div class="section-title">
+            <div>
+              <div class="kicker">Section 14</div>
+              <h2>Next Step - Bước tiếp theo</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Định hướng phát triển - Future expansions</h3>
+              <p>
+                Trong các buổi học tới, chúng ta sẽ mở rộng khả năng của tác tử bằng cách tích hợp thêm các máy chủ MCP đa nguồn: 
+                quét cơ sở dữ liệu quan hệ (SQL MCP Server), tự động đọc ghi tệp cục bộ (Filesystem MCP Server), 
+                và kết nối dịch vụ trực tuyến để gửi thông báo tự động (Gmail/Slack MCP Servers).
+              </p>
+            </article>
+            <article class="card">
+              <h3>Tài nguyên cần bổ sung - Missing inputs</h3>
+              <p>
+                Để phát triển hệ thống lên cấp độ production thực tế, cần xây dựng một bộ test câu hỏi đa dạng (evaluation test suite) 
+                và công cụ đo lường tự động tương tự như `evaluator2.py` để đánh giá xem việc thêm công cụ MCP mới có gây ảnh hưởng tiêu cực (regression) 
+                tới các chỉ số MRR và nDCG của hệ thống hiện tại hay không.
+              </p>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            Tài liệu này được biên soạn đầy đủ để ôn tập chủ đề Agentic RAG và giao thức MCP. Chúc bạn chuẩn bị tốt cho buổi phỏng vấn tiếp theo!
+          </div>
+          <p class="print-only">End of study guide.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const allSections = Array.from(document.querySelectorAll("main section[data-section]"));
+    const tocLinks = Array.from(document.querySelectorAll(".toc-link"));
+    const progressBar = document.getElementById("progressBar");
+    const detailsNodes = Array.from(document.querySelectorAll("details"));
+
+    function applySectionVisibility() {
+      allSections.forEach((section) => {
+        const enabled = section.dataset.enabled !== "false";
+        section.classList.toggle("hidden-section", !enabled);
+      });
+
+      tocLinks.forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const hidden = !target || target.classList.contains("hidden-section");
+        link.classList.toggle("hidden-section", hidden);
+      });
+    }
+
+    function setActiveLink() {
+      const visibleSections = allSections.filter((section) => !section.classList.contains("hidden-section"));
+      let currentId = visibleSections[0]?.id;
+      const offset = window.scrollY + 180;
+
+      for (const section of visibleSections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+      });
+    }
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    document.getElementById("expandAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = true;
+      });
+    });
+
+    document.getElementById("collapseAll").addEventListener("click", () => {
+      detailsNodes.forEach((node) => {
+        node.open = false;
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      setActiveLink();
+      updateProgress();
+    }, { passive: true });
+
+    applySectionVisibility();
+    setActiveLink();
+    updateProgress();
+  </script>
+</body>
+</html>
